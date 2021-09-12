@@ -1,0 +1,29 @@
+# exclude all
+/*
+
+# need gradle 
+!gradle/
+!gradlew
+!gradlew.bat
+!build.gradle
+!gradle.properties
+
+# include markdowns
+!README.md
+!LICENSE
+
+# include source code
+!src/
+!libs/
+!RedstoneFlux-API
+
+# include git important files
+!.gitmodules
+!.gitignore
+
+# other important files
+!.editorconfig
+!.travis.yml
+!deploy_key.enc
+!scripts/
+!docs/
