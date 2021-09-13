@@ -1,31 +1,63 @@
 package com.projecturanus.betterp2p.client
 
+import com.projecturanus.betterp2p.MODID
 import net.minecraft.client.gui.GuiScreen
 import net.minecraft.client.renderer.GlStateManager
-import net.minecraft.client.resources.I18n
 import net.minecraft.init.Blocks
 import net.minecraft.item.ItemStack
+import net.minecraft.util.ResourceLocation
+import org.lwjgl.input.Mouse
 
-class GuiBetterMemoryCard : GuiScreen() {
+class GuiBetterMemoryCard : GuiScreen(), TextureBound {
+    private val xSize = 238
+    private val ySize = 206
+    private val guiLeft: Int by lazy { (width - this.xSize) / 2 }
+    private val guiTop: Int by lazy { (height - this.ySize) / 2 }
+
+    private val tableX = 9
+    private val tableY = 19
+
+    private lateinit var scrollBar: WidgetScrollBar
 
     override fun initGui() {
-
         super.initGui()
+        scrollBar = WidgetScrollBar()
+        scrollBar.displayX = guiLeft + 218
+        scrollBar.displayY = guiTop + 19
+        scrollBar.height = 114
+        scrollBar.setRange(0, 10, 23)
     }
 
     override fun drawScreen(mouseX: Int, mouseY: Int, partialTicks: Float) {
         drawDefaultBackground()
-        drawCenteredString(fontRenderer, I18n.format("sign.edit"), width / 2, 40, 16777215)
-        GlStateManager.color(1.0f, 1.0f, 1.0f, 1.0f)
-        GlStateManager.pushMatrix()
-        GlStateManager.translate((width / 2).toFloat(), 0.0f, 50.0f)
-        val f = 93.75f
-        GlStateManager.scale(-93.75f, -93.75f, -93.75f)
-        GlStateManager.rotate(180.0f, 0.0f, 1.0f, 0.0f)
-        GlStateManager.popMatrix()
+        drawBackground()
+        scrollBar.draw(this)
+        drawItemStack(ItemStack(Blocks.STONE), guiLeft + tableX + 4, guiTop + tableY + 3)
+        fontRenderer.drawString("Test", guiLeft + 33, guiTop + 22, 16777215)
 
-        drawItemStack(ItemStack(Blocks.STONE), 20, 20)
         super.drawScreen(mouseX, mouseY, partialTicks)
+    }
+
+    override fun mouseClicked(mouseX: Int, mouseY: Int, mouseButton: Int) {
+        scrollBar.click(mouseX, mouseY)
+        super.mouseClicked(mouseX, mouseY, mouseButton)
+    }
+
+    override fun mouseClickMove(mouseX: Int, mouseY: Int, clickedMouseButton: Int, timeSinceLastClick: Long) {
+        scrollBar.click(mouseX, mouseY)
+        super.mouseClickMove(mouseX, mouseY, clickedMouseButton, timeSinceLastClick)
+    }
+
+    override fun handleMouseInput() {
+        super.handleMouseInput()
+        val i = Mouse.getEventDWheel()
+        if (i != 0 && isShiftKeyDown()) {
+            val x = Mouse.getEventX() * width / mc.displayWidth
+            val y = height - Mouse.getEventY() * height / mc.displayHeight - 1
+//            this.mouseWheelEvent(x, y, i / Math.abs(i))
+        } else if (i != 0) {
+            scrollBar.wheel(i)
+        }
     }
 
     private fun drawItemStack(stack: ItemStack, x: Int, y: Int, altText: String? = null) {
@@ -38,5 +70,19 @@ class GuiBetterMemoryCard : GuiScreen() {
         itemRender.renderItemOverlayIntoGUI(font, stack, x, y, altText)
         zLevel = 0.0f
         itemRender.zLevel = 0.0f
+    }
+
+    override fun bindTexture(modid: String, location: String) {
+        val loc = ResourceLocation(modid, location)
+        mc.textureManager.bindTexture(loc)
+    }
+
+    private fun drawBackground() {
+        bindTexture(MODID, "textures/gui/better_memory_card.png")
+        drawTexturedModalRect(guiLeft, guiTop, 0, 0, this.xSize, this.ySize)
+    }
+
+    override fun doesGuiPauseGame(): Boolean {
+        return false
     }
 }

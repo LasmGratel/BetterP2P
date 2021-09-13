@@ -7,12 +7,11 @@ import appeng.api.util.AEColor
 import appeng.core.localization.GuiText
 import appeng.core.localization.PlayerMessages
 import appeng.items.AEBaseItem
-import appeng.parts.p2p.*
+import appeng.parts.p2p.PartP2PTunnel
 import appeng.util.Platform
 import com.projecturanus.betterp2p.BetterP2P
 import com.projecturanus.betterp2p.util.colorCode
 import com.projecturanus.betterp2p.util.facingTile
-import com.projecturanus.betterp2p.util.getCableBus
 import com.projecturanus.betterp2p.util.getPart
 import net.minecraft.client.resources.I18n
 import net.minecraft.client.util.ITooltipFlag
@@ -24,7 +23,6 @@ import net.minecraft.util.EnumActionResult
 import net.minecraft.util.EnumFacing
 import net.minecraft.util.EnumHand
 import net.minecraft.util.math.BlockPos
-import net.minecraft.util.math.Vec3d
 import net.minecraft.util.text.TextComponentString
 import net.minecraft.util.text.TextFormatting
 import net.minecraft.world.IBlockAccess
@@ -36,7 +34,7 @@ private val DEFAULT_COLOR_CODE = arrayOf(
     AEColor.TRANSPARENT, AEColor.TRANSPARENT, AEColor.TRANSPARENT, AEColor.TRANSPARENT,
     AEColor.TRANSPARENT, AEColor.TRANSPARENT, AEColor.TRANSPARENT, AEColor.TRANSPARENT)
 
-class ItemBetterMemoryCard : AEBaseItem(), IMemoryCard {
+object ItemBetterMemoryCard : AEBaseItem(), IMemoryCard {
     init {
         setMaxStackSize(1)
     }

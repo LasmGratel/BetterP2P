@@ -11,6 +11,6 @@ object ModItems {
     @JvmStatic
     @SubscribeEvent
     fun registerItems(event: RegistryEvent.Register<Item>) {
-        event.registry.register(ItemBetterMemoryCard().setRegistryName(MODID, "better_memory_card"))
+        event.registry.register(ItemBetterMemoryCard.setRegistryName(MODID, "better_memory_card"))
     }
 }
