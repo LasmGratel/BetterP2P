@@ -2,7 +2,7 @@ package com.projecturanus.betterp2p.client
 
 import com.projecturanus.betterp2p.MODID
 import net.minecraft.client.gui.GuiScreen
-import net.minecraft.client.renderer.GlStateManager
+import net.minecraft.client.renderer.RenderHelper
 import net.minecraft.init.Blocks
 import net.minecraft.item.ItemStack
 import net.minecraft.util.ResourceLocation
@@ -32,9 +32,10 @@ class GuiBetterMemoryCard : GuiScreen(), TextureBound {
         drawDefaultBackground()
         drawBackground()
         scrollBar.draw(this)
-        drawItemStack(ItemStack(Blocks.STONE), guiLeft + tableX + 4, guiTop + tableY + 3)
-        fontRenderer.drawString("Test", guiLeft + 33, guiTop + 22, 16777215)
-
+        for (i in 0..3) {
+            drawItemStack(ItemStack(Blocks.STONE), guiLeft + tableX + 4, guiTop + tableY + 3 + 23 * i)
+            fontRenderer.drawString("Test", guiLeft + 33, guiTop + 22, 16777215)
+        }
         super.drawScreen(mouseX, mouseY, partialTicks)
     }
 
@@ -60,16 +61,12 @@ class GuiBetterMemoryCard : GuiScreen(), TextureBound {
         }
     }
 
-    private fun drawItemStack(stack: ItemStack, x: Int, y: Int, altText: String? = null) {
-        GlStateManager.translate(0.0f, 0.0f, 32.0f)
-        zLevel = 200.0f
-        itemRender.zLevel = 200.0f
-        var font = stack.item.getFontRenderer(stack)
-        if (font == null) font = fontRenderer
+    private fun drawItemStack(stack: ItemStack, x: Int, y: Int) {
+        RenderHelper.enableGUIStandardItemLighting()
+        itemRender.zLevel = 100.0f
         itemRender.renderItemAndEffectIntoGUI(stack, x, y)
-        itemRender.renderItemOverlayIntoGUI(font, stack, x, y, altText)
-        zLevel = 0.0f
         itemRender.zLevel = 0.0f
+        RenderHelper.disableStandardItemLighting()
     }
 
     override fun bindTexture(modid: String, location: String) {

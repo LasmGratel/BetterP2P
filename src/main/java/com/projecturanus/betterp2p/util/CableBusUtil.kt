@@ -1,6 +1,7 @@
 package com.projecturanus.betterp2p.util
 
 import appeng.api.parts.IPart
+import appeng.api.parts.IPartHost
 import appeng.api.parts.SelectedPart
 import appeng.parts.AEBasePart
 import appeng.parts.ICableBusContainer
@@ -25,7 +26,8 @@ fun getCableBus(w: IBlockAccess, pos: BlockPos): ICableBusContainer? {
 
 fun getPart(w: IBlockAccess, pos: BlockPos, hitX: Float, hitY: Float, hitZ: Float): IPart? {
     val vec = Vec3d(hitX.toDouble(), hitY.toDouble(), hitZ.toDouble())
-    val p: SelectedPart? = getCableBus(w, pos)?.selectPart(vec)
+    val te = w.getTileEntity(pos)
+    val p: SelectedPart? = (te as IPartHost?)?.selectPart(vec)
     return p?.part
 }
 
