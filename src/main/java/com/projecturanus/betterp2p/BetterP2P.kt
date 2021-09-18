@@ -1,6 +1,7 @@
 package com.projecturanus.betterp2p
 
 import com.projecturanus.betterp2p.client.ModGuiHandler
+import com.projecturanus.betterp2p.network.ModNetwork
 import net.minecraftforge.fml.common.Mod
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent
 import net.minecraftforge.fml.common.network.NetworkRegistry
@@ -16,5 +17,6 @@ object BetterP2P {
     fun preInit(event: FMLPreInitializationEvent) {
         logger = event.modLog
         NetworkRegistry.INSTANCE.registerGuiHandler(this, ModGuiHandler)
+        ModNetwork.registerNetwork()
     }
 }

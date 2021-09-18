@@ -5,6 +5,7 @@ import appeng.api.parts.IPartHost
 import appeng.api.parts.SelectedPart
 import appeng.parts.AEBasePart
 import appeng.parts.ICableBusContainer
+import appeng.parts.p2p.PartP2PTunnel
 import appeng.tile.networking.TileCableBus
 import net.minecraft.tileentity.TileEntity
 import net.minecraft.util.EnumFacing
@@ -29,6 +30,17 @@ fun getPart(w: IBlockAccess, pos: BlockPos, hitX: Float, hitY: Float, hitZ: Floa
     val te = w.getTileEntity(pos)
     val p: SelectedPart? = (te as IPartHost?)?.selectPart(vec)
     return p?.part
+}
+
+/**
+ * Return a list of p2p in the part's target grid
+ * @param part Part to be detected
+ * @param clazz P2P class type
+ * @return a list of p2p tunnel in the target grid, or an empty list
+ */
+fun listTargetGridP2P(part: IPart?, clazz: Class<PartP2PTunnel<*>>): List<PartP2PTunnel<*>> {
+    val grid = part?.gridNode?.grid
+    return grid?.getMachines(clazz)?.map { it.machine as PartP2PTunnel<*> }?.toList() ?: emptyList()
 }
 
 val AEBasePart.facingPos: BlockPos?

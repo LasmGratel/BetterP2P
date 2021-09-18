@@ -8,6 +8,7 @@ object ModNetwork {
     val channal = NetworkRegistry.INSTANCE.newSimpleChannel(MODID)
 
     fun registerNetwork() {
-        channal.registerMessage(ClientOpenGuiHandler::class.java, S2COpenGui::class.java, 0, Side.CLIENT)
+        channal.registerMessage(ClientOpenGuiHandler::class.java, AEPartLocationMessage::class.java, 0, Side.CLIENT)
+        channal.registerMessage(ServerListP2PHandler::class.java, AEPartLocationMessage::class.java, 1, Side.SERVER)
     }
 }

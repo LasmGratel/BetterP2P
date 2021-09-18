@@ -1,6 +1,7 @@
 package com.projecturanus.betterp2p.client
 
 import com.projecturanus.betterp2p.MODID
+import com.projecturanus.betterp2p.network.AEPartLocationMessage
 import net.minecraft.client.gui.GuiScreen
 import net.minecraft.client.renderer.RenderHelper
 import net.minecraft.init.Blocks
@@ -8,7 +9,7 @@ import net.minecraft.item.ItemStack
 import net.minecraft.util.ResourceLocation
 import org.lwjgl.input.Mouse
 
-class GuiBetterMemoryCard : GuiScreen(), TextureBound {
+class GuiBetterMemoryCard(val msg: AEPartLocationMessage) : GuiScreen(), TextureBound {
     private val xSize = 238
     private val ySize = 206
     private val guiLeft: Int by lazy { (width - this.xSize) / 2 }
