@@ -8,11 +8,14 @@ import net.minecraftforge.fml.common.network.simpleimpl.MessageContext
 import net.minecraftforge.fml.relauncher.Side
 import net.minecraftforge.fml.relauncher.SideOnly
 
-class ClientOpenGuiHandler : IMessageHandler<S2CListP2P, IMessage?> {
+class ClientRefreshInfoHandler : IMessageHandler<S2CRefreshInfo, IMessage?> {
     @SideOnly(Side.CLIENT)
-    override fun onMessage(message: S2CListP2P, ctx: MessageContext): IMessage? {
+    override fun onMessage(message: S2CRefreshInfo, ctx: MessageContext): IMessage? {
         Minecraft.getMinecraft().addScheduledTask {
-            Minecraft.getMinecraft().displayGuiScreen(GuiBetterMemoryCard(message))
+            val gui = Minecraft.getMinecraft().currentScreen
+            if (gui is GuiBetterMemoryCard) {
+                gui.refreshInfo(message.input!!, message.output!!)
+            }
         }
         return null
     }

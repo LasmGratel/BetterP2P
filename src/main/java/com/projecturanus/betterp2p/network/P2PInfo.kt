@@ -1,4 +1,7 @@
 package com.projecturanus.betterp2p.network
 
-data class P2PInfo(val frequency: Short, val facingBlock: String?, val isInput: Boolean) {
+import net.minecraft.util.EnumFacing
+import net.minecraft.util.math.BlockPos
+
+class P2PInfo(val index: Int, val frequency: Short, val pos: BlockPos, val facing: EnumFacing, val output: Boolean) {
 }

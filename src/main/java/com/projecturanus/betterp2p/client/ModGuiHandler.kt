@@ -13,7 +13,7 @@ object ModGuiHandler : IGuiHandler {
 
     override fun getClientGuiElement(ID: Int, player: EntityPlayer?, world: World?, x: Int, y: Int, z: Int): Any? =
         when (ID) {
-            0 -> GuiBetterMemoryCard(x, y, z)
+//            0 -> GuiBetterMemoryCard(x, y, z)
             else -> null
         }
 }

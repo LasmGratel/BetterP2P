@@ -1,34 +1,29 @@
 package com.projecturanus.betterp2p.network
 
 import io.netty.buffer.ByteBuf
+import net.minecraft.util.EnumFacing
+import net.minecraft.util.math.BlockPos
 import net.minecraftforge.fml.common.network.simpleimpl.IMessage
-import java.nio.charset.StandardCharsets
 
-class S2CListP2P(var list: List<P2PInfo> = emptyList()): IMessage {
+class S2CListP2P(var infos: List<P2PInfo> = emptyList(),
+
+                 // Index of target p2p
+                 var targetIndex: Int = -1) : IMessage {
     override fun fromBytes(buf: ByteBuf) {
-        val l = mutableListOf<P2PInfo>()
-        for (i in 0 until buf.readInt()) {
-            val freq = buf.readShort()
-            val length = buf.readInt()
-            val facingBlock = if (length != 0) {
-                buf.readCharSequence(length, StandardCharsets.UTF_8)
-            } else { null }?.toString()
-            val isInput = buf.readBoolean()
-            l += P2PInfo(freq, facingBlock, isInput)
+        val length = buf.readInt()
+        val list = ArrayList<P2PInfo>(length)
+        for (i in 0 until length) {
+            list += readInfo(buf)
         }
+        infos = list
+        targetIndex = buf.readInt()
     }
 
     override fun toBytes(buf: ByteBuf) {
-        buf.writeInt(list.size)
-        for (info in list) {
-            buf.writeShort(info.frequency.toInt())
-            if (info.facingBlock == null) {
-                buf.writeInt(0)
-            } else {
-                buf.writeInt(info.facingBlock.length)
-                buf.writeCharSequence(info.facingBlock, StandardCharsets.UTF_8)
-            }
-            buf.writeBoolean(info.isInput)
+        buf.writeInt(infos.size)
+        for (info in infos) {
+            writeInfo(buf, info)
         }
+        buf.writeInt(targetIndex)
     }
 }

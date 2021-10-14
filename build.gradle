@@ -64,12 +64,10 @@ minecraft {
 }
 
 dependencies {
-	
-	deobfCompile ("appeng:appliedenergistics2:rv6-stable-5"){
+	implementation ("appeng:appliedenergistics2:rv6-stable-5"){
 		transitive = false
 	}
-	compile "net.shadowfacts:Forgelin:1.8.4"
-    testCompile "junit:junit:4.12"
+	implementation "net.shadowfacts:Forgelin:1.8.4"
 }
 
 processResources
