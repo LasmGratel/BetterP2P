@@ -21,10 +21,12 @@ fun linkP2P(input: PartP2PTunnel<*>, output: PartP2PTunnel<*>) : Boolean {
     if (input.frequency.toInt() == 0) {
         cache.updateFreq(input, cache.newFrequency())
         input.onTunnelConfigChange()
+        output.onTunnelNetworkChange()
     }
     input.outputProperty = false
     output.outputProperty = true
     cache.updateFreq(output, input.frequency)
+    output.onTunnelConfigChange()
     output.onTunnelNetworkChange()
     return true
 }
@@ -37,5 +39,8 @@ var PartP2PTunnel<*>.outputProperty
         field.setBoolean(this, value)
     }
 
+val PartP2PTunnel<*>.hasChannel
+    get() = isPowered && isActive
+
 fun PartP2PTunnel<*>.getInfo(index: Int)
-    = P2PInfo(index, frequency, location.pos, side.facing, isOutput)
+    = P2PInfo(index, frequency, location.pos, side.facing, isOutput, hasChannel)

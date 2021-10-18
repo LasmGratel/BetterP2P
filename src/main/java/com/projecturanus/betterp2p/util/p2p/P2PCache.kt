@@ -6,6 +6,5 @@ import java.util.*
  * Cache P2P status for client to use
  */
 object P2PCache {
-    val statusMap = WeakHashMap<UUID, P2PStatus>()
-
+    val statusMap: MutableMap<UUID, P2PStatus> = Collections.synchronizedMap(WeakHashMap<UUID, P2PStatus>())
 }

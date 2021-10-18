@@ -9,5 +9,10 @@ enum class BetterMemoryCardModes {
     /**
      * Select an input P2P and bind its output
      */
-    OUTPUT
+    OUTPUT,
+
+    /**
+     * Copy same output frequency
+     */
+    COPY
 }

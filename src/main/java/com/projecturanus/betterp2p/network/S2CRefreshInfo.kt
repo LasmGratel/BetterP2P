@@ -10,7 +10,7 @@ fun readInfo(buf: ByteBuf): P2PInfo {
     val freq = buf.readShort()
     val pos = BlockPos.fromLong(buf.readLong())
     val facing = EnumFacing.values()[buf.readInt()]
-    return P2PInfo(index, freq, pos, facing, buf.readBoolean())
+    return P2PInfo(index, freq, pos, facing, buf.readBoolean(), buf.readBoolean())
 }
 
 fun writeInfo(buf: ByteBuf, info: P2PInfo) {
@@ -19,16 +19,23 @@ fun writeInfo(buf: ByteBuf, info: P2PInfo) {
     buf.writeLong(info.pos.toLong())
     buf.writeInt(info.facing.index)
     buf.writeBoolean(info.output)
+    buf.writeBoolean(info.hasChannel)
 }
 
-class S2CRefreshInfo(var input: P2PInfo? = null, var output: P2PInfo? = null) : IMessage {
+class S2CRefreshInfo(var infos: List<P2PInfo> = emptyList()) : IMessage {
     override fun fromBytes(buf: ByteBuf) {
-        input = readInfo(buf)
-        output = readInfo(buf)
+        val length = buf.readInt()
+        val list = ArrayList<P2PInfo>(length)
+        for (i in 0 until length) {
+            list += readInfo(buf)
+        }
+        infos = list
     }
 
     override fun toBytes(buf: ByteBuf) {
-        writeInfo(buf, input!!)
-        writeInfo(buf, output!!)
+        buf.writeInt(infos.size)
+        for (info in infos) {
+            writeInfo(buf, info)
+        }
     }
 }

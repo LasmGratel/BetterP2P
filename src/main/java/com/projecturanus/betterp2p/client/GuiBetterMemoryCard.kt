@@ -2,53 +2,21 @@ package com.projecturanus.betterp2p.client
 
 import appeng.util.Platform
 import com.projecturanus.betterp2p.MODID
-import com.projecturanus.betterp2p.network.C2SUpdateInfo
-import com.projecturanus.betterp2p.network.ModNetwork
-import com.projecturanus.betterp2p.network.P2PInfo
-import com.projecturanus.betterp2p.network.S2CListP2P
+import com.projecturanus.betterp2p.network.*
 import net.minecraft.client.gui.GuiButton
 import net.minecraft.client.gui.GuiScreen
 import net.minecraft.client.renderer.RenderHelper
-import net.minecraft.init.Blocks
+import net.minecraft.client.resources.I18n
 import net.minecraft.item.ItemStack
-import net.minecraft.util.EnumFacing
 import net.minecraft.util.ResourceLocation
-import net.minecraft.util.math.BlockPos
 import org.lwjgl.input.Mouse
 import java.awt.Color
 
 class GuiBetterMemoryCard(msg: S2CListP2P) : GuiScreen(), TextureBound {
-    private class InfoWrapper(info: P2PInfo) {
-        // Basic information
-        val index: Int = info.index
-        val frequency: Short = info.frequency
-        val pos: BlockPos = info.pos
-        val facing: EnumFacing = info.facing
-        val description: String
-        val output: Boolean = info.output
-
-        // Widgets
-        val selectButton = GuiButton(0, 0, 0, 34, 20,"Select")
-        val bindButton = GuiButton(0, 0, 0, 34, 20, "Bind")
-
-        init {
-            description = buildString {
-                append("P2P ")
-                if (output)
-                    append("Output")
-                else
-                    append("Input")
-                append(" - ")
-                if (info.frequency.toInt() == 0)
-                    append("Not set")
-                else
-                    append(Platform.p2p().toHexString(info.frequency))
-            }
-        }
-    }
-
-    private val outputColor = 0x7166ccff
-    private val selectedColor = 0x2745DA75
+    private val outputColor = 0x4566ccff
+    private val selectedColor = 0x4545DA75
+    private val errorColor = 0x45DA4527
+    private val inactiveColor = 0x45FFEA05
 
     private val xSize = 238
     private val ySize = 206
@@ -60,35 +28,76 @@ class GuiBetterMemoryCard(msg: S2CListP2P) : GuiScreen(), TextureBound {
     private val rowWidth = 203
     private val rowHeight = 22
 
-    private var scrollIndex = 0
     private var selectedIndex = msg.targetIndex
 
     private lateinit var scrollBar: WidgetScrollBar
 
     private val infos = msg.infos.map(::InfoWrapper).toMutableList()
 
+    private var sortedInfo = infos.toList()
+
+    private var errorInfos = emptyList<Short>()
+
     private val selectedInfo: InfoWrapper?
         get() = infos.getOrNull(selectedIndex)
 
-    private var infoOnScreen: List<InfoWrapper> = infos.take(5)
+    private var infoOnScreen: List<InfoWrapper>
 
     private var mode = BetterMemoryCardModes.OUTPUT
-    private var modeString = "Mode: Bind Output"
+    private var modeString = getModeString()
     private val modeButton by lazy { GuiButton(0, guiLeft + 8, guiTop + 140, 205, 20, modeString) }
+
+    init {
+        sortInfo()
+        infoOnScreen = sortedInfo.take(5)
+    }
 
     override fun initGui() {
         super.initGui()
+        checkInfo()
         scrollBar = WidgetScrollBar()
         scrollBar.displayX = guiLeft + 218
         scrollBar.displayY = guiTop + 19
         scrollBar.height = 114
-        scrollBar.setRange(0, 10, 23)
+        scrollBar.onScroll = this::onScrollChanged
+        scrollBar.setRange(0, infos.size.coerceIn(0..(infos.size-5).coerceAtLeast(0)), 23)
     }
 
-    fun refreshInfo(input: P2PInfo, output: P2PInfo) {
-        infos[input.index] = InfoWrapper(input)
-        infos[output.index] = InfoWrapper(output)
-        infoOnScreen = infos.take(5)
+    fun sortInfo() {
+        sortedInfo = infos.sortedBy {
+            if (it.index == selectedIndex) {
+                -2 // Put the selected p2p in the front
+            } else if (it.frequency != 0.toShort() && it.frequency == selectedInfo?.frequency && !it.output) {
+                -3 // Put input in the beginning
+            } else if (it.frequency != 0.toShort() && it.frequency == selectedInfo?.frequency) {
+                -1 // Put same frequency in the front
+            } else {
+                it.frequency + Short.MAX_VALUE
+            }
+        }
+    }
+
+    fun checkInfo() {
+        errorInfos = infos.groupBy { it.frequency }.filter { it.value.none { x -> !x.output } }.map { it.key }
+    }
+
+    fun refreshInfo(infos: List<P2PInfo>) {
+        for (info in infos) {
+            val wrapper = InfoWrapper(info)
+            this.infos[info.index] = wrapper
+        }
+        checkInfo()
+        sortInfo()
+        takeInfo()
+    }
+
+    fun onScrollChanged() {
+        takeInfo()
+    }
+
+    fun takeInfo() {
+        infoOnScreen = sortedInfo.drop(scrollBar.currentScroll)
+            .take(5)
     }
 
     private fun drawButtons(info: InfoWrapper, x: Int, y: Int, mouseX: Int, mouseY: Int, partialTicks: Float) {
@@ -144,7 +153,15 @@ class GuiBetterMemoryCard(msg: S2CListP2P) : GuiScreen(), TextureBound {
     private fun renderInfo(info: InfoWrapper, x: Int, y: Int, mouseX: Int, mouseY: Int, partialTicks: Float) {
         if (selectedIndex == info.index)
             drawRect(x, y, x + rowWidth, y + rowHeight, selectedColor)
-        else if (selectedInfo?.frequency == info.frequency) {
+        else if (errorInfos.contains(info.frequency)) {
+            // P2P output without an input
+            drawRect(x, y, x + rowWidth, y + rowHeight, errorColor)
+        }
+        else if (!info.hasChannel && info.frequency != 0.toShort()) {
+            // No channel
+            drawRect(x, y, x + rowWidth, y + rowHeight, inactiveColor)
+        }
+        else if (selectedInfo?.frequency == info.frequency && info.frequency != 0.toShort()) {
             // Show same frequency
             drawRect(x, y, x + rowWidth, y + rowHeight, outputColor)
         }
@@ -167,6 +184,10 @@ class GuiBetterMemoryCard(msg: S2CListP2P) : GuiScreen(), TextureBound {
         renderP2PColors(info.frequency, x, y)
     }
 
+    override fun onGuiClosed() {
+        ModNetwork.channel.sendToServer(C2SCloseGui())
+    }
+
     override fun drawScreen(mouseX: Int, mouseY: Int, partialTicks: Float) {
         drawDefaultBackground()
         drawBackground()
@@ -176,26 +197,30 @@ class GuiBetterMemoryCard(msg: S2CListP2P) : GuiScreen(), TextureBound {
             renderInfo(info, guiLeft + tableX, guiTop + tableY + 23 * i, mouseX, mouseY, partialTicks)
         }
         modeButton.drawButton(mc, mouseX, mouseY, partialTicks)
+
         super.drawScreen(mouseX, mouseY, partialTicks)
     }
 
-    private fun onModeButtonClicked() {
+    private fun switchMode() {
         // Switch mode
-        mode = if (mode == BetterMemoryCardModes.INPUT)
-            BetterMemoryCardModes.OUTPUT
-        else
-            BetterMemoryCardModes.INPUT
+        mode = BetterMemoryCardModes.values()[mode.ordinal.plus(1) % BetterMemoryCardModes.values().size]
         modeString = getModeString()
         modeButton.displayString = modeString
     }
 
-    private fun getModeString() = when (mode) {
-        BetterMemoryCardModes.INPUT -> "Mode: Bind Input"
-        BetterMemoryCardModes.OUTPUT -> "Mode: Bind Output"
+    private fun getModeString(): String {
+        return I18n.format("gui.better_memory_card.mode.${mode.name.toLowerCase()}")
+    }
+
+    fun findInput(frequency: Short) =
+        infos.find { it.frequency == frequency && !it.output }
+
+    fun selectInfo(index: Int) {
+        selectedIndex = index
     }
 
     private fun onSelectButtonClicked(info: InfoWrapper) {
-        selectedIndex = info.index
+        selectInfo(info.index)
     }
 
     private fun onBindButtonClicked(info: InfoWrapper) {
@@ -209,6 +234,11 @@ class GuiBetterMemoryCard(msg: S2CListP2P) : GuiScreen(), TextureBound {
                 println("Bind ${info.index} as output")
                 ModNetwork.channel.sendToServer(C2SUpdateInfo(selectedIndex, info.index))
             }
+            BetterMemoryCardModes.COPY -> {
+                val input = selectedInfo?.frequency?.let { findInput(it) }
+                if (input != null)
+                    ModNetwork.channel.sendToServer(C2SUpdateInfo(input.index, info.index))
+            }
         }
     }
 
@@ -220,7 +250,7 @@ class GuiBetterMemoryCard(msg: S2CListP2P) : GuiScreen(), TextureBound {
                 onBindButtonClicked(info)
         }
         if (modeButton.mousePressed(mc, mouseX, mouseY)) {
-            onModeButtonClicked()
+            switchMode()
         }
         scrollBar.click(mouseX, mouseY)
         super.mouseClicked(mouseX, mouseY, mouseButton)

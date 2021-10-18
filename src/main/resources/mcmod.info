@@ -3,7 +3,8 @@
         "modid":"betterp2p",
         "name":"Better P2P",
         "description":"An AE2 submod",
-        "mcversion":"1.12.2",
+        "mcversion":"${mcversion}",
+        "version": "${version}",
         "url":"https://github.com/LasmGratel/BetterP2P",
         "updateUrl":"",
         "authorList":[

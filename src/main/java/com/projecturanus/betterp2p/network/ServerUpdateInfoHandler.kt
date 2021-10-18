@@ -13,7 +13,7 @@ class ServerUpdateInfoHandler : IMessageHandler<C2SUpdateInfo, S2CRefreshInfo?> 
         val input = status.listP2P[message.input]
         val output = status.listP2P[message.output]
         if (linkP2P(input, output)) {
-            return S2CRefreshInfo(input.getInfo(message.input), output.getInfo(message.output))
+            return S2CRefreshInfo(listOf(input.getInfo(message.input), output.getInfo(message.output)))
         }
         return null
     }

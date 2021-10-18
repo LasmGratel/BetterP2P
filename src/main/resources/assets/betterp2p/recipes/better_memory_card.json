@@ -1,0 +1,14 @@
+{
+    "type": "minecraft:crafting_shapeless",
+    "ingredients": [
+        {
+            "item": "appliedenergistics2:memory_card"
+        },
+        {
+            "item": "appliedenergistics2:network_tool"
+        }
+    ],
+    "result": {
+        "item": "betterp2p:better_memory_card"
+    }
+}

@@ -1,22 +1,38 @@
 # BetterP2P
 
-(WIP) Better P2P and memory card for Applied Energistics 2, requires Forgelin.
+![logo](logo.png)
+
+(WIP) Better P2P and memory card for Applied Energistics 2, requires [Forgelin](https://www.curseforge.com/minecraft/mc-mods/shadowfacts-forgelin).
 
 Supported Minecraft Version: 1.12.2
 
-## Showcase
+## Features
 
-Inspect all P2P devices in your ME Network.
+Obtain a Better Memory Card.
+
+![](img/showcase0.png)
+
+Right click on a P2P device or any ME attached device to inspect all P2P devices in your ME Network.
 
 ![](img/showcase1.png)
 
-Select one of the P2P devices and pair it with other P2P, you can choose the binding mode.
+Select one of the P2P devices and pair it with other P2P, you can choose the binding mode. Once you have P2P devices paired, devices with same frequency will be highlighted in aqua color.
 
 ![](img/showcase2.png)
 
+Input P2P will always be on the top.
+
+![](img/showcase3.png)
+
+A wrong setup (usually P2P devices without input) will be in red color, and devices with no channel will be in yellow.
+
+![](img/showcase4.png)
+
 ## TODOs
 
-- [ ] Better check
+- [ ] Documentation
+- [ ] Sort modes
+- [ ] Better predicate to reduce crashes
 - [ ] Backport to 1.7.10
 - [ ] A green border show in the world to identify the selected P2P device
 - [ ] Optimize cache

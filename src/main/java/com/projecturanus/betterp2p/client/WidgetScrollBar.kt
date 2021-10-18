@@ -12,6 +12,9 @@ class WidgetScrollBar {
 
     var maxScroll = 0
     var minScroll = 0
+
+    var onScroll: () -> Unit = {}
+
     var currentScroll = 0
 
     fun <T> draw(g: T) where T: TextureBound, T: Gui {
@@ -41,6 +44,7 @@ class WidgetScrollBar {
 
     private fun applyRange() {
         currentScroll = currentScroll.coerceAtMost(maxScroll).coerceAtLeast(minScroll)
+        onScroll()
     }
 
     fun click(x: Int, y: Int) {
@@ -60,7 +64,7 @@ class WidgetScrollBar {
     fun wheel(delta: Int) {
         var delta = delta
         delta = (-delta).coerceAtMost(1).coerceAtLeast(-1)
-        currentScroll += delta * pageSize
+        currentScroll += delta
         applyRange()
     }
 }

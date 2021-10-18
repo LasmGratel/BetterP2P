@@ -13,5 +13,6 @@ object ModNetwork {
         channel.registerMessage(ClientRefreshInfoHandler::class.java, S2CRefreshInfo::class.java, 1, Side.CLIENT)
 
         channel.registerMessage(ServerUpdateInfoHandler::class.java, C2SUpdateInfo::class.java, 2, Side.SERVER)
+        channel.registerMessage(ServerCloseGuiHandler::class.java, C2SCloseGui::class.java, 3, Side.SERVER)
     }
 }
