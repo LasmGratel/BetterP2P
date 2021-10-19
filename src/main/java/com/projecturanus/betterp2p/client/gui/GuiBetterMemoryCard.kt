@@ -191,6 +191,9 @@ class GuiBetterMemoryCard(msg: S2CListP2P) : GuiScreen(), TextureBound {
             info.bindButton.enabled = false
             info.selectButton.enabled = false
         }
+        if (mode == BetterMemoryCardModes.COPY && !info.output) {
+            info.bindButton.enabled = false
+        }
         drawButtons(info, x, y, mouseX, mouseY, partialTicks)
         renderP2PColors(info.frequency, x, y)
     }
@@ -218,6 +221,7 @@ class GuiBetterMemoryCard(msg: S2CListP2P) : GuiScreen(), TextureBound {
         mode = BetterMemoryCardModes.values()[mode.ordinal.plus(1) % BetterMemoryCardModes.values().size]
         modeString = getModeString()
         modeButton.displayString = modeString
+
         syncMemoryInfo()
     }
 

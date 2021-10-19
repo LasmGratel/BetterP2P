@@ -29,7 +29,7 @@ fun linkP2P(player: EntityPlayer, input: PartP2PTunnel<*>, output: PartP2PTunnel
     }
     val cache = input.proxy.p2P
     // TODO reduce changes
-    if (input.frequency.toInt() == 0) {
+    if (input.frequency.toInt() == 0 || input.isOutput) {
         cache.updateFreq(input, cache.newFrequency())
         input.onTunnelConfigChange()
         output.onTunnelNetworkChange()
