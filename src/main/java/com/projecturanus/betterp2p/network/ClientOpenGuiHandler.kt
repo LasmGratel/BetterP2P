@@ -1,6 +1,6 @@
 package com.projecturanus.betterp2p.network
 
-import com.projecturanus.betterp2p.client.GuiBetterMemoryCard
+import com.projecturanus.betterp2p.client.gui.GuiBetterMemoryCard
 import net.minecraft.client.Minecraft
 import net.minecraftforge.fml.common.network.simpleimpl.IMessage
 import net.minecraftforge.fml.common.network.simpleimpl.IMessageHandler

@@ -1,5 +1,6 @@
-package com.projecturanus.betterp2p.client
+package com.projecturanus.betterp2p.client.gui.widget
 
+import com.projecturanus.betterp2p.client.TextureBound
 import net.minecraft.client.gui.Gui
 import net.minecraft.client.renderer.GlStateManager
 

@@ -1,4 +1,4 @@
-package com.projecturanus.betterp2p.client
+package com.projecturanus.betterp2p.client.gui
 
 enum class InfoSortStrategy(val comparator: (InfoWrapper, InfoWrapper) -> Int) : Comparator<InfoWrapper> {
     DEFAULT({ o1, o2 ->

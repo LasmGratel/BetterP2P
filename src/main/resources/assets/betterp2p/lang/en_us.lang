@@ -1,6 +1,9 @@
 item.better_memory_card.name=Better Memory Card
+item.better_memory_card.selected=Frequency: {}
+item.better_memory_card.not_selected=No Frequency
 gui.better_memory_card.select=Select
 gui.better_memory_card.bind=Bind
+gui.better_memory_card.pos=Pos: %d, %d, %d
 gui.better_memory_card.mode.input=Mode: Bind Input
 gui.better_memory_card.mode.output=Mode: Bind Output
 gui.better_memory_card.mode.copy=Mode: Copy Output

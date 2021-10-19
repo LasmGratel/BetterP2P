@@ -1,4 +1,4 @@
-package com.projecturanus.betterp2p.client
+package com.projecturanus.betterp2p.client.gui
 
 import appeng.util.Platform
 import com.projecturanus.betterp2p.network.P2PInfo

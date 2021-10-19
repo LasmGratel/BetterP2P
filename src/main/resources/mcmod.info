@@ -10,7 +10,7 @@
         "authorList":[
          "AlgorithmX2"
         ],
-        "dependencies": ["appliedenergistics2"],
+        "dependencies": ["appliedenergistics2", "forgelin"],
         "credits":"Lasm Gratel",
         "screenshots":[]
     }

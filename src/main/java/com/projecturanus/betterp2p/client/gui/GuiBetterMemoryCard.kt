@@ -1,7 +1,12 @@
-package com.projecturanus.betterp2p.client
+package com.projecturanus.betterp2p.client.gui
 
 import appeng.util.Platform
 import com.projecturanus.betterp2p.MODID
+import com.projecturanus.betterp2p.capability.MemoryInfo
+import com.projecturanus.betterp2p.client.ClientCache
+import com.projecturanus.betterp2p.client.TextureBound
+import com.projecturanus.betterp2p.client.gui.widget.WidgetScrollBar
+import com.projecturanus.betterp2p.item.BetterMemoryCardModes
 import com.projecturanus.betterp2p.network.*
 import net.minecraft.client.gui.GuiButton
 import net.minecraft.client.gui.GuiScreen
@@ -28,7 +33,7 @@ class GuiBetterMemoryCard(msg: S2CListP2P) : GuiScreen(), TextureBound {
     private val rowWidth = 203
     private val rowHeight = 22
 
-    private var selectedIndex = msg.targetIndex
+    private var selectedIndex = -1
 
     private lateinit var scrollBar: WidgetScrollBar
 
@@ -43,11 +48,12 @@ class GuiBetterMemoryCard(msg: S2CListP2P) : GuiScreen(), TextureBound {
 
     private var infoOnScreen: List<InfoWrapper>
 
-    private var mode = BetterMemoryCardModes.OUTPUT
+    private var mode = msg.memoryInfo.mode
     private var modeString = getModeString()
     private val modeButton by lazy { GuiButton(0, guiLeft + 8, guiTop + 140, 205, 20, modeString) }
 
     init {
+        selectInfo(msg.memoryInfo.selectedIndex)
         sortInfo()
         infoOnScreen = sortedInfo.take(5)
     }
@@ -98,6 +104,10 @@ class GuiBetterMemoryCard(msg: S2CListP2P) : GuiScreen(), TextureBound {
     fun takeInfo() {
         infoOnScreen = sortedInfo.drop(scrollBar.currentScroll)
             .take(5)
+    }
+
+    fun syncMemoryInfo() {
+        ModNetwork.channel.sendToServer(C2SUpdateInfo(MemoryInfo(selectedIndex, mode)))
     }
 
     private fun drawButtons(info: InfoWrapper, x: Int, y: Int, mouseX: Int, mouseY: Int, partialTicks: Float) {
@@ -166,7 +176,8 @@ class GuiBetterMemoryCard(msg: S2CListP2P) : GuiScreen(), TextureBound {
             drawRect(x, y, x + rowWidth, y + rowHeight, outputColor)
         }
 
-        fontRenderer.drawString(info.description, x + 32, y + 3, 0)
+        fontRenderer.drawString(info.description, x + 24, y + 3, 0)
+        fontRenderer.drawString(I18n.format("gui.better_memory_card.pos", info.pos.x, info.pos.y, info.pos.z), x + 24, y + 12, 0)
 
         if (selectedIndex == -1) {
             info.bindButton.enabled = false
@@ -185,6 +196,7 @@ class GuiBetterMemoryCard(msg: S2CListP2P) : GuiScreen(), TextureBound {
     }
 
     override fun onGuiClosed() {
+        syncMemoryInfo()
         ModNetwork.channel.sendToServer(C2SCloseGui())
     }
 
@@ -206,6 +218,7 @@ class GuiBetterMemoryCard(msg: S2CListP2P) : GuiScreen(), TextureBound {
         mode = BetterMemoryCardModes.values()[mode.ordinal.plus(1) % BetterMemoryCardModes.values().size]
         modeString = getModeString()
         modeButton.displayString = modeString
+        syncMemoryInfo()
     }
 
     private fun getModeString(): String {
@@ -217,6 +230,12 @@ class GuiBetterMemoryCard(msg: S2CListP2P) : GuiScreen(), TextureBound {
 
     fun selectInfo(index: Int) {
         selectedIndex = index
+        syncMemoryInfo()
+
+        ClientCache.selectedPosition = selectedInfo?.pos
+        ClientCache.selectedFacing = selectedInfo?.facing
+        ClientCache.positions.clear()
+        ClientCache.positions.addAll(infos.filter { it.frequency == selectedInfo?.frequency && it != selectedInfo }.map { it.pos to it.facing })
     }
 
     private fun onSelectButtonClicked(info: InfoWrapper) {
@@ -228,16 +247,16 @@ class GuiBetterMemoryCard(msg: S2CListP2P) : GuiScreen(), TextureBound {
         when (mode) {
             BetterMemoryCardModes.INPUT -> {
                 println("Bind ${info.index} as input")
-                ModNetwork.channel.sendToServer(C2SUpdateInfo(info.index, selectedIndex))
+                ModNetwork.channel.sendToServer(C2SLinkP2P(info.index, selectedIndex))
             }
             BetterMemoryCardModes.OUTPUT -> {
                 println("Bind ${info.index} as output")
-                ModNetwork.channel.sendToServer(C2SUpdateInfo(selectedIndex, info.index))
+                ModNetwork.channel.sendToServer(C2SLinkP2P(selectedIndex, info.index))
             }
             BetterMemoryCardModes.COPY -> {
                 val input = selectedInfo?.frequency?.let { findInput(it) }
                 if (input != null)
-                    ModNetwork.channel.sendToServer(C2SUpdateInfo(input.index, info.index))
+                    ModNetwork.channel.sendToServer(C2SLinkP2P(input.index, info.index))
             }
         }
     }

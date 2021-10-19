@@ -1,4 +1,4 @@
-package com.projecturanus.betterp2p.client
+package com.projecturanus.betterp2p.client.render
 
 import net.minecraft.client.Minecraft
 import net.minecraft.client.renderer.GlStateManager
@@ -9,6 +9,7 @@ import org.lwjgl.opengl.GL11
 
 /**
  * Render things in world
+ * Author: Cyclic
  */
 object WorldRenderer {
     fun renderBlockList(blockPosList: List<BlockPos>, center: BlockPos, relX: Double, relY: Double, relZ: Double, red: Float, green: Float, blue: Float) {

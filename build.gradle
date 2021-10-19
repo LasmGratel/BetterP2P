@@ -70,6 +70,10 @@ dependencies {
 	implementation "net.shadowfacts:Forgelin:1.8.4"
 }
 
+sourceJar {
+    duplicatesStrategy = DuplicatesStrategy.WARN
+}
+
 processResources
 {
     duplicatesStrategy = DuplicatesStrategy.WARN

@@ -1,14 +1,11 @@
 package com.projecturanus.betterp2p.network
 
+import com.projecturanus.betterp2p.capability.MemoryInfo
 import io.netty.buffer.ByteBuf
-import net.minecraft.util.EnumFacing
-import net.minecraft.util.math.BlockPos
 import net.minecraftforge.fml.common.network.simpleimpl.IMessage
 
 class S2CListP2P(var infos: List<P2PInfo> = emptyList(),
-
-                 // Index of target p2p
-                 var targetIndex: Int = -1) : IMessage {
+                 var memoryInfo: MemoryInfo = MemoryInfo()) : IMessage {
     override fun fromBytes(buf: ByteBuf) {
         val length = buf.readInt()
         val list = ArrayList<P2PInfo>(length)
@@ -16,7 +13,7 @@ class S2CListP2P(var infos: List<P2PInfo> = emptyList(),
             list += readInfo(buf)
         }
         infos = list
-        targetIndex = buf.readInt()
+        memoryInfo = readMemoryInfo(buf)
     }
 
     override fun toBytes(buf: ByteBuf) {
@@ -24,6 +21,6 @@ class S2CListP2P(var infos: List<P2PInfo> = emptyList(),
         for (info in infos) {
             writeInfo(buf, info)
         }
-        buf.writeInt(targetIndex)
+        writeMemoryInfo(buf, memoryInfo!!)
     }
 }
