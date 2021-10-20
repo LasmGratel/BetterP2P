@@ -14,5 +14,9 @@ enum class BetterMemoryCardModes {
     /**
      * Copy same output frequency
      */
-    COPY
+    COPY;
+
+    fun next(): BetterMemoryCardModes {
+        return values()[ordinal.plus(1) % values().size]
+    }
 }

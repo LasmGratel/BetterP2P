@@ -1,21 +1,18 @@
 package com.projecturanus.betterp2p.client.gui
 
-import appeng.util.Platform
 import com.projecturanus.betterp2p.MODID
 import com.projecturanus.betterp2p.capability.MemoryInfo
 import com.projecturanus.betterp2p.client.ClientCache
 import com.projecturanus.betterp2p.client.TextureBound
+import com.projecturanus.betterp2p.client.gui.widget.WidgetP2PDevice
 import com.projecturanus.betterp2p.client.gui.widget.WidgetScrollBar
 import com.projecturanus.betterp2p.item.BetterMemoryCardModes
 import com.projecturanus.betterp2p.network.*
 import net.minecraft.client.gui.GuiButton
 import net.minecraft.client.gui.GuiScreen
-import net.minecraft.client.renderer.RenderHelper
 import net.minecraft.client.resources.I18n
-import net.minecraft.item.ItemStack
 import net.minecraft.util.ResourceLocation
 import org.lwjgl.input.Mouse
-import java.awt.Color
 
 class GuiBetterMemoryCard(msg: S2CListP2P) : GuiScreen(), TextureBound {
     private val outputColor = 0x4566ccff
@@ -41,12 +38,16 @@ class GuiBetterMemoryCard(msg: S2CListP2P) : GuiScreen(), TextureBound {
 
     private var sortedInfo = infos.toList()
 
-    private var errorInfos = emptyList<Short>()
-
-    private val selectedInfo: InfoWrapper?
+    private var selectedInfo: InfoWrapper?
         get() = infos.getOrNull(selectedIndex)
+        set(value) {
+            selectedIndex = value?.index ?: -1
+        }
 
+    private val widgetDevices: List<WidgetP2PDevice>
     private var infoOnScreen: List<InfoWrapper>
+
+    private val descriptionLines: MutableList<String> = mutableListOf()
 
     private var mode = msg.memoryInfo.mode
     private var modeString = getModeString()
@@ -56,6 +57,12 @@ class GuiBetterMemoryCard(msg: S2CListP2P) : GuiScreen(), TextureBound {
         selectInfo(msg.memoryInfo.selectedIndex)
         sortInfo()
         infoOnScreen = sortedInfo.take(5)
+
+        val list = mutableListOf<WidgetP2PDevice>()
+        for (i in 0..4) {
+            list += WidgetP2PDevice(::selectedInfo, ::mode, { sortedInfo.getOrNull(i + scrollBar.currentScroll) }, 0, 0)
+        }
+        widgetDevices = list.toList()
     }
 
     override fun initGui() {
@@ -65,8 +72,12 @@ class GuiBetterMemoryCard(msg: S2CListP2P) : GuiScreen(), TextureBound {
         scrollBar.displayX = guiLeft + 218
         scrollBar.displayY = guiTop + 19
         scrollBar.height = 114
-        scrollBar.onScroll = this::onScrollChanged
         scrollBar.setRange(0, infos.size.coerceIn(0..(infos.size-5).coerceAtLeast(0)), 23)
+
+        for (i in 0..4) {
+            widgetDevices[i].x = guiLeft + tableX
+            widgetDevices[i].y = guiTop + tableY + 23 * i
+        }
     }
 
     fun sortInfo() {
@@ -84,7 +95,10 @@ class GuiBetterMemoryCard(msg: S2CListP2P) : GuiScreen(), TextureBound {
     }
 
     fun checkInfo() {
-        errorInfos = infos.groupBy { it.frequency }.filter { it.value.none { x -> !x.output } }.map { it.key }
+        infos.forEach { it.error = false }
+        infos.groupBy { it.frequency }.filter { it.value.none { x -> !x.output } }.forEach { it.value.forEach { info ->
+            info.error = true
+        } }
     }
 
     fun refreshInfo(infos: List<P2PInfo>) {
@@ -94,108 +108,19 @@ class GuiBetterMemoryCard(msg: S2CListP2P) : GuiScreen(), TextureBound {
         }
         checkInfo()
         sortInfo()
-        takeInfo()
-    }
-
-    fun onScrollChanged() {
-        takeInfo()
-    }
-
-    fun takeInfo() {
-        infoOnScreen = sortedInfo.drop(scrollBar.currentScroll)
-            .take(5)
     }
 
     fun syncMemoryInfo() {
         ModNetwork.channel.sendToServer(C2SUpdateInfo(MemoryInfo(selectedIndex, mode)))
     }
 
-    private fun drawButtons(info: InfoWrapper, x: Int, y: Int, mouseX: Int, mouseY: Int, partialTicks: Float) {
-        if (!info.bindButton.enabled && info.selectButton.enabled) {
-            info.bindButton.enabled = false
-            info.selectButton.enabled = true
-
-            info.selectButton.x = x + 166
-            info.selectButton.y = y + 1
-            info.selectButton.drawButton(mc, mouseX, mouseY, partialTicks)
-        } else if (info.bindButton.enabled && info.selectButton.enabled) {
-            info.bindButton.enabled = true
-            info.selectButton.enabled = true
-
-            // Select button on the left
-            info.selectButton.x = x + 130
-            info.selectButton.y = y + 1
-            info.selectButton.drawButton(mc, mouseX, mouseY, partialTicks)
-
-            // Bind button on the right
-            info.bindButton.x = x + 166
-            info.bindButton.y = y + 1
-            info.bindButton.drawButton(mc, mouseX, mouseY, partialTicks)
-        } else if (!info.selectButton.enabled && !info.bindButton.enabled) {
-            // TODO Unbind
-            info.bindButton.enabled = false
-            info.selectButton.enabled = false
+    fun drawInformation() {
+        val x = 8
+        var y = 170
+        for (line in descriptionLines) {
+            fontRenderer.drawString(line, guiLeft + x, guiTop + y, 0)
+            y += fontRenderer.FONT_HEIGHT
         }
-    }
-
-    private fun drawRectBorder(left: Int, top: Int, width: Int, height: Int, stroke: Int) {
-        drawHorizontalLine(left, left + width, top, stroke)
-        drawHorizontalLine(left, left + width, top + height, stroke)
-        drawVerticalLine(left, top, top + height, stroke)
-        drawVerticalLine(left + width, top, top + height, stroke)
-    }
-
-    private fun renderP2PColors(frequency: Short, x: Int, y: Int) {
-        val colors = Platform.p2p().toColors(frequency)
-        drawRectBorder(x + 9, y + 9, 3, 3, Color.BLACK.rgb)
-        for (row in 0..1) {
-            for (col in 0..1) {
-                for (colorIndex in 0..3) {
-                    val offsetX: Int = colorIndex % 2
-                    val offsetY: Int = colorIndex / 2
-                    drawHorizontalLine(x + 7 + col * 6 + offsetX, x + 8 + col * 6 + offsetX, y + 7 + row * 6 + offsetY, Color(colors[colorIndex].dye.colorValue, false).rgb)
-                }
-                drawRectBorder(x + 6 + col * 6, y + 6 + row * 6, 3, 3, Color.BLACK.rgb)
-            }
-        }
-    }
-
-    private fun renderInfo(info: InfoWrapper, x: Int, y: Int, mouseX: Int, mouseY: Int, partialTicks: Float) {
-        if (selectedIndex == info.index)
-            drawRect(x, y, x + rowWidth, y + rowHeight, selectedColor)
-        else if (errorInfos.contains(info.frequency)) {
-            // P2P output without an input
-            drawRect(x, y, x + rowWidth, y + rowHeight, errorColor)
-        }
-        else if (!info.hasChannel && info.frequency != 0.toShort()) {
-            // No channel
-            drawRect(x, y, x + rowWidth, y + rowHeight, inactiveColor)
-        }
-        else if (selectedInfo?.frequency == info.frequency && info.frequency != 0.toShort()) {
-            // Show same frequency
-            drawRect(x, y, x + rowWidth, y + rowHeight, outputColor)
-        }
-
-        fontRenderer.drawString(info.description, x + 24, y + 3, 0)
-        fontRenderer.drawString(I18n.format("gui.better_memory_card.pos", info.pos.x, info.pos.y, info.pos.z), x + 24, y + 12, 0)
-
-        if (selectedIndex == -1) {
-            info.bindButton.enabled = false
-            info.selectButton.enabled = true
-        } else if (info.index != selectedIndex) {
-            info.bindButton.enabled = true
-            info.selectButton.enabled = true
-
-        } else {
-            // TODO Unbind
-            info.bindButton.enabled = false
-            info.selectButton.enabled = false
-        }
-        if (mode == BetterMemoryCardModes.COPY && !info.output) {
-            info.bindButton.enabled = false
-        }
-        drawButtons(info, x, y, mouseX, mouseY, partialTicks)
-        renderP2PColors(info.frequency, x, y)
     }
 
     override fun onGuiClosed() {
@@ -208,17 +133,25 @@ class GuiBetterMemoryCard(msg: S2CListP2P) : GuiScreen(), TextureBound {
         drawBackground()
         scrollBar.draw(this)
 
-        infoOnScreen.forEachIndexed { i, info ->
-            renderInfo(info, guiLeft + tableX, guiTop + tableY + 23 * i, mouseX, mouseY, partialTicks)
+        for (widget in widgetDevices) {
+            widget.render(this, mouseX, mouseY, partialTicks)
         }
         modeButton.drawButton(mc, mouseX, mouseY, partialTicks)
+
+        if (modeButton.isMouseOver) {
+            descriptionLines.clear()
+            descriptionLines += I18n.format("gui.better_memory_card.desc.mode", I18n.format("gui.better_memory_card.mode.${mode.next().name.toLowerCase()}"))
+        } else {
+            descriptionLines.clear()
+        }
+        drawInformation()
 
         super.drawScreen(mouseX, mouseY, partialTicks)
     }
 
     private fun switchMode() {
         // Switch mode
-        mode = BetterMemoryCardModes.values()[mode.ordinal.plus(1) % BetterMemoryCardModes.values().size]
+        mode = mode.next()
         modeString = getModeString()
         modeButton.displayString = modeString
 
@@ -266,11 +199,12 @@ class GuiBetterMemoryCard(msg: S2CListP2P) : GuiScreen(), TextureBound {
     }
 
     override fun mouseClicked(mouseX: Int, mouseY: Int, mouseButton: Int) {
-        for (info in infoOnScreen) {
-            if (info.selectButton.mousePressed(mc, mouseX, mouseY))
-                onSelectButtonClicked(info)
-            else if (info.bindButton.mousePressed(mc, mouseX, mouseY))
-                onBindButtonClicked(info)
+        for (widget in widgetDevices) {
+            val info = widget.infoSupplier()
+            if (info?.selectButton?.mousePressed(mc, mouseX, mouseY) == true)
+                onSelectButtonClicked(widget.infoSupplier()!!)
+            else if (info?.bindButton?.mousePressed(mc, mouseX, mouseY) == true)
+                onBindButtonClicked(widget.infoSupplier()!!)
         }
         if (modeButton.mousePressed(mc, mouseX, mouseY)) {
             switchMode()
@@ -294,14 +228,6 @@ class GuiBetterMemoryCard(msg: S2CListP2P) : GuiScreen(), TextureBound {
         } else if (i != 0) {
             scrollBar.wheel(i)
         }
-    }
-
-    private fun drawItemStack(stack: ItemStack, x: Int, y: Int) {
-        RenderHelper.enableGUIStandardItemLighting()
-        itemRender.zLevel = 100.0f
-        itemRender.renderItemAndEffectIntoGUI(stack, x, y)
-        itemRender.zLevel = 0.0f
-        RenderHelper.disableStandardItemLighting()
     }
 
     override fun bindTexture(modid: String, location: String) {

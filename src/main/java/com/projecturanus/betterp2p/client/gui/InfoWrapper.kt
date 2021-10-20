@@ -16,6 +16,7 @@ class InfoWrapper(info: P2PInfo) {
     val facing: EnumFacing = info.facing
     val description: String
     val output: Boolean = info.output
+    var error: Boolean = false
 
     // Widgets
     val selectButton = GuiButton(0, 0, 0, 34, 20, I18n.format("gui.better_memory_card.select"))
