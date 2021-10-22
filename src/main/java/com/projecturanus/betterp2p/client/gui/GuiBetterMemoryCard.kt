@@ -109,6 +109,7 @@ class GuiBetterMemoryCard(msg: S2CListP2P) : GuiScreen(), TextureBound {
         }
         checkInfo()
         sortInfo()
+        refreshOverlay()
     }
 
     fun syncMemoryInfo() {
@@ -169,7 +170,10 @@ class GuiBetterMemoryCard(msg: S2CListP2P) : GuiScreen(), TextureBound {
     fun selectInfo(index: Int) {
         selectedIndex = index
         syncMemoryInfo()
+        refreshOverlay()
+    }
 
+    fun refreshOverlay() {
         ClientCache.selectedPosition = selectedInfo?.pos
         ClientCache.selectedFacing = selectedInfo?.facing
         ClientCache.positions.clear()
