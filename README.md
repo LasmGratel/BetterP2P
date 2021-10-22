@@ -1,10 +1,12 @@
 # BetterP2P
 
+![](https://cf.way2muchnoise.eu/versions/538092.svg) [![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0) 
+
 ![logo](logo.png)
 
-(WIP) Better P2P and memory card for Applied Energistics 2, requires [Forgelin](https://www.curseforge.com/minecraft/mc-mods/shadowfacts-forgelin).
+Better P2P and memory card for Applied Energistics 2, requires [Forgelin](https://www.curseforge.com/minecraft/mc-mods/shadowfacts-forgelin).
 
-Supported Minecraft Version: 1.12.2
+Documentation is now available to read: <https://lasmgratel.github.io/BetterP2P-Manual/>
 
 ## Features
 
