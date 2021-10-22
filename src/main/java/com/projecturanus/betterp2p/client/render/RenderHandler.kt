@@ -2,6 +2,7 @@ package com.projecturanus.betterp2p.client.render
 
 import com.projecturanus.betterp2p.MODID
 import com.projecturanus.betterp2p.client.ClientCache
+import com.projecturanus.betterp2p.item.ItemBetterMemoryCard
 import net.minecraft.client.Minecraft
 import net.minecraftforge.client.event.RenderWorldLastEvent
 import net.minecraftforge.fml.common.Mod
@@ -14,11 +15,20 @@ object RenderHandler {
     @SubscribeEvent
     fun renderOverlays(event: RenderWorldLastEvent) {
         val player = Minecraft.getMinecraft().player
-        if (ClientCache.positions.isNotEmpty() || ClientCache.selectedPosition != null) {
-            if (ClientCache.selectedPosition != null) {
-                OutlineRenderer.renderOutlinesWithFacing(event, player, listOf(ClientCache.selectedPosition to ClientCache.selectedFacing), 0x45, 0xDA, 0x75)
+        if (player.heldItemMainhand.item == ItemBetterMemoryCard) {
+            if (ClientCache.positions.isNotEmpty() || ClientCache.selectedPosition != null) {
+                if (ClientCache.selectedPosition != null) {
+                    OutlineRenderer.renderOutlinesWithFacing(
+                        event,
+                        player,
+                        listOf(ClientCache.selectedPosition to ClientCache.selectedFacing),
+                        0x45,
+                        0xDA,
+                        0x75
+                    )
+                }
+                OutlineRenderer.renderOutlinesWithFacing(event, player, ClientCache.positions, 0x66, 0xCC, 0xFF)
             }
-            OutlineRenderer.renderOutlinesWithFacing(event, player, ClientCache.positions, 0x66, 0xCC, 0xFF)
         }
     }
 }
