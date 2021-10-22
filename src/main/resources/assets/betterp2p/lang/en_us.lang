@@ -1,4 +1,4 @@
-item.better_memory_card.name=Better Memory Card
+item.better_memory_card.name=Advanced Memory Card
 item.better_memory_card.selected=Frequency: {}
 item.better_memory_card.not_selected=No Frequency
 gui.better_memory_card.select=Select
