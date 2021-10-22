@@ -15,5 +15,7 @@ object BetterP2P {
     fun preInit(event: FMLPreInitializationEvent) {
         logger = event.modLog
         ModNetwork.registerNetwork()
+
+
     }
 }

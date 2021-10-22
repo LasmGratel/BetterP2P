@@ -1,5 +1,6 @@
 package com.projecturanus.betterp2p.client.gui
 
+import com.projecturanus.betterp2p.BetterP2P
 import com.projecturanus.betterp2p.MODID
 import com.projecturanus.betterp2p.capability.MemoryInfo
 import com.projecturanus.betterp2p.client.ClientCache
@@ -183,11 +184,11 @@ class GuiBetterMemoryCard(msg: S2CListP2P) : GuiScreen(), TextureBound {
         if (selectedIndex == -1) return
         when (mode) {
             BetterMemoryCardModes.INPUT -> {
-                println("Bind ${info.index} as input")
+                BetterP2P.logger.debug("Bind ${info.index} as input")
                 ModNetwork.channel.sendToServer(C2SLinkP2P(info.index, selectedIndex))
             }
             BetterMemoryCardModes.OUTPUT -> {
-                println("Bind ${info.index} as output")
+                BetterP2P.logger.debug("Bind ${info.index} as output")
                 ModNetwork.channel.sendToServer(C2SLinkP2P(selectedIndex, info.index))
             }
             BetterMemoryCardModes.COPY -> {

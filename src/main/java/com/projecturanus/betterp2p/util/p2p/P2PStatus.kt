@@ -7,5 +7,5 @@ import com.projecturanus.betterp2p.util.listTargetGridP2P
 import net.minecraft.entity.player.EntityPlayer
 
 class P2PStatus(player: EntityPlayer, val id: Int, val grid: IGrid, val targetP2P: PartP2PTunnel<*>? = null) {
-    val listP2P: List<PartP2PTunnel<*>> = listTargetGridP2P(grid, player, targetP2P?.javaClass ?: PartP2PTunnelME::class.java)
+    val listP2P: MutableList<PartP2PTunnel<*>> = listTargetGridP2P(grid, player, targetP2P?.javaClass ?: PartP2PTunnelME::class.java).toMutableList()
 }
