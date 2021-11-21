@@ -2,15 +2,12 @@ package com.projecturanus.betterp2p.util.p2p
 
 import appeng.api.config.SecurityPermissions
 import appeng.api.networking.IGrid
-import appeng.api.networking.IGridConnection
-import appeng.api.networking.IGridNode
 import appeng.api.networking.security.ISecurityGrid
 import appeng.api.parts.IPart
 import appeng.api.parts.PartItemStack
 import appeng.api.util.AEColor
 import appeng.api.util.AEPartLocation
 import appeng.me.GridAccessException
-import appeng.me.GridNode
 import appeng.parts.p2p.PartP2PTunnel
 import appeng.util.Platform
 import com.projecturanus.betterp2p.network.P2PInfo
@@ -60,7 +57,8 @@ fun linkP2P(player: EntityPlayer, inputIndex: Int, outputIndex: Int, status: P2P
  * Due to Applied Energistics' limit
  */
 fun updateP2P(tunnel: PartP2PTunnel<*>, frequency: Short, output: Boolean): PartP2PTunnel<*> {
-    tunnel.host.removePart(tunnel.side, true)
+    val side = tunnel.side
+    tunnel.host.removePart(side, true)
 
     val data = NBTTagCompound()
     val p2pItem: ItemStack = tunnel.getItemStack(PartItemStack.WRENCH)
@@ -79,20 +77,19 @@ fun updateP2P(tunnel: PartP2PTunnel<*>, frequency: Short, output: Boolean): Part
     data.setIntArray("colorCode", colorCode)
 
     val newType = ItemStack(data)
-    val dir: AEPartLocation = tunnel.host.addPart(newType, tunnel.side, null, null)
+    val dir: AEPartLocation = tunnel.host?.addPart(newType, side, null, null) ?: throw RuntimeException("Cannot bind")
     val newBus: IPart = tunnel.host.getPart(dir)
 
     if (newBus is PartP2PTunnel<*>) {
-        val newTunnel = newBus
-        newTunnel.outputProperty = output
+        newBus.outputProperty = output
         try {
-            val p2p = newTunnel.proxy.p2P
-            p2p.updateFreq(newTunnel, frequency)
+            val p2p = newBus.proxy.p2P
+            p2p.updateFreq(newBus, frequency)
         } catch (e: GridAccessException) {
             // :P
         }
-        newTunnel.onTunnelNetworkChange()
-        return newTunnel
+        newBus.onTunnelNetworkChange()
+        return newBus
     } else {
         throw RuntimeException("Cannot bind")
     }
@@ -104,13 +101,6 @@ var PartP2PTunnel<*>.outputProperty
         val field = PartP2PTunnel::class.java.getDeclaredField("output")
         field.isAccessible = true
         field.setBoolean(this, value)
-    }
-
-val IGridNode.connectionList: java.util.List<IGridConnection>
-    get() {
-        val field = GridNode::class.java.getDeclaredField("connections")
-        field.isAccessible = true
-        return field.get(this as GridNode) as java.util.List<IGridConnection>
     }
 
 val PartP2PTunnel<*>.hasChannel

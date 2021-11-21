@@ -19,19 +19,19 @@ class InfoWrapper(info: P2PInfo) {
     var error: Boolean = false
 
     // Widgets
-    val selectButton = GuiButton(0, 0, 0, 34, 20, I18n.format("gui.better_memory_card.select"))
-    val bindButton = GuiButton(0, 0, 0, 34, 20, I18n.format("gui.better_memory_card.bind"))
+    val selectButton = GuiButton(0, 0, 0, 34, 20, I18n.format("gui.advanced_memory_card.select"))
+    val bindButton = GuiButton(0, 0, 0, 34, 20, I18n.format("gui.advanced_memory_card.bind"))
 
     init {
         description = buildString {
             append("P2P ")
             if (output)
-                append(I18n.format("gui.better_memory_card.desc.mode.output"))
+                append(I18n.format("gui.advanced_memory_card.desc.mode.output"))
             else
-                append(I18n.format("gui.better_memory_card.desc.mode.input"))
+                append(I18n.format("gui.advanced_memory_card.desc.mode.input"))
             append(" - ")
             if (info.frequency.toInt() == 0)
-                append(I18n.format("gui.better_memory_card.desc.not_set"))
+                append(I18n.format("gui.advanced_memory_card.desc.not_set"))
             else
                 append(Platform.p2p().toHexString(info.frequency))
         }

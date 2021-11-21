@@ -1,6 +1,6 @@
 package com.projecturanus.betterp2p.network
 
-import com.projecturanus.betterp2p.client.gui.GuiBetterMemoryCard
+import com.projecturanus.betterp2p.client.gui.GuiAdvancedMemoryCard
 import net.minecraft.client.Minecraft
 import net.minecraftforge.fml.common.network.simpleimpl.IMessage
 import net.minecraftforge.fml.common.network.simpleimpl.IMessageHandler
@@ -13,7 +13,7 @@ class ClientRefreshInfoHandler : IMessageHandler<S2CRefreshInfo, IMessage?> {
     override fun onMessage(message: S2CRefreshInfo, ctx: MessageContext): IMessage? {
         Minecraft.getMinecraft().addScheduledTask {
             val gui = Minecraft.getMinecraft().currentScreen
-            if (gui is GuiBetterMemoryCard) {
+            if (gui is GuiAdvancedMemoryCard) {
                 gui.refreshInfo(message.infos)
             }
         }

@@ -30,10 +30,10 @@ import net.minecraft.world.World
 import net.minecraftforge.fml.relauncher.Side
 import net.minecraftforge.fml.relauncher.SideOnly
 
-object ItemBetterMemoryCard : Item() {
+object ItemAdvancedMemoryCard : Item() {
     init {
         maxStackSize = 1
-        translationKey = "better_memory_card"
+        translationKey = "advanced_memory_card"
         creativeTab = CreativeTab.instance
     }
 
@@ -52,7 +52,7 @@ object ItemBetterMemoryCard : Item() {
     @SideOnly(Side.CLIENT)
     override fun addInformation(stack: ItemStack, worldIn: World?, tooltip: MutableList<String>, flagIn: ITooltipFlag) {
         val info = getInfo(stack)
-        tooltip += I18n.format("gui.better_memory_card.mode.${info.mode.name.toLowerCase()}")
+        tooltip += I18n.format("gui.advanced_memory_card.mode.${info.mode.name.toLowerCase()}")
     }
 
     @SideOnly(Side.CLIENT)
@@ -104,7 +104,7 @@ object ItemBetterMemoryCard : Item() {
         val compound = stack.tagCompound!!
         if (!compound.hasKey("selectedIndex")) compound.setInteger("selectedIndex", -1)
 
-        return MemoryInfo(compound.getInteger("selectedIndex"), BetterMemoryCardModes.values()[compound.getInteger("mode")])
+        return MemoryInfo(compound.getInteger("selectedIndex"), compound.getShort("frequency"), BetterMemoryCardModes.values()[compound.getInteger("mode")])
     }
 
     fun writeInfo(stack: ItemStack, info: MemoryInfo) {
@@ -113,6 +113,7 @@ object ItemBetterMemoryCard : Item() {
         if (stack.tagCompound == null) stack.tagCompound = NBTTagCompound()
         val compound = stack.tagCompound!!
         compound.setInteger("selectedIndex", info.selectedIndex)
+        compound.setShort("frequency", info.frequency)
         compound.setInteger("mode", info.mode.ordinal)
     }
 }

@@ -2,7 +2,7 @@ package com.projecturanus.betterp2p.client.render
 
 import com.projecturanus.betterp2p.MODID
 import com.projecturanus.betterp2p.client.ClientCache
-import com.projecturanus.betterp2p.item.ItemBetterMemoryCard
+import com.projecturanus.betterp2p.item.ItemAdvancedMemoryCard
 import net.minecraft.client.Minecraft
 import net.minecraftforge.client.event.RenderWorldLastEvent
 import net.minecraftforge.fml.common.Mod
@@ -15,7 +15,7 @@ object RenderHandler {
     @SubscribeEvent
     fun renderOverlays(event: RenderWorldLastEvent) {
         val player = Minecraft.getMinecraft().player
-        if (player.heldItemMainhand.item == ItemBetterMemoryCard) {
+        if (player.heldItemMainhand.item == ItemAdvancedMemoryCard) {
             if (ClientCache.positions.isNotEmpty() || ClientCache.selectedPosition != null) {
                 if (ClientCache.selectedPosition != null) {
                     OutlineRenderer.renderOutlinesWithFacing(

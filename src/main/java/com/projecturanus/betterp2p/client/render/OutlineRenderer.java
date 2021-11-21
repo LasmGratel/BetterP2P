@@ -5,6 +5,7 @@ import net.minecraft.client.renderer.BufferBuilder;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
+import net.minecraft.client.shader.ShaderManager;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.AxisAlignedBB;
@@ -92,6 +93,7 @@ public class OutlineRenderer {
 
 
     public static void renderOutlinesWithFacing(RenderWorldLastEvent evt, EntityPlayer p, Collection<Pair<BlockPos, EnumFacing>> coordinates, int r, int g, int b) {
+
         double doubleX = p.lastTickPosX + (p.posX - p.lastTickPosX) * evt.getPartialTicks();
         double doubleY = p.lastTickPosY + (p.posY - p.lastTickPosY) * evt.getPartialTicks();
         double doubleZ = p.lastTickPosZ + (p.posZ - p.lastTickPosZ) * evt.getPartialTicks();
@@ -148,6 +150,11 @@ public class OutlineRenderer {
                 case WEST:
                     break;
             }
+            int[] west_matrix = {1, 0, 0, 0, 1, 0, 0, 0, 1};
+            int[] east_matrix = {-1, 0, 0, 0, 1, 0, 0, 0, 1};
+            int[] north_matrix = {0, 0, -1, 0, 1, 0, 1, 0, 0};
+            int[] south_matrix = {0, 0, 1, 0, 1, 0, -1, 0, 0};
+
             GlStateManager.translate(-0.5, -0.5, -0.5);
             GlStateManager.translate(-pos.getX(), -pos.getY(), -pos.getZ());
             tessellator.draw();
@@ -202,8 +209,5 @@ public class OutlineRenderer {
 
         buffer.pos(minX, minY, maxZ).color(r, g, b, a).endVertex();
         buffer.pos(minX, maxY, maxZ).color(r, g, b, a).endVertex();
-//        GL11.glTranslated(minX, minY, minZ);
-//        GL11.glRotated(90, 0, 0, 1);
-//        GL11.glTranslated(-minX, -minY, -minZ);
     }
 }

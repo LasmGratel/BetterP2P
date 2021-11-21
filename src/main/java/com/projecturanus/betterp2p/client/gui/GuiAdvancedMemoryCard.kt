@@ -15,7 +15,7 @@ import net.minecraft.client.resources.I18n
 import net.minecraft.util.ResourceLocation
 import org.lwjgl.input.Mouse
 
-class GuiBetterMemoryCard(msg: S2CListP2P) : GuiScreen(), TextureBound {
+class GuiAdvancedMemoryCard(msg: S2CListP2P) : GuiScreen(), TextureBound {
     private val outputColor = 0x4566ccff
     private val selectedColor = 0x4545DA75
     private val errorColor = 0x45DA4527
@@ -113,7 +113,7 @@ class GuiBetterMemoryCard(msg: S2CListP2P) : GuiScreen(), TextureBound {
     }
 
     fun syncMemoryInfo() {
-        ModNetwork.channel.sendToServer(C2SUpdateInfo(MemoryInfo(selectedIndex, mode)))
+        ModNetwork.channel.sendToServer(C2SUpdateInfo(MemoryInfo(selectedIndex, selectedInfo?.frequency ?: 0, mode)))
     }
 
     fun drawInformation() {
@@ -142,7 +142,7 @@ class GuiBetterMemoryCard(msg: S2CListP2P) : GuiScreen(), TextureBound {
 
         if (modeButton.isMouseOver) {
             descriptionLines.clear()
-            descriptionLines += I18n.format("gui.better_memory_card.desc.mode", I18n.format("gui.better_memory_card.mode.${mode.next().name.toLowerCase()}"))
+            descriptionLines += I18n.format("gui.advanced_memory_card.desc.mode", I18n.format("gui.advanced_memory_card.mode.${mode.next().name.toLowerCase()}"))
         } else {
             descriptionLines.clear()
         }
@@ -161,7 +161,7 @@ class GuiBetterMemoryCard(msg: S2CListP2P) : GuiScreen(), TextureBound {
     }
 
     private fun getModeString(): String {
-        return I18n.format("gui.better_memory_card.mode.${mode.name.toLowerCase()}")
+        return I18n.format("gui.advanced_memory_card.mode.${mode.name.toLowerCase()}")
     }
 
     fun findInput(frequency: Short) =
@@ -241,7 +241,7 @@ class GuiBetterMemoryCard(msg: S2CListP2P) : GuiScreen(), TextureBound {
     }
 
     private fun drawBackground() {
-        bindTexture(MODID, "textures/gui/better_memory_card.png")
+        bindTexture(MODID, "textures/gui/advanced_memory_card.png")
         drawTexturedModalRect(guiLeft, guiTop, 0, 0, this.xSize, this.ySize)
     }
 

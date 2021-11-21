@@ -1,6 +1,8 @@
 package com.projecturanus.betterp2p
 
+import com.projecturanus.betterp2p.config.BetterP2PConfig
 import com.projecturanus.betterp2p.network.ModNetwork
+import net.minecraftforge.common.config.Configuration
 import net.minecraftforge.fml.common.Mod
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent
 import org.apache.logging.log4j.Logger
@@ -16,6 +18,6 @@ object BetterP2P {
         logger = event.modLog
         ModNetwork.registerNetwork()
 
-
+        BetterP2PConfig.loadConfig(Configuration(event.suggestedConfigurationFile))
     }
 }

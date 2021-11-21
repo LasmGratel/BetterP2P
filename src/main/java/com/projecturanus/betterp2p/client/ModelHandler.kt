@@ -1,7 +1,7 @@
 package com.projecturanus.betterp2p.client
 
 import com.projecturanus.betterp2p.MODID
-import com.projecturanus.betterp2p.item.ItemBetterMemoryCard
+import com.projecturanus.betterp2p.item.ItemAdvancedMemoryCard
 import net.minecraft.client.renderer.block.model.ModelResourceLocation
 import net.minecraft.util.ResourceLocation
 import net.minecraftforge.client.event.ModelRegistryEvent
@@ -15,6 +15,6 @@ object ModelHandler {
     @JvmStatic
     @SubscribeEvent
     fun registerModels(event: ModelRegistryEvent) {
-        ModelLoader.setCustomModelResourceLocation(ItemBetterMemoryCard, 0, ModelResourceLocation(ResourceLocation(MODID, "better_memory_card"), "inventory"))
+        ModelLoader.setCustomModelResourceLocation(ItemAdvancedMemoryCard, 0, ModelResourceLocation(ResourceLocation(MODID, "advanced_memory_card"), "inventory"))
     }
 }
