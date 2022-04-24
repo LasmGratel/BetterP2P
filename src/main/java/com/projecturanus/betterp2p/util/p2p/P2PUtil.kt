@@ -44,10 +44,12 @@ fun linkP2P(player: EntityPlayer, inputIndex: Int, outputIndex: Int, status: P2P
         frequency = cache.newFrequency()
         updateP2P(input, frequency, false)
     }
-    if (cache.getInput(frequency) != null) {
-        val originalInput = cache.getInput(frequency)
-        if (originalInput != input)
-            updateP2P(originalInput, frequency, true)
+    if (cache.getInputs(frequency, input.javaClass) != null) {
+        val originalInputs = cache.getInputs(frequency, input.javaClass)
+        for (originalInput in originalInputs) {
+            if (originalInput != input)
+                updateP2P(originalInput, frequency, true)
+        }
     }
 
     return updateP2P(input, frequency, false) to updateP2P(output, frequency, true)

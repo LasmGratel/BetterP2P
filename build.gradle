@@ -42,10 +42,12 @@ repositories {
 	maven {
 		url "https://maven.shadowfacts.net/"
 	}
-	maven {
-		url "https://maven.cil.li/"
-		metadataSources { artifact() }
-	}
+    maven {
+        url "https://cursemaven.com"
+        content {
+            includeGroup "curse.maven"
+        }
+    }
 }
 
 compileKotlin {
@@ -64,9 +66,7 @@ minecraft {
 }
 
 dependencies {
-	implementation ("appeng:appliedenergistics2:rv6-stable-5"){
-		transitive = false
-	}
+    implementation "curse.maven:ae2-extended-life-570458:3755096"
 	implementation "net.shadowfacts:Forgelin:1.8.4"
 }
 
