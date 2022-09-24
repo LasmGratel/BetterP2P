@@ -14,6 +14,7 @@ import com.projecturanus.betterp2p.network.P2PInfo
 import net.minecraft.entity.player.EntityPlayer
 import net.minecraft.item.ItemStack
 import net.minecraft.nbt.NBTTagCompound
+import net.minecraft.util.EnumHand
 
 val PartP2PTunnel<*>.colorCode: Array<AEColor> get() = Platform.p2p().toColors(this.frequency)
 
@@ -42,23 +43,23 @@ fun linkP2P(player: EntityPlayer, inputIndex: Int, outputIndex: Int, status: P2P
     // TODO reduce changes
     if (input.frequency.toInt() == 0 || input.isOutput) {
         frequency = cache.newFrequency()
-        updateP2P(input, frequency, false)
+        updateP2P(input, frequency, player, false)
     }
     if (cache.getInputs(frequency, input.javaClass) != null) {
         val originalInputs = cache.getInputs(frequency, input.javaClass)
         for (originalInput in originalInputs) {
             if (originalInput != input)
-                updateP2P(originalInput, frequency, true)
+                updateP2P(originalInput, frequency, player, true)
         }
     }
 
-    return updateP2P(input, frequency, false) to updateP2P(output, frequency, true)
+    return updateP2P(input, frequency, player, false) to updateP2P(output, frequency, player, true)
 }
 
 /**
  * Due to Applied Energistics' limit
  */
-fun updateP2P(tunnel: PartP2PTunnel<*>, frequency: Short, output: Boolean): PartP2PTunnel<*> {
+fun updateP2P(tunnel: PartP2PTunnel<*>, frequency: Short, player: EntityPlayer, output: Boolean): PartP2PTunnel<*> {
     val side = tunnel.side
     tunnel.host.removePart(side, true)
 
@@ -79,7 +80,7 @@ fun updateP2P(tunnel: PartP2PTunnel<*>, frequency: Short, output: Boolean): Part
     data.setIntArray("colorCode", colorCode)
 
     val newType = ItemStack(data)
-    val dir: AEPartLocation = tunnel.host?.addPart(newType, side, null, null) ?: throw RuntimeException("Cannot bind")
+    val dir: AEPartLocation = tunnel.host?.addPart(newType, side, player, EnumHand.MAIN_HAND) ?: throw RuntimeException("Cannot bind")
     val newBus: IPart = tunnel.host.getPart(dir)
 
     if (newBus is PartP2PTunnel<*>) {
