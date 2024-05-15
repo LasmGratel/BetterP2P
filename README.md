@@ -1,59 +1,38 @@
 # BetterP2P
 
-![](https://cf.way2muchnoise.eu/versions/538092.svg) [![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0) 
+![](https://cf.way2muchnoise.eu/versions/538092.svg) ![](https://cf.way2muchnoise.eu/full_538092_downloads.svg)  [![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0)
 
 ![logo](logo.png)
 
-Better P2P and memory card for Applied Energistics 2, requires [Forgelin](https://www.curseforge.com/minecraft/mc-mods/shadowfacts-forgelin).
+An advanced tool for AE2, to manage P2P networks.
+
+Supports both **1.20.1 Fabric and Forge!**
+
+**Fabric**: Requires [Architectury API (fabric)](https://modrinth.com/mod/architectury-api/versions?g=1.20.1&l=fabric), [Fabric Language Kotlin](https://modrinth.com/mod/fabric-language-kotlin/versions?g=1.20.1)
+
+**Forge**: Requires [Architectury API (forge)](https://modrinth.com/mod/architectury-api/versions?g=1.20.1&l=forge), [Kotlin for Forge](https://modrinth.com/mod/kotlin-for-forge/versions?l=forge&g=1.20.1)
+
+**Please choose the corrent corresponding dependencies for your mod loader!**
 
 Documentation is now available to read: <https://lasmgratel.github.io/BetterP2P-Manual/>
 
-## Features
+## Older Versions
 
-Obtain a Better Memory Card.
+1.7.10 Currently Maintained by GTNH Team: <https://github.com/GTNewHorizons/BetterP2P>
 
-![](img/showcase0.png)
+1.12.2 Currently Maintained by AE2UEL: <https://www.curseforge.com/minecraft/mc-mods/betterer-p2p>
 
-Right-click on a P2P device or any ME attached device to inspect all P2P devices in your ME Network.
-
-![](img/showcase1.png)
-
-Select one of the P2P devices and pair it with other P2P, you can choose the binding mode. Once you have P2P devices paired, devices with same frequency will be highlighted in aqua color.
-
-![](img/showcase2.png)
-
-Input P2P will always be on the top.
-
-![](img/showcase3.png)
-
-A wrong setup (usually P2P devices without input) will be in red color, and devices with no channel will be in yellow.
-
-![](img/showcase4.png)
-
-Version 1.1 update:
-
-P2P location is shown.
-
-![](img/showcase5.png)
-
-When you select one of the P2P device, outlines will render at other devices with same frequency.
-
-You can Shift-click better memory card to clean this outline.
-
-![](img/showcase6.png)
+**All new features and ideas in 1.20 are based on Betterer P2P, thanks AE2UEL Team!**
 
 ## TODOs
 
-- [ ] Documentation
-- [ ] Sort modes
-- [ ] Better predicate to reduce crashes
-- [X] A border show in the world to identify the selected P2P device
-- [ ] Optimize cache
-- [ ] A minimap shows all P2P devices
+- [ ] Config
+- [ ] Stability Checks
 
 ## Credits
 
-- Cyclic for its block outline code
+- PnC for its block outline code
 - LasmGratel for the first BetterP2P
 - GlodBlock for the first 1.7.10 port
 - firenoo for the big revamps <3
+- AE2UEL Team for Betterer P2P

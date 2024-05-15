@@ -1,31 +1,19 @@
-# exclude all
-/*
+build/
+*.ipr
+run/
+*.iws
+out/
+*.iml
+.gradle/
+output/
+bin/
+libs/
 
-# need gradle 
-!gradle/
-!gradlew
-!gradlew.bat
-!build.gradle
-!gradle.properties
-
-# include markdowns
-!README.md
-!LICENSE
-
-# include source code
-!src/
-!libs/
-!img/
-!RedstoneFlux-API
-
-# include git important files
-!.gitmodules
-!.gitignore
-
-# other important files
-!.editorconfig
-!.travis.yml
-!deploy_key.enc
-!scripts/
-!docs/
-!logo.png
+.classpath
+.project
+.idea/
+classes/
+.metadata
+.vscode
+.settings
+*.launch

@@ -1,103 +1,82 @@
-buildscript {
+plugins {
+    id "org.jetbrains.kotlin.jvm" version "1.8.22"
+    id "architectury-plugin" version "3.4-SNAPSHOT"
+    id "dev.architectury.loom" version "1.3-SNAPSHOT" apply false
+}
+
+architectury {
+    minecraft = rootProject.minecraft_version
+}
+
+subprojects {
+    apply plugin: "dev.architectury.loom"
+
+    loom {
+        silentMojangMappingsLicense()
+    }
+
     repositories {
-        mavenCentral()
-        maven {
-            name = "forge"
-            url = "https://files.minecraftforge.net/maven"
-        }
-        maven {
-            name = "sonatype"
-            url = "https://oss.sonatype.org/content/repositories/snapshots/"
-        }
-        maven {
-            name = "gradle"
-            url = "https://plugins.gradle.org/m2/"
-        }
+        maven { url = "https://maven.parchmentmc.org" } // Parchment mappings
+        maven { url = "https://maven.quiltmc.org/repository/release" } // Quilt Mappings
     }
+
     dependencies {
-		classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:1.3.50"
-        classpath("com.anatawa12.forge:ForgeGradle:2.3-1.0.+") {
-            changing = true
+        minecraft "com.mojang:minecraft:${rootProject.minecraft_version}"
+        // The following line declares the mojmap mappings, you may use other mappings as well
+        mappings loom.layered() {
+            officialMojangMappings() { nameSyntheticMembers = false }
+            parchment("org.parchmentmc.data:parchment-1.20.1:2023.09.03@zip")
+        }
+        // The following line declares the yarn mappings you may select this one as well.
+        // mappings "net.fabricmc:yarn:1.20.1+build.10:v2"
+    }
+}
+
+allprojects {
+    apply plugin: "java"
+    apply plugin: "kotlin"
+    apply plugin: "architectury-plugin"
+    apply plugin: "maven-publish"
+
+    base {
+        archivesName = rootProject.archives_base_name
+    }
+
+    version = rootProject.mod_version
+    group = rootProject.maven_group
+
+    repositories {
+        exclusiveContent {
+            forRepository {
+                maven {
+                    name 'Modrinth'
+                    url 'https://api.modrinth.com/maven'
+                }
+            }
+            filter {
+                includeGroup 'maven.modrinth'
+            }
+        }
+        maven {
+            name 'ModMaven'
+            url 'https://modmaven.dev'
         }
     }
-}
 
-apply plugin: "net.minecraftforge.gradle.forge"
-apply plugin: 'kotlin'
-
-compileJava.options.encoding = "UTF-8"
-compileTestJava.options.encoding = "UTF-8"
-
-sourceCompatibility = targetCompatibility = "1.8" // Need this here so eclipse task generates correctly.
-compileJava {
-    sourceCompatibility = targetCompatibility = "1.8"
-}
-
-version = minecraft_version + "-" + mod_version
-group= mod_group // http://maven.apache.org/guides/mini/guide-naming-conventions.html
-archivesBaseName = mod_id
-
-repositories {
-	mavenCentral()
-	maven {
-		url "https://maven.shadowfacts.net/"
-	}
-    maven {
-        url "https://cursemaven.com"
-        content {
-            includeGroup "curse.maven"
-        }
-    }
-    maven {
-        name = "Progwml6 maven"
-        url = "https://dvs1.progwml6.com/files/maven"
-    }
-}
-
-compileKotlin {
-    kotlinOptions {
-        jvmTarget = 1.8
-    }
-}
-
-minecraft {
-    version = minecraft_version + "-" + forge_version
-    runDir = "run"
-
-    replace "@version@", mod_version
-
-    mappings = mcp_mapping_version
-}
-
-dependencies {
-    implementation "curse.maven:ae2-extended-life-570458:4851091"
-	implementation "net.shadowfacts:Forgelin:1.8.4"
-
-    runtime "mezz.jei:jei_1.12.2:4.16.1.302"
-}
-
-sourceJar {
-    duplicatesStrategy = DuplicatesStrategy.WARN
-}
-
-processResources
-{
-    duplicatesStrategy = DuplicatesStrategy.WARN
-
-    // this will ensure that this task is redone when the versions change.
-    inputs.property "version", project.version
-    inputs.property "mcversion", project.minecraft.version
-
-    // replace stuff in mcmod.info, nothing else
-    from(sourceSets.main.resources.srcDirs) {
-        include 'mcmod.info'
-
-        // replace version and mcversion
-        expand 'version':project.version, 'mcversion':project.minecraft.version
+    dependencies {
+        compileOnly "org.jetbrains.kotlin:kotlin-stdlib"
     }
 
-    // copy everything else, thats not the mcmod.info
-    from(sourceSets.main.resources.srcDirs) {
-        exclude 'mcmod.info'
+    tasks.withType(JavaCompile) {
+        options.encoding = "UTF-8"
+        options.release = 17
+    }
+
+    kotlin.target.compilations.all {
+        kotlinOptions.jvmTarget = "17"
+    }
+
+    java {
+        withSourcesJar()
     }
 }
