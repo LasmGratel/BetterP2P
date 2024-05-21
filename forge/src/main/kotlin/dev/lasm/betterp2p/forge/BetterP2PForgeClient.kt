@@ -18,7 +18,8 @@ object BetterP2PForgeClient {
     fun init() {
         BetterP2P.initClient()
         MinecraftForge.EVENT_BUS.addListener { context: RenderLevelStageEvent ->
-            if (context.stage != RenderLevelStageEvent.Stage.AFTER_BLOCK_ENTITIES) return@addListener
+            if (context.stage != RenderLevelStageEvent.Stage.AFTER_BLOCK_ENTITIES)
+                return@addListener
             val level: ClientLevel? = Minecraft.getInstance().level
             val poseStack: PoseStack = context.poseStack
             val buffers: MultiBufferSource? = Minecraft.getInstance().renderBuffers().bufferSource()

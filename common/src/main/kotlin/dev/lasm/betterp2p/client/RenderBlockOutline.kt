@@ -8,6 +8,7 @@ import dev.lasm.betterp2p.client.ClientCache.positions
 import dev.lasm.betterp2p.client.ClientCache.selectedFacing
 import dev.lasm.betterp2p.client.ClientCache.selectedPosition
 import dev.lasm.betterp2p.item.ItemAdvancedMemoryCard
+import java.util.*
 import net.minecraft.client.Camera
 import net.minecraft.client.renderer.MultiBufferSource
 import net.minecraft.client.renderer.RenderStateShard
@@ -18,7 +19,6 @@ import net.minecraft.world.entity.player.Player
 import net.minecraft.world.phys.AABB
 import net.minecraft.world.phys.shapes.Shapes
 import org.lwjgl.opengl.GL11
-import java.util.*
 
 object RenderBlockOutline {
     @JvmStatic
