@@ -10,43 +10,38 @@ import dev.lasm.betterp2p.util.p2p.TunnelInfo
 import dev.lasm.betterp2p.util.p2p.getTypeIndex
 import dev.lasm.betterp2p.util.p2p.pleaseSetTheFuckingOutputState
 import dev.lasm.betterp2p.util.p2p.setCustomName
+import java.util.*
 import net.minecraft.network.chat.Component
 import net.minecraft.server.level.ServerLevel
 import net.minecraft.world.InteractionHand
 import net.minecraft.world.entity.player.Player
-import java.util.*
 
 /**
- * When the player uses the adv memory card, this is cached on the server side
- * to provide access to the Grid when the player performs actions in the GUI
- * Each player has a list of p2ps that will be sent. These are tracked in [listP2P].
+ * When the player uses the adv memory card, this is cached on the server side to provide access to
+ * the Grid when the player performs actions in the GUI Each player has a list of p2ps that will be
+ * sent. These are tracked in [listP2P].
  */
 class GridServerCache(private val grid: IGrid, val player: Player, var type: Int) {
-    /**
-     * The P2P list. On init, this is the full list.
-     */
+    /** The P2P list. On init, this is the full list. */
     private val listP2P: MutableMap<P2PLocation, P2PTunnelPart<*>> = mutableMapOf()
 
-    /**
-     * The dirty P2P list. Updates are accumulated here and sent altogether.
-     */
+    /** The dirty P2P list. Updates are accumulated here and sent altogether. */
     private val dirtyP2P: MutableSet<P2PLocation> = mutableSetOf()
 
     init {
         rebuildList(type)
     }
 
-    /**
-     * Refreshes the global p2p list
-     */
+    /** Refreshes the global p2p list */
     private fun rebuildList(type: Int) {
         synchronized(listP2P) {
             listP2P.clear()
             dirtyP2P.clear()
             grid.machineClasses.forEach {
                 // Find all P2P tunnels...
-                if (P2PTunnelPart::class.java.isAssignableFrom(it) &&
-                    (type == TUNNEL_ANY || BetterP2P.proxy.getP2PFromIndex(type)?.clazz == it)
+                if (
+                    P2PTunnelPart::class.java.isAssignableFrom(it) &&
+                        (type == TUNNEL_ANY || BetterP2P.proxy.getP2PFromIndex(type)?.clazz == it)
                 ) {
                     grid.getMachines(it).forEach { gridNode ->
                         val p2p = gridNode as P2PTunnelPart<*>
@@ -58,9 +53,8 @@ class GridServerCache(private val grid: IGrid, val player: Player, var type: Int
     }
 
     /**
-     * Refreshes and gets the p2p list of the targeted type
-     * If [type] is [TUNNEL_ANY] or invalid, returns the full list; else filters the list to the
-     * targeted type
+     * Refreshes and gets the p2p list of the targeted type If [type] is [TUNNEL_ANY] or invalid,
+     * returns the full list; else filters the list to the targeted type
      */
     fun retrieveP2PList(): List<P2PInfo> {
         rebuildList(type)
@@ -86,32 +80,32 @@ class GridServerCache(private val grid: IGrid, val player: Player, var type: Int
         }
     }
 
-    /**
-     * Returns the list of P2Ps that are currently marked dirty, and clears the dirty list.
-     */
+    /** Returns the list of P2Ps that are currently marked dirty, and clears the dirty list. */
     fun getP2PUpdates(): List<P2PInfo> {
-        val result = dirtyP2P.mapNotNull {
-            listP2P[it]?.toInfo()
-        }
+        val result = dirtyP2P.mapNotNull { listP2P[it]?.toInfo() }
 
         dirtyP2P.clear()
 
-        return result;
+        return result
     }
 
     /**
-     * Link the two P2P tunnels together. Returns the pair of P2P tunnels on success, or null otherwise.
+     * Link the two P2P tunnels together. Returns the pair of P2P tunnels on success, or null
+     * otherwise.
      */
-    fun linkP2P(inputIndex: P2PLocation, outputIndex: P2PLocation):
-        Pair<P2PTunnelPart<*>, P2PTunnelPart<*>>? {
+    fun linkP2P(
+        inputIndex: P2PLocation,
+        outputIndex: P2PLocation
+    ): Pair<P2PTunnelPart<*>, P2PTunnelPart<*>>? {
         // If these calls mess up we have bigger problems...
         val input = listP2P[inputIndex] ?: return null
         var output = listP2P[outputIndex] ?: return null
 
-        //change type if necessary
+        // change type if necessary
         if (input.javaClass != output.javaClass) {
-            output = changeP2PType(output, BetterP2P.proxy.getP2PFromClass(input.javaClass)!!)
-                ?: return null
+            output =
+                changeP2PType(output, BetterP2P.proxy.getP2PFromClass(input.javaClass)!!)
+                    ?: return null
         }
 
         // Network loop
@@ -131,13 +125,7 @@ class GridServerCache(private val grid: IGrid, val player: Player, var type: Int
         if (cache.getInput(frequency) != null) {
             val originalInput = cache.getInput(frequency)
             if (originalInput != input) {
-                updateP2P(
-                    originalInput.toLoc(),
-                    originalInput,
-                    frequency,
-                    true,
-                    input.customName
-                )
+                updateP2P(originalInput.toLoc(), originalInput, frequency, true, input.customName)
             }
         }
 
@@ -161,8 +149,9 @@ class GridServerCache(private val grid: IGrid, val player: Player, var type: Int
     }
 
     /**
-     * Sets the p2p tunnel to the frequency, output, and custom name. Removes the old one and replaces it, which lets
-     * AE2 trigger the Grid refresh for us (though we need to update the tunnels ourselves)
+     * Sets the p2p tunnel to the frequency, output, and custom name. Removes the old one and
+     * replaces it, which lets AE2 trigger the Grid refresh for us (though we need to update the
+     * tunnels ourselves)
      */
     private fun updateP2P(
         key: P2PLocation,
@@ -188,7 +177,10 @@ class GridServerCache(private val grid: IGrid, val player: Player, var type: Int
      */
     private fun changeP2PType(tunnel: P2PTunnelPart<*>, newType: TunnelInfo): P2PTunnelPart<*>? {
         if (BetterP2P.proxy.getP2PFromClass(tunnel.javaClass) == newType) {
-            player.displayClientMessage(Component.translatable("gui.advanced_memory_card.error.same_type"),false)
+            player.displayClientMessage(
+                Component.translatable("gui.advanced_memory_card.error.same_type"),
+                false
+            )
             return null
         }
 
@@ -201,18 +193,33 @@ class GridServerCache(private val grid: IGrid, val player: Player, var type: Int
                 // Regular checks
                 Objects.requireNonNull(tunnel.blockEntity)
                 if (newType.stack.item !is IPartItem<*>) {
-                    BetterP2P.logger.error("Attempt to assign a invalid type {} to tunnel {}, this shouldn't happen!", newType, tunnel.blockEntity)
+                    BetterP2P.logger.error(
+                        "Attempt to assign a invalid type {} to tunnel {}, this shouldn't happen!",
+                        newType,
+                        tunnel.blockEntity
+                    )
                     return@executeBlocking
                 }
                 val partItem = newType.stack.item as IPartItem<*>
                 if (!P2PTunnelPart::class.java.isAssignableFrom(partItem.partClass)) {
-                    BetterP2P.logger.error("Attempt to assign a invalid type {} to tunnel {}, this shouldn't happen!", partItem.partClass, tunnel.blockEntity)
+                    BetterP2P.logger.error(
+                        "Attempt to assign a invalid type {} to tunnel {}, this shouldn't happen!",
+                        partItem.partClass,
+                        tunnel.blockEntity
+                    )
                     return@executeBlocking
                 }
 
                 newBus = tunnel
                 if (newBus!!.partItem !== partItem) {
-                    val replaced = tunnel.host.replacePart(partItem, tunnel.side, player, InteractionHand.MAIN_HAND)!! as P2PTunnelPart<*>
+                    val replaced =
+                        tunnel.host.replacePart(
+                            partItem,
+                            tunnel.side,
+                            player,
+                            InteractionHand.MAIN_HAND
+                        )!!
+                            as P2PTunnelPart<*>
 
                     replaced.pleaseSetTheFuckingOutputState(oldOutput)
                     replaced.onTunnelNetworkChange()
@@ -229,9 +236,7 @@ class GridServerCache(private val grid: IGrid, val player: Player, var type: Int
         return tunnel
     }
 
-    /**
-     * Converts all connected P2Ps to a new type
-     */
+    /** Converts all connected P2Ps to a new type */
     fun changeAllP2Ps(p2p: P2PLocation, newType: TunnelInfo): Boolean {
 
         var tunnel = listP2P[p2p] ?: return false
@@ -270,5 +275,4 @@ class GridServerCache(private val grid: IGrid, val player: Player, var type: Int
         }
         return false
     }
-
 }

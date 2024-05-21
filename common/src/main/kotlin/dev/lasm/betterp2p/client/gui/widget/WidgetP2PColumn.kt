@@ -9,35 +9,40 @@ import dev.lasm.betterp2p.network.ModNetwork
 import dev.lasm.betterp2p.network.packet.C2SLinkP2P
 import dev.lasm.betterp2p.network.packet.C2SRenameP2P
 import dev.lasm.betterp2p.network.packet.C2SUnlinkP2P
+import java.util.function.Consumer
+import kotlin.reflect.KProperty0
 import net.minecraft.client.Minecraft
 import net.minecraft.client.gui.GuiGraphics
 import net.minecraft.client.gui.components.AbstractWidget
 import net.minecraft.client.gui.components.EditBox
 import net.minecraft.client.gui.narration.NarrationElementOutput
 import net.minecraft.network.chat.Component
-import java.util.function.Consumer
-import kotlin.reflect.KProperty0
 
 /**
  * WidgetP2PColumn
  *
  * A widget that contains a list of P2P entries.
  */
-class WidgetP2PColumn(val gui: GuiAdvancedMemoryCard,
-                      private val infos: InfoList,
-                      x: Int, y: Int,
-                      private val selectedInfo: KProperty0<InfoWrapper?>,
-                      val mode: () -> BetterMemoryCardModes,
-                      private var scrollBar: WidgetScrollBar) : AbstractWidget(x, y, 160, 0, Component.empty()) {
+class WidgetP2PColumn(
+    val gui: GuiAdvancedMemoryCard,
+    private val infos: InfoList,
+    x: Int,
+    y: Int,
+    private val selectedInfo: KProperty0<InfoWrapper?>,
+    val mode: () -> BetterMemoryCardModes,
+    private var scrollBar: WidgetScrollBar
+) : AbstractWidget(x, y, 160, 0, Component.empty()) {
 
     val entries: MutableList<WidgetP2PDevice> = mutableListOf()
-    private val renameBar = object : EditBox(font,0, 0, 160, 12, Component.empty()) {
+    private val renameBar =
+        object : EditBox(font, 0, 0, 160, 12, Component.empty()) {
             var info: InfoWrapper? = null
         }
 
     fun getRenameBar() = renameBar
 
-    val font get() = Minecraft.getInstance().font
+    val font
+        get() = Minecraft.getInstance().font
 
     init {
         renameBar.setMaxLength(50)
@@ -45,18 +50,22 @@ class WidgetP2PColumn(val gui: GuiAdvancedMemoryCard,
         renameBar.setCanLoseFocus(true)
     }
 
-    /**
-     * Resize the column
-     */
+    /** Resize the column */
     fun resize(scale: GuiScale, availableHeight: Int) {
         entries.clear()
         for (i in 0 until scale.size(availableHeight)) {
-            val widget = WidgetP2PDevice(i, selectedInfo, mode,
-                { infos.filtered.getOrNull(i + scrollBar.currentScroll) },
-                this, x, y + i * (P2PEntryConstants.HEIGHT + 1))
+            val widget =
+                WidgetP2PDevice(
+                    i,
+                    selectedInfo,
+                    mode,
+                    { infos.filtered.getOrNull(i + scrollBar.currentScroll) },
+                    this,
+                    x,
+                    y + i * (P2PEntryConstants.HEIGHT + 1)
+                )
             entries.add(widget)
         }
-
     }
 
     override fun setPosition(x: Int, y: Int) {
@@ -67,20 +76,20 @@ class WidgetP2PColumn(val gui: GuiAdvancedMemoryCard,
         }
     }
 
-    override fun renderWidget(guiGraphics: GuiGraphics, i: Int, j: Int, f: Float) {
+    override fun renderWidget(guiGraphics: GuiGraphics, i: Int, j: Int, f: Float) {}
 
-    }
-
-    override fun updateWidgetNarration(narrationElementOutput: NarrationElementOutput) {
-
-    }
+    override fun updateWidgetNarration(narrationElementOutput: NarrationElementOutput) {}
 
     fun finishRename() {
         if (!renameBar.visible) return
-        for (widget in entries){
+        for (widget in entries) {
             widget.renderNameTextfield = true
         }
-        if(renameBar.info != null && renameBar.value.isNotEmpty() && renameBar.info!!.name != renameBar.value){
+        if (
+            renameBar.info != null &&
+                renameBar.value.isNotEmpty() &&
+                renameBar.info!!.name != renameBar.value
+        ) {
             val info: InfoWrapper = renameBar.info!!
 
             renameBar.value = renameBar.value.trim()
@@ -94,8 +103,8 @@ class WidgetP2PColumn(val gui: GuiAdvancedMemoryCard,
     }
 
     /**
-     * Called when rename button "area" is clicked. Rename text bar must be
-     * visible after this is called
+     * Called when rename button "area" is clicked. Rename text bar must be visible after this is
+     * called
      */
     fun onRenameButtonClicked(info: InfoWrapper, index: Int) {
         renameBar.visible = true
@@ -110,7 +119,7 @@ class WidgetP2PColumn(val gui: GuiAdvancedMemoryCard,
 
     override fun onClick(d: Double, e: Double) {
         val clickRenameButton = false
-        if(!clickRenameButton && renameBar.visible) {
+        if (!clickRenameButton && renameBar.visible) {
             finishRename()
         }
         super.onClick(d, e)
@@ -129,9 +138,9 @@ class WidgetP2PColumn(val gui: GuiAdvancedMemoryCard,
             }
             BetterMemoryCardModes.COPY -> {
                 val input = findInput(infos.selectedInfo?.frequency)
-                if (input != null)
-                    ModNetwork.channel.sendToServer(C2SLinkP2P(input.loc, info.loc))
-            } else -> {
+                if (input != null) ModNetwork.channel.sendToServer(C2SLinkP2P(input.loc, info.loc))
+            }
+            else -> {
                 BetterP2P.logger.debug("Somehow bind button was pressed while in UNBIND mode.")
             }
         }
@@ -160,4 +169,3 @@ class WidgetP2PColumn(val gui: GuiAdvancedMemoryCard,
         finishRename()
     }
 }
-

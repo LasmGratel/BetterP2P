@@ -4,13 +4,14 @@ import dev.architectury.networking.NetworkManager.PacketContext
 import dev.lasm.betterp2p.client.AdvancedMemoryCardMenu
 import dev.lasm.betterp2p.client.gui.GuiAdvancedMemoryCard
 import dev.lasm.betterp2p.network.data.*
+import java.util.function.Supplier
 import net.minecraft.client.Minecraft
 import net.minecraft.network.FriendlyByteBuf
-import java.util.function.Supplier
 
-
-class S2COpenGui(var infos: List<P2PInfo> = emptyList(),
-                 var memoryInfo: MemoryInfo = MemoryInfo()) : IMessage {
+class S2COpenGui(
+    var infos: List<P2PInfo> = emptyList(),
+    var memoryInfo: MemoryInfo = MemoryInfo()
+) : IMessage {
     override fun toBytes(buf: FriendlyByteBuf) {
         buf.writeInt(infos.size)
         for (info in infos) {
@@ -34,7 +35,6 @@ class S2COpenGui(var infos: List<P2PInfo> = emptyList(),
         infos = list
         memoryInfo = readMemoryInfo(buf)
     }
-
 }
 
 val ClientOpenGuiHandler = { message: S2COpenGui, ctx: Supplier<PacketContext> ->
@@ -44,7 +44,15 @@ val ClientOpenGuiHandler = { message: S2COpenGui, ctx: Supplier<PacketContext> -
         gui.memoryInfo = message.memoryInfo
     } else {
         Minecraft.getInstance().submit {
-            Minecraft.getInstance().setScreen(GuiAdvancedMemoryCard(AdvancedMemoryCardMenu(0, null).also { it.memoryInfo = message.memoryInfo; it.infos = message.infos }))
+            Minecraft.getInstance()
+                .setScreen(
+                    GuiAdvancedMemoryCard(
+                        AdvancedMemoryCardMenu(0, null).also {
+                            it.memoryInfo = message.memoryInfo
+                            it.infos = message.infos
+                        }
+                    )
+                )
         }
     }
     Unit

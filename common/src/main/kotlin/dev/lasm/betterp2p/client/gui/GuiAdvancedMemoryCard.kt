@@ -43,7 +43,8 @@ const val GUI_TEX_HEIGHT = 264
 
 val TEXTURE_BLITTER = Blitter.texture(TEXTURE, GUI_WIDTH, GUI_TEX_HEIGHT)
 
-class GuiAdvancedMemoryCard(val theMenu: AdvancedMemoryCardMenu) : Screen(Component.empty()), MenuAccess<AdvancedMemoryCardMenu>, ContainerEventHandler {
+class GuiAdvancedMemoryCard(val theMenu: AdvancedMemoryCardMenu) :
+    Screen(Component.empty()), MenuAccess<AdvancedMemoryCardMenu>, ContainerEventHandler {
     private var ySize: Int = 0
     private var leftPos: Int = 0
     private var topPos: Int = 0
@@ -51,7 +52,8 @@ class GuiAdvancedMemoryCard(val theMenu: AdvancedMemoryCardMenu) : Screen(Compon
     private val tableX = 9
     private val tableY = 19
 
-    private var type: ClientTunnelInfo? = BetterP2P.proxy.getP2PFromIndex(menu.memoryInfo.type) as? ClientTunnelInfo
+    private var type: ClientTunnelInfo? =
+        BetterP2P.proxy.getP2PFromIndex(menu.memoryInfo.type) as? ClientTunnelInfo
 
     var memoryInfo = theMenu.memoryInfo
     var scale = memoryInfo.guiScale
@@ -75,8 +77,7 @@ class GuiAdvancedMemoryCard(val theMenu: AdvancedMemoryCardMenu) : Screen(Compon
     private val searchText: String
         get() = searchBar.value
 
-    private val infos =
-        InfoList(menu.infos.map(::InfoWrapper), ::searchText)
+    private val infos = InfoList(menu.infos.map(::InfoWrapper), ::searchText)
 
     private val typeSelector: WidgetTypeSelector
 
@@ -106,7 +107,8 @@ class GuiAdvancedMemoryCard(val theMenu: AdvancedMemoryCardMenu) : Screen(Compon
 
     init {
         val typeSelectorList = mutableListOf<ClientTunnelInfo>()
-        var toAdd = BetterP2P.proxy.getP2PFromClass(MEP2PTunnelPart::class.java) as? ClientTunnelInfo
+        var toAdd =
+            BetterP2P.proxy.getP2PFromClass(MEP2PTunnelPart::class.java) as? ClientTunnelInfo
         if (toAdd != null) {
             typeSelectorList.add(toAdd)
         }
@@ -120,48 +122,53 @@ class GuiAdvancedMemoryCard(val theMenu: AdvancedMemoryCardMenu) : Screen(Compon
             }
         }
         typeSelector = WidgetTypeSelector(0, 0, this, typeSelectorList)
-
     }
 
-    private val modeDescriptions: List<List<String>> = listOf(
-        fmtTooltips(
-            title = BetterMemoryCardModes.OUTPUT.unlocalizedName,
-            maxChars = MAX_TOOLTIP_LENGTH,
-            keys = BetterMemoryCardModes.OUTPUT.unlocalizedDesc
-        ),
-        fmtTooltips(
-            title = BetterMemoryCardModes.INPUT.unlocalizedName,
-            maxChars = MAX_TOOLTIP_LENGTH,
-            keys = BetterMemoryCardModes.INPUT.unlocalizedDesc
-        ),
-        fmtTooltips(
-            title = BetterMemoryCardModes.COPY.unlocalizedName,
-            maxChars = MAX_TOOLTIP_LENGTH,
-            keys = BetterMemoryCardModes.COPY.unlocalizedDesc
-        ),
-        fmtTooltips(
-            title = BetterMemoryCardModes.UNBIND.unlocalizedName,
-            maxChars = MAX_TOOLTIP_LENGTH,
-            keys = BetterMemoryCardModes.UNBIND.unlocalizedDesc
+    private val modeDescriptions: List<List<String>> =
+        listOf(
+            fmtTooltips(
+                title = BetterMemoryCardModes.OUTPUT.unlocalizedName,
+                maxChars = MAX_TOOLTIP_LENGTH,
+                keys = BetterMemoryCardModes.OUTPUT.unlocalizedDesc
+            ),
+            fmtTooltips(
+                title = BetterMemoryCardModes.INPUT.unlocalizedName,
+                maxChars = MAX_TOOLTIP_LENGTH,
+                keys = BetterMemoryCardModes.INPUT.unlocalizedDesc
+            ),
+            fmtTooltips(
+                title = BetterMemoryCardModes.COPY.unlocalizedName,
+                maxChars = MAX_TOOLTIP_LENGTH,
+                keys = BetterMemoryCardModes.COPY.unlocalizedDesc
+            ),
+            fmtTooltips(
+                title = BetterMemoryCardModes.UNBIND.unlocalizedName,
+                maxChars = MAX_TOOLTIP_LENGTH,
+                keys = BetterMemoryCardModes.UNBIND.unlocalizedDesc
+            )
         )
-    )
 
     fun onChangeMode(button: Button) {
         val button = button as IconButton
         mode = mode.next()
         button.texX = (mode.ordinal + 3) * 32
         button.texY = 232
-        button.messages = modeDescriptions[mode.ordinal].asSequence().map { Component.literal(it) }.toMutableList()
+        button.messages =
+            modeDescriptions[mode.ordinal]
+                .asSequence()
+                .map { Component.literal(it) }
+                .toMutableList()
         syncMemoryInfo()
     }
 
     fun onResize(button: Button) {
-        scale = when (scale) {
-            GuiScale.DYNAMIC -> GuiScale.LARGE
-            GuiScale.LARGE -> GuiScale.NORMAL
-            GuiScale.NORMAL -> GuiScale.SMALL
-            GuiScale.SMALL -> GuiScale.DYNAMIC
-        }
+        scale =
+            when (scale) {
+                GuiScale.DYNAMIC -> GuiScale.LARGE
+                GuiScale.LARGE -> GuiScale.NORMAL
+                GuiScale.NORMAL -> GuiScale.SMALL
+                GuiScale.SMALL -> GuiScale.DYNAMIC
+            }
         repositionElements()
     }
 
@@ -185,7 +192,14 @@ class GuiAdvancedMemoryCard(val theMenu: AdvancedMemoryCardMenu) : Screen(Compon
             infos.refresh()
             col.entries.forEach { it.updateButtonVisibility() }
             scrollBar.height = numEntries * P2PEntryConstants.HEIGHT + (numEntries - 1) - 7
-            scrollBar.setRange(0, infos.filtered.size.coerceIn(0, (infos.filtered.size - numEntries).coerceAtLeast(0)), 23)
+            scrollBar.setRange(
+                0,
+                infos.filtered.size.coerceIn(
+                    0,
+                    (infos.filtered.size - numEntries).coerceAtLeast(0)
+                ),
+                23
+            )
         }
 
         scrollBar.x = leftPos + 268
@@ -198,9 +212,11 @@ class GuiAdvancedMemoryCard(val theMenu: AdvancedMemoryCardMenu) : Screen(Compon
         modeButton.x = leftPos - 32
         modeButton.y = topPos + 34
         modeButton.texX = (mode.ordinal + 3) * 32
-        modeButton.messages = modeDescriptions[mode.ordinal].asSequence().map { Component.literal(it) }.toMutableList()
-
-
+        modeButton.messages =
+            modeDescriptions[mode.ordinal]
+                .asSequence()
+                .map { Component.literal(it) }
+                .toMutableList()
 
         typeButton.setPosition(leftPos - 32, topPos + 66)
 
@@ -212,9 +228,12 @@ class GuiAdvancedMemoryCard(val theMenu: AdvancedMemoryCardMenu) : Screen(Compon
         infos.select(memoryInfo.selectedEntry)
         infos.refresh()
 
-
         scrollBar.height = numEntries * P2PEntryConstants.HEIGHT + (numEntries - 1) - 7
-        scrollBar.setRange(0, infos.filtered.size.coerceIn(0, (infos.filtered.size - numEntries).coerceAtLeast(0)), 23)
+        scrollBar.setRange(
+            0,
+            infos.filtered.size.coerceIn(0, (infos.filtered.size - numEntries).coerceAtLeast(0)),
+            23
+        )
 
         col.entries.forEach { it.updateButtonVisibility() }
 
@@ -244,35 +263,53 @@ class GuiAdvancedMemoryCard(val theMenu: AdvancedMemoryCardMenu) : Screen(Compon
 
     override fun renderBackground(graphics: GuiGraphics) {
         super.renderBackground(graphics)
-        graphics.blit(TEXTURE, leftPos, topPos, 0,
-            0.0f, 0.0f,
-            GUI_WIDTH, 60,
-            288, 264
-        )
+        graphics.blit(TEXTURE, leftPos, topPos, 0, 0.0f, 0.0f, GUI_WIDTH, 60, 288, 264)
 
         val p2pHeight = P2PEntryConstants.HEIGHT + 1
         for (i in 0 until scale.size(ySize - 75) - 2) {
-            graphics.blit(TEXTURE, leftPos, topPos + 60 + p2pHeight * i, 0,
-                0.0f, 60.0f,
-                GUI_WIDTH, 102 - 60,
-                288, 264
+            graphics.blit(
+                TEXTURE,
+                leftPos,
+                topPos + 60 + p2pHeight * i,
+                0,
+                0.0f,
+                60.0f,
+                GUI_WIDTH,
+                102 - 60,
+                288,
+                264
             )
         }
-        graphics.blit(TEXTURE, leftPos, topPos + ySize - 98, 0,
-            0.0f, 102.0f,
-            GUI_WIDTH, 98,
-            288, 264
+        graphics.blit(
+            TEXTURE,
+            leftPos,
+            topPos + ySize - 98,
+            0,
+            0.0f,
+            102.0f,
+            GUI_WIDTH,
+            98,
+            288,
+            264
         )
     }
 
     override fun mouseScrolled(mouseX: Double, mouseY: Double, delta: Double): Boolean {
-        return scrollBar.mouseScrolled(mouseX, mouseY, delta) || super<Screen>.mouseScrolled(mouseX, mouseY, delta)
+        return scrollBar.mouseScrolled(mouseX, mouseY, delta) ||
+            super<Screen>.mouseScrolled(mouseX, mouseY, delta)
     }
 
     override fun render(graphics: GuiGraphics, i: Int, j: Int, f: Float) {
         this.renderBackground(graphics)
 
-        graphics.drawString(font, I18n.get("item.betterp2p.advanced_memory_card"), leftPos + tableX, topPos + 6, 0x404040, false)
+        graphics.drawString(
+            font,
+            I18n.get("item.betterp2p.advanced_memory_card"),
+            leftPos + tableX,
+            topPos + 6,
+            0x404040,
+            false
+        )
 
         RenderSystem.disableDepthTest()
         RenderSystem.depthMask(false)
@@ -287,18 +324,28 @@ class GuiAdvancedMemoryCard(val theMenu: AdvancedMemoryCardMenu) : Screen(Compon
 
     private fun syncMemoryInfo() {
         ModNetwork.channel.sendToServer(
-            C2SUpdateMemoryInfo(MemoryInfo(infos.selectedEntry, selectedInfo?.frequency ?: 0, mode, scale, type?.index ?: TUNNEL_ANY))
+            C2SUpdateMemoryInfo(
+                MemoryInfo(
+                    infos.selectedEntry,
+                    selectedInfo?.frequency ?: 0,
+                    mode,
+                    scale,
+                    type?.index ?: TUNNEL_ANY
+                )
+            )
         )
     }
 
     private fun checkInfo() {
 
         infos.filtered.forEach {
-            it.error = it.frequency != 0.toShort() && if (it.output) {
-                col.findInput(it.frequency) == null
-            } else {
-                col.findOutput(it.frequency) == null
-            }
+            it.error =
+                it.frequency != 0.toShort() &&
+                    if (it.output) {
+                        col.findInput(it.frequency) == null
+                    } else {
+                        col.findOutput(it.frequency) == null
+                    }
         }
     }
 
@@ -322,7 +369,12 @@ class GuiAdvancedMemoryCard(val theMenu: AdvancedMemoryCardMenu) : Screen(Compon
                 }
 
                 val area: Rect2i = c.tooltipArea
-                if (mouseX >= area.x && mouseY >= area.y && mouseX < area.x + area.width && mouseY < area.y + area.height) {
+                if (
+                    mouseX >= area.x &&
+                        mouseY >= area.y &&
+                        mouseX < area.x + area.width &&
+                        mouseY < area.y + area.height
+                ) {
                     val tooltip = Tooltip(c.tooltipMessage)
                     if (tooltip.content.isNotEmpty()) {
                         drawTooltipWithHeader(guiGraphics, tooltip, mouseX, mouseY)
@@ -331,11 +383,12 @@ class GuiAdvancedMemoryCard(val theMenu: AdvancedMemoryCardMenu) : Screen(Compon
             }
         }
 
-//        // Widget-container uses screen-relative coordinates while the rest uses window-relative
-//        val tooltip: Tooltip = this.widgets.getTooltip(mouseX - leftPos, mouseY - topPos)
-//        if (tooltip != null) {
-//            drawTooltipWithHeader(guiGraphics, tooltip, mouseX, mouseY)
-//        }
+        //        // Widget-container uses screen-relative coordinates while the rest uses
+        // window-relative
+        //        val tooltip: Tooltip = this.widgets.getTooltip(mouseX - leftPos, mouseY - topPos)
+        //        if (tooltip != null) {
+        //            drawTooltipWithHeader(guiGraphics, tooltip, mouseX, mouseY)
+        //        }
     }
 
     private fun drawTooltipWithHeader(
@@ -382,19 +435,19 @@ class GuiAdvancedMemoryCard(val theMenu: AdvancedMemoryCardMenu) : Screen(Compon
         val formattedLines = ArrayList<Component>(lines.size)
         for (i in lines.indices) {
             if (i == 0) {
-                formattedLines.add(lines[i].copy().withStyle { s: Style ->
-                    s.withColor(
-                        ChatFormatting.WHITE
-                    )
-                })
+                formattedLines.add(
+                    lines[i].copy().withStyle { s: Style -> s.withColor(ChatFormatting.WHITE) }
+                )
             } else {
-                formattedLines.add(lines[i].copy().withStyle { s: Style ->
-                    if (s.color != null) {
-                        return@withStyle s
-                    } else {
-                        return@withStyle s.withColor(ChatFormatting.GRAY)
+                formattedLines.add(
+                    lines[i].copy().withStyle { s: Style ->
+                        if (s.color != null) {
+                            return@withStyle s
+                        } else {
+                            return@withStyle s.withColor(ChatFormatting.GRAY)
+                        }
                     }
-                })
+                )
             }
         }
         drawTooltip(guiGraphics, x, y, formattedLines)
@@ -409,19 +462,21 @@ class GuiAdvancedMemoryCard(val theMenu: AdvancedMemoryCardMenu) : Screen(Compon
             ClientCache.selectedFacing = selectedInfo?.loc?.facing
         }
         ClientCache.positions.clear()
-        ClientCache.positions.addAll(infos.sorted.filter {
-            it.frequency == selectedInfo?.frequency &&
-                it != selectedInfo &&
-                it.loc.dim == minecraft?.player?.level()?.dimension()
-        }.map { it.loc.pos to it.loc.facing })
+        ClientCache.positions.addAll(
+            infos.sorted
+                .filter {
+                    it.frequency == selectedInfo?.frequency &&
+                        it != selectedInfo &&
+                        it.loc.dim == minecraft?.player?.level()?.dimension()
+                }
+                .map { it.loc.pos to it.loc.facing }
+        )
     }
 
     fun openTypeSelector(parent: ITypeReceiver, useAny: Boolean) {
         typeSelector.parent = parent
-        if (parent is WidgetP2PDevice)
-            typeSelector.setPosition(parent.x + 20, parent.y)
-        else
-            typeSelector.setPosition(parent.x + parent.width, parent.y)
+        if (parent is WidgetP2PDevice) typeSelector.setPosition(parent.x + 20, parent.y)
+        else typeSelector.setPosition(parent.x + parent.width, parent.y)
         typeSelector.useAny = useAny
         typeSelector.visible = true
     }
@@ -458,9 +513,7 @@ class GuiAdvancedMemoryCard(val theMenu: AdvancedMemoryCardMenu) : Screen(Compon
     }
 }
 
-/**
- * Format multiple lines of tooltips by the given max chars.
- */
+/** Format multiple lines of tooltips by the given max chars. */
 fun fmtTooltips(title: String, vararg keys: String, maxChars: Int): List<String> {
     val result: MutableList<String> = mutableListOf()
     result.add(I18n.get(title))
@@ -472,8 +525,7 @@ fun fmtTooltips(title: String, vararg keys: String, maxChars: Int): List<String>
         }
         while (i < words.size) {
             val s = StringBuilder()
-            perWord@
-            while (s.length < maxChars) {
+            perWord@ while (s.length < maxChars) {
                 s.append(words[i])
                 i += 1
                 if (i >= words.size) break@perWord
@@ -487,5 +539,3 @@ fun fmtTooltips(title: String, vararg keys: String, maxChars: Int): List<String>
     }
     return result
 }
-
-

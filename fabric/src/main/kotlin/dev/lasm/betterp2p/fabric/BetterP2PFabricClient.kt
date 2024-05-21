@@ -16,13 +16,18 @@ object BetterP2PFabricClient : ClientModInitializer {
         WorldRenderEvents.BEFORE_BLOCK_OUTLINE.register { context, hitResult ->
             val level: ClientLevel? = context.world()
             val poseStack: PoseStack = context.matrixStack()
-            val buffers: MultiBufferSource ?= context.consumers()
+            val buffers: MultiBufferSource? = context.consumers()
             val camera: Camera = context.camera()
             if (level == null || buffers == null) {
                 true
             } else {
-                RenderBlockOutline.showPartPlacementPreview(Minecraft.getInstance().player, poseStack, buffers, camera)
-                false
+                RenderBlockOutline.showPartPlacementPreview(
+                    Minecraft.getInstance().player,
+                    poseStack,
+                    buffers,
+                    camera
+                )
+                true
             }
         }
     }

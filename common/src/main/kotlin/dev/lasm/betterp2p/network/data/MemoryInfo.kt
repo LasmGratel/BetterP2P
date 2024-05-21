@@ -5,11 +5,14 @@ import dev.lasm.betterp2p.item.BetterMemoryCardModes
 import net.minecraft.network.FriendlyByteBuf
 
 const val TUNNEL_ANY: Int = -1
-data class MemoryInfo(var selectedEntry: P2PLocation? = null,
-                      var frequency: Short = 0,
-                      var mode: BetterMemoryCardModes = BetterMemoryCardModes.OUTPUT,
-                      var guiScale: GuiScale = GuiScale.DYNAMIC,
-                      var type: Int = TUNNEL_ANY)
+
+data class MemoryInfo(
+    var selectedEntry: P2PLocation? = null,
+    var frequency: Short = 0,
+    var mode: BetterMemoryCardModes = BetterMemoryCardModes.OUTPUT,
+    var guiScale: GuiScale = GuiScale.DYNAMIC,
+    var type: Int = TUNNEL_ANY
+)
 
 fun writeMemoryInfo(buf: FriendlyByteBuf, info: MemoryInfo) {
     val hasSelected = info.selectedEntry != null
@@ -30,16 +33,18 @@ fun readMemoryInfo(buf: FriendlyByteBuf): MemoryInfo {
         selectedEntry = readP2PLocation(buf)
     }
     val frequency = buf.readShort()
-    val mode = try {
-        BetterMemoryCardModes.values()[buf.readInt()]
-    } catch (e: Exception) {
-        BetterMemoryCardModes.OUTPUT
-    }
-    val gui = try {
-        GuiScale.values()[buf.readByte().toInt()]
-    } catch (e: ArrayIndexOutOfBoundsException) {
-        GuiScale.DYNAMIC
-    }
+    val mode =
+        try {
+            BetterMemoryCardModes.values()[buf.readInt()]
+        } catch (e: Exception) {
+            BetterMemoryCardModes.OUTPUT
+        }
+    val gui =
+        try {
+            GuiScale.values()[buf.readByte().toInt()]
+        } catch (e: ArrayIndexOutOfBoundsException) {
+            GuiScale.DYNAMIC
+        }
     val type = buf.readByte().toInt()
     return MemoryInfo(selectedEntry, frequency, mode, gui, type)
 }

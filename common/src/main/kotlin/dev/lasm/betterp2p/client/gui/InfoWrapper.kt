@@ -7,7 +7,6 @@ import dev.lasm.betterp2p.util.p2p.ClientTunnelInfo
 import net.minecraft.client.resources.language.I18n
 import net.minecraft.resources.ResourceLocation
 
-
 class InfoWrapper(info: P2PInfo) {
     var frequency: Short = info.frequency
         set(value) {
@@ -26,16 +25,14 @@ class InfoWrapper(info: P2PInfo) {
     var name: String = info.name
     var error: Boolean = false
 
-//    val icon: ResourceLocation? = ResourceLocation("appliedenergistics2", "textures/blocks/quartz_block.png")
-//    val overlay: ResourceLocation? = ResourceLocation("appliedenergistics2", "textures/items/part/p2p_tunnel_front.png")
-    /**
-     * The backing p2p icon/feature
-     */
+    //    val icon: ResourceLocation? = ResourceLocation("appliedenergistics2",
+    // "textures/blocks/quartz_block.png")
+    //    val overlay: ResourceLocation? = ResourceLocation("appliedenergistics2",
+    // "textures/items/part/p2p_tunnel_front.png")
+    /** The backing p2p icon/feature */
     var icon: ResourceLocation
 
-    /**
-     * p2p frame
-     */
+    /** p2p frame */
     var overlay: ResourceLocation = ResourceLocation("ae2", "textures/part/p2p_tunnel_front.png")
 
     val description: String
@@ -45,10 +42,12 @@ class InfoWrapper(info: P2PInfo) {
             append(I18n.get("item.betterp2p.advanced_memory_card.selected"))
             append(" ")
             if (frequency != 0.toShort()) {
-                val hex: String = buildString {
-                    append((frequency.toUInt() shr 32).toString(16).uppercase())
-                    append(frequency.toUInt().toString(16).uppercase())
-                }.format4()
+                val hex: String =
+                    buildString {
+                            append((frequency.toUInt() shr 32).toString(16).uppercase())
+                            append(frequency.toUInt().toString(16).uppercase())
+                        }
+                        .format4()
                 append(hex)
             } else {
                 append(I18n.get("gui.advanced_memory_card.desc.not_set"))
@@ -67,7 +66,8 @@ class InfoWrapper(info: P2PInfo) {
     }
 
     init {
-        val p2pType: ClientTunnelInfo = BetterP2P.proxy.getP2PFromIndex(info.type) as ClientTunnelInfo
+        val p2pType: ClientTunnelInfo =
+            BetterP2P.proxy.getP2PFromIndex(info.type) as ClientTunnelInfo
         icon = p2pType.icon()
         description = buildString {
             append("Type: ")
@@ -80,12 +80,13 @@ class InfoWrapper(info: P2PInfo) {
             }
         }
         val online = info.hasChannel
-        hoverInfo = mutableListOf(
-            "§bP2P - ${p2pType.dispName}",
-            "§e" + I18n.get("gui.advanced_memory_card.pos", info.pos.x, info.pos.y, info.pos.z),
-            "§e" + I18n.get("gui.advanced_memory_card.side", info.facing.name),
-            "§e" + I18n.get("gui.advanced_memory_card.dim", info.dim.location())
-        )
+        hoverInfo =
+            mutableListOf(
+                "§bP2P - ${p2pType.dispName}",
+                "§e" + I18n.get("gui.advanced_memory_card.pos", info.pos.x, info.pos.y, info.pos.z),
+                "§e" + I18n.get("gui.advanced_memory_card.side", info.facing.name),
+                "§e" + I18n.get("gui.advanced_memory_card.dim", info.dim.location())
+            )
         if (error || frequency == 0.toShort()) {
             hoverInfo.add("§c" + I18n.get("gui.advanced_memory_card.p2p_status.unbound"))
         } else {

@@ -24,10 +24,14 @@ import net.minecraft.world.item.TooltipFlag
 import net.minecraft.world.item.context.UseOnContext
 import net.minecraft.world.level.Level
 
-object ItemAdvancedMemoryCard : Item(Properties().stacksTo(1).`arch$tab`(
-    ResourceKey.create(
-        Registries.CREATIVE_MODE_TAB, ResourceLocation("ae2", "main")
-    ))) {
+object ItemAdvancedMemoryCard :
+    Item(
+        Properties()
+            .stacksTo(1)
+            .`arch$tab`(
+                ResourceKey.create(Registries.CREATIVE_MODE_TAB, ResourceLocation("ae2", "main"))
+            )
+    ) {
 
     override fun appendHoverText(
         stack: ItemStack,
@@ -36,9 +40,10 @@ object ItemAdvancedMemoryCard : Item(Properties().stacksTo(1).`arch$tab`(
         tooltipFlag: TooltipFlag
     ) {
         val info = getInfo(stack)
-        list.add(Component.translatable("gui.advanced_memory_card.mode.${info.mode.name.toLowerCase()}"))
+        list.add(
+            Component.translatable("gui.advanced_memory_card.mode.${info.mode.name.toLowerCase()}")
+        )
     }
-
 
     override fun use(
         level: Level,
@@ -47,6 +52,7 @@ object ItemAdvancedMemoryCard : Item(Properties().stacksTo(1).`arch$tab`(
     ): InteractionResultHolder<ItemStack> {
         if (player.isCrouching && !level.isClientSide) {
             ClientCache.clear()
+            return InteractionResultHolder.success(player.getItemInHand(interactionHand))
         }
         return super.use(level, player, interactionHand)
     }
@@ -83,7 +89,10 @@ object ItemAdvancedMemoryCard : Item(Properties().stacksTo(1).`arch$tab`(
     }
 
     fun getInfo(stack: ItemStack): MemoryInfo {
-        if (stack.item != this) throw ClassCastException("Cannot cast ${stack.item.javaClass.name} to ${javaClass.name}")
+        if (stack.item != this)
+            throw ClassCastException(
+                "Cannot cast ${stack.item.javaClass.name} to ${javaClass.name}"
+            )
 
         // Initialize NBT if it isn't already a thing
         val compound = stack.orCreateTag
@@ -100,11 +109,13 @@ object ItemAdvancedMemoryCard : Item(Properties().stacksTo(1).`arch$tab`(
             mode = BetterMemoryCardModes.values()[compound.getInt("mode")],
             guiScale = GuiScale.values()[compound.getByte("gui").toInt()]
         )
-
     }
 
     fun writeInfo(stack: ItemStack, info: MemoryInfo) {
-        if (stack.item != this) throw ClassCastException("Cannot cast ${stack.item.javaClass.name} to ${javaClass.name}")
+        if (stack.item != this)
+            throw ClassCastException(
+                "Cannot cast ${stack.item.javaClass.name} to ${javaClass.name}"
+            )
 
         val compound = stack.orCreateTag
         compound.put("selectedIndex", writeP2PLocation(info.selectedEntry))

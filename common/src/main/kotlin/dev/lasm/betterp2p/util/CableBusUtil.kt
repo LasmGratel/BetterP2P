@@ -12,9 +12,7 @@ import net.minecraft.world.level.BlockGetter
 import net.minecraft.world.level.block.entity.BlockEntity
 import net.minecraft.world.phys.HitResult
 
-/**
- * @see appeng.block.networking.BlockCableBus.cb
- */
+/** @see appeng.block.networking.BlockCableBus.cb */
 fun getCableBus(w: BlockGetter, pos: BlockPos): ICableBusContainer? {
     val te = w.getBlockEntity(pos)
     var out: ICableBusContainer? = null
@@ -32,16 +30,13 @@ fun getPart(w: BlockGetter, pos: BlockPos, hitResult: HitResult): IPart? {
 }
 
 val AEBasePart.facingPos: BlockPos?
-    get() =
-        host?.location?.pos?.offset(side?.normal ?: Direction.UP.normal)
+    get() = host?.location?.pos?.offset(side?.normal ?: Direction.UP.normal)
 
 val AEBasePart.facingTile: BlockEntity?
     get() {
         if (host.isInWorld) {
             val pos = facingPos
-            if (pos != null)
-                return host?.location?.level?.getBlockEntity(pos)
+            if (pos != null) return host?.location?.level?.getBlockEntity(pos)
         }
         return null
     }
-

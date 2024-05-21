@@ -48,7 +48,17 @@ fun readP2PInfo(buf: FriendlyByteBuf): P2PInfo? {
         val hasChannel = buf.readBoolean()
         val channels = buf.readByte().toInt()
         val type = buf.readByte().toInt()
-        return P2PInfo(freq, pos, world, facing, name.toString(), output, hasChannel, channels, type)
+        return P2PInfo(
+            freq,
+            pos,
+            world,
+            facing,
+            name.toString(),
+            output,
+            hasChannel,
+            channels,
+            type
+        )
     } catch (e: Exception) {
         e.printStackTrace()
         return null
@@ -67,15 +77,15 @@ fun writeP2PInfo(buf: FriendlyByteBuf, info: P2PInfo) {
     buf.writeByte(info.type)
 }
 
-fun P2PTunnelPart<*>.toInfo()
-    = P2PInfo(
-    frequency,
-    blockEntity.blockPos,
-    blockEntity.level!!.dimension(),
-    side,
-    customName?.string ?: "",
-    isOutput,
-    hasChannel,
-    (externalFacingNode as? GridNode)?.usedChannels() ?: -1,
-    getTypeIndex()
-)
+fun P2PTunnelPart<*>.toInfo() =
+    P2PInfo(
+        frequency,
+        blockEntity.blockPos,
+        blockEntity.level!!.dimension(),
+        side,
+        customName?.string ?: "",
+        isOutput,
+        hasChannel,
+        (externalFacingNode as? GridNode)?.usedChannels() ?: -1,
+        getTypeIndex()
+    )

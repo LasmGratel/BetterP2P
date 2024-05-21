@@ -11,10 +11,8 @@ import net.minecraft.client.gui.components.Button
 import net.minecraft.client.renderer.Rect2i
 import net.minecraft.network.chat.Component
 
-open class IconButton(var texX: Int, var texY: Int, onPress: OnPress) : Button(0, 0, 32, 32,
-    Component.empty(),
-    onPress,
-    DEFAULT_NARRATION), ITooltip {
+open class IconButton(var texX: Int, var texY: Int, onPress: OnPress) :
+    Button(0, 0, 32, 32, Component.empty(), onPress, DEFAULT_NARRATION), ITooltip {
 
     var messages = mutableListOf(message)
 
@@ -28,7 +26,8 @@ open class IconButton(var texX: Int, var texY: Int, onPress: OnPress) : Button(0
         RenderSystem.enableDepthTest()
         renderBackground(guiGraphics, mouseY, mouseY, partial)
 
-        guiGraphics.drawTexturedQuad(TEXTURE,
+        guiGraphics.drawTexturedQuad(
+            TEXTURE,
             x0 = x + 1.0f,
             y0 = y + 1.0f,
             x1 = x + width - 1.0f,
@@ -36,7 +35,8 @@ open class IconButton(var texX: Int, var texY: Int, onPress: OnPress) : Button(0
             u0 = texX / GUI_WIDTH.toFloat(),
             v0 = texY / GUI_TEX_HEIGHT.toFloat(),
             u1 = (texX + width) / GUI_WIDTH.toFloat(),
-            v1 = (texY + height) / GUI_TEX_HEIGHT.toFloat())
+            v1 = (texY + height) / GUI_TEX_HEIGHT.toFloat()
+        )
     }
 
     fun getHoverState(): Int {
@@ -49,17 +49,18 @@ open class IconButton(var texX: Int, var texY: Int, onPress: OnPress) : Button(0
         return i
     }
 
-    fun renderBackground(
-        graphics: GuiGraphics,
-        mouseX: Int,
-        mouseY: Int,
-        partial: Float) {
+    fun renderBackground(graphics: GuiGraphics, mouseX: Int, mouseY: Int, partial: Float) {
         val k = getHoverState()
         graphics.drawTexturedQuad(
-            TEXTURE, x.toFloat(), y.toFloat(),
-            (x + width).toFloat(), (y + height).toFloat(),
-            u0 = (32.0f * k) / GUI_WIDTH, v0 = (232.0f) / GUI_TEX_HEIGHT,
-            u1 = (32.0f * (k + 1)) / GUI_WIDTH, v1 = (232.0f + height) / GUI_TEX_HEIGHT
+            TEXTURE,
+            x.toFloat(),
+            y.toFloat(),
+            (x + width).toFloat(),
+            (y + height).toFloat(),
+            u0 = (32.0f * k) / GUI_WIDTH,
+            v0 = (232.0f) / GUI_TEX_HEIGHT,
+            u1 = (32.0f * (k + 1)) / GUI_WIDTH,
+            v1 = (232.0f + height) / GUI_TEX_HEIGHT
         )
     }
 
@@ -68,16 +69,10 @@ open class IconButton(var texX: Int, var texY: Int, onPress: OnPress) : Button(0
     }
 
     override fun getTooltipArea(): Rect2i {
-        return Rect2i(
-            x,
-            y,
-            width,
-            height
-        )
+        return Rect2i(x, y, width, height)
     }
 
     override fun isTooltipAreaVisible(): Boolean {
         return this.visible
     }
-
 }

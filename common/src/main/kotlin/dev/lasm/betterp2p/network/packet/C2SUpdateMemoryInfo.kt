@@ -5,8 +5,8 @@ import dev.lasm.betterp2p.item.ItemAdvancedMemoryCard
 import dev.lasm.betterp2p.network.data.MemoryInfo
 import dev.lasm.betterp2p.network.data.readMemoryInfo
 import dev.lasm.betterp2p.network.data.writeMemoryInfo
-import net.minecraft.network.FriendlyByteBuf
 import java.util.function.Supplier
+import net.minecraft.network.FriendlyByteBuf
 
 class C2SUpdateMemoryInfo(var info: MemoryInfo = MemoryInfo()) : IMessage {
     override fun fromBytes(buf: FriendlyByteBuf) {
@@ -18,12 +18,13 @@ class C2SUpdateMemoryInfo(var info: MemoryInfo = MemoryInfo()) : IMessage {
     }
 }
 
-val ServerUpdateMemoryInfoHandler = { message: C2SUpdateMemoryInfo, ctx: Supplier<NetworkManager.PacketContext> ->
-    val player = ctx.get().player
-    val stack = player.mainHandItem
+val ServerUpdateMemoryInfoHandler =
+    { message: C2SUpdateMemoryInfo, ctx: Supplier<NetworkManager.PacketContext> ->
+        val player = ctx.get().player
+        val stack = player.mainHandItem
 
-    if (stack.item is ItemAdvancedMemoryCard) {
-        ItemAdvancedMemoryCard.writeInfo(stack, message.info)
+        if (stack.item is ItemAdvancedMemoryCard) {
+            ItemAdvancedMemoryCard.writeInfo(stack, message.info)
+        }
+        Unit
     }
-    Unit
-}

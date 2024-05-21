@@ -11,13 +11,16 @@ import dev.lasm.betterp2p.network.ModNetwork
 import dev.lasm.betterp2p.network.data.TUNNEL_ANY
 import dev.lasm.betterp2p.network.packet.C2SRefreshP2PList
 import dev.lasm.betterp2p.util.p2p.ClientTunnelInfo
+import kotlin.reflect.KProperty0
 import net.minecraft.client.Minecraft
 import net.minecraft.client.gui.GuiGraphics
 import net.minecraft.client.resources.language.I18n
-import kotlin.reflect.KProperty0
 
-class P2PTypeButton(val type: KProperty0<ClientTunnelInfo?>, onPress: OnPress, private val onSecondaryPress: OnPress) : IconButton(0, 0, onPress),
-    ITypeReceiver {
+class P2PTypeButton(
+    val type: KProperty0<ClientTunnelInfo?>,
+    onPress: OnPress,
+    private val onSecondaryPress: OnPress
+) : IconButton(0, 0, onPress), ITypeReceiver {
     private var hoverText: MutableList<String>
 
     val types = BetterP2P.proxy.getP2PTypeList()
@@ -27,20 +30,30 @@ class P2PTypeButton(val type: KProperty0<ClientTunnelInfo?>, onPress: OnPress, p
         } else {
             types.size
         }
-    private val me = BetterP2P.proxy.getP2PFromClass(MEP2PTunnelPart::class.java) as ClientTunnelInfo
-    private val fluid = BetterP2P.proxy.getP2PFromClass(FluidP2PTunnelPart::class.java) as ClientTunnelInfo
-    private val redstone = BetterP2P.proxy.getP2PFromClass(RedstoneP2PTunnelPart::class.java) as ClientTunnelInfo
+    private val me =
+        BetterP2P.proxy.getP2PFromClass(MEP2PTunnelPart::class.java) as ClientTunnelInfo
+    private val fluid =
+        BetterP2P.proxy.getP2PFromClass(FluidP2PTunnelPart::class.java) as ClientTunnelInfo
+    private val redstone =
+        BetterP2P.proxy.getP2PFromClass(RedstoneP2PTunnelPart::class.java) as ClientTunnelInfo
 
     init {
-        hoverText = if (type.get() == null) {
-            mutableListOf(
-                I18n.get("gui.advanced_memory_card.types.filtered",
-                    I18n.get("gui.advanced_memory_card.types.any"))
-            )
-        } else {
-            mutableListOf(
-                I18n.get("gui.advanced_memory_card.types.filtered", "§a" + type.get()!!.stack.displayName))
-        }
+        hoverText =
+            if (type.get() == null) {
+                mutableListOf(
+                    I18n.get(
+                        "gui.advanced_memory_card.types.filtered",
+                        I18n.get("gui.advanced_memory_card.types.any")
+                    )
+                )
+            } else {
+                mutableListOf(
+                    I18n.get(
+                        "gui.advanced_memory_card.types.filtered",
+                        "§a" + type.get()!!.stack.displayName
+                    )
+                )
+            }
     }
 
     fun nextType(reverse: Boolean): ClientTunnelInfo? {
@@ -58,9 +71,7 @@ class P2PTypeButton(val type: KProperty0<ClientTunnelInfo?>, onPress: OnPress, p
         if (!this.active || !this.visible) {
             return false
         }
-        if ((clicked(d, e).also {
-                bl = it
-            })) {
+        if ((clicked(d, e).also { bl = it })) {
             if (i == 0) {
                 this.playDownSound(Minecraft.getInstance().soundManager)
                 this.onClick(d, e)
@@ -70,7 +81,6 @@ class P2PTypeButton(val type: KProperty0<ClientTunnelInfo?>, onPress: OnPress, p
                 this.onSecondaryPress.onPress(this)
                 return true
             }
-
         }
         return false
     }
@@ -82,7 +92,8 @@ class P2PTypeButton(val type: KProperty0<ClientTunnelInfo?>, onPress: OnPress, p
 
         if (type.get() != null) {
             drawBlockIcon(
-                graphics, type.get()!!.icon(),
+                graphics,
+                type.get()!!.icon(),
                 x = this.x + 2,
                 y = this.y + 2,
                 width = 28,
@@ -90,21 +101,24 @@ class P2PTypeButton(val type: KProperty0<ClientTunnelInfo?>, onPress: OnPress, p
             )
         } else {
             drawBlockIcon(
-                graphics, redstone.icon(),
+                graphics,
+                redstone.icon(),
                 x = this.x + 12,
                 y = this.y + 12,
                 width = 18,
                 height = 18
             )
             drawBlockIcon(
-                graphics, fluid.icon(),
+                graphics,
+                fluid.icon(),
                 x = this.x + 7,
                 y = this.y + 7,
                 width = 18,
                 height = 18
             )
             drawBlockIcon(
-                graphics, me.icon(),
+                graphics,
+                me.icon(),
                 x = this.x + 2,
                 y = this.y + 2,
                 width = 18,
@@ -115,11 +129,17 @@ class P2PTypeButton(val type: KProperty0<ClientTunnelInfo?>, onPress: OnPress, p
 
     fun commitType() {
         if (type.get() == null) {
-            hoverText[0] = I18n.get("gui.advanced_memory_card.types.filtered",
-                I18n.get("gui.advanced_memory_card.types.any"))
+            hoverText[0] =
+                I18n.get(
+                    "gui.advanced_memory_card.types.filtered",
+                    I18n.get("gui.advanced_memory_card.types.any")
+                )
         } else {
             hoverText[0] =
-                I18n.get("gui.advanced_memory_card.types.filtered", "§a" + type.get()!!.stack.displayName)
+                I18n.get(
+                    "gui.advanced_memory_card.types.filtered",
+                    "§a" + type.get()!!.stack.displayName
+                )
         }
         ModNetwork.channel.sendToServer(C2SRefreshP2PList(type.get()?.index ?: TUNNEL_ANY))
         playDownSound(Minecraft.getInstance().soundManager)
@@ -131,6 +151,4 @@ class P2PTypeButton(val type: KProperty0<ClientTunnelInfo?>, onPress: OnPress, p
             screen.closeTypeSelector(type)
         }
     }
-
-
 }

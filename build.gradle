@@ -2,6 +2,10 @@ plugins {
     id "org.jetbrains.kotlin.jvm" version "1.8.22"
     id "architectury-plugin" version "3.4-SNAPSHOT"
     id "dev.architectury.loom" version "1.3-SNAPSHOT" apply false
+
+    id 'com.diffplug.spotless-changelog' version "3.0.2" apply false
+    id 'com.diffplug.spotless' version '6.21.0' apply false
+    id 'com.palantir.git-version' version '3.0.0' apply false
 }
 
 architectury {
@@ -10,6 +14,10 @@ architectury {
 
 subprojects {
     apply plugin: "dev.architectury.loom"
+
+    // Spotless auto-formatter
+    // See https://github.com/diffplug/spotless/tree/main/plugin-gradle
+    // Can be locally toggled via spotless:off/spotless:on comments
 
     loom {
         silentMojangMappingsLicense()
@@ -37,6 +45,7 @@ allprojects {
     apply plugin: "kotlin"
     apply plugin: "architectury-plugin"
     apply plugin: "maven-publish"
+    apply plugin: 'com.diffplug.spotless'
 
     base {
         archivesName = rootProject.archives_base_name
@@ -44,6 +53,47 @@ allprojects {
 
     version = rootProject.mod_version
     group = rootProject.maven_group
+
+    spotless {
+        encoding 'UTF-8'
+
+        format 'misc', {
+            target '.gitignore'
+
+            trimTrailingWhitespace()
+            indentWithSpaces(4)
+            endWithNewline()
+        }
+        java {
+            target 'src/main/java/**/*.java', 'src/test/java/**/*.java' // exclude api as they are not our files
+            def orderFile = rootProject.file('spotless/spotless.importorder')
+            def formatFile = rootProject.file('spotless/spotless.eclipseformat.xml')
+
+            toggleOffOn()
+            importOrderFile(orderFile)
+            removeUnusedImports()
+            endWithNewline()
+            indentWithTabs(2)
+            indentWithSpaces(4)
+            //noinspection GroovyAssignabilityCheck
+            eclipse('4.19').configFile(formatFile)
+        }
+        kotlin {
+            target 'src/*/kotlin/**/*.kt'
+
+            toggleOffOn()
+            ktfmt('0.39').kotlinlangStyle()
+
+            trimTrailingWhitespace()
+
+
+            endWithNewline()
+        }
+        scala {
+            target 'src/*/scala/**/*.scala'
+            scalafmt('3.7.1')
+        }
+    }
 
     repositories {
         exclusiveContent {
@@ -79,4 +129,11 @@ allprojects {
     java {
         withSourcesJar()
     }
+}
+
+apply plugin: 'com.diffplug.spotless-changelog'
+
+spotlessChangelog {
+    changelogFile 'CHANGELOG.md'
+    enforceCheck true
 }

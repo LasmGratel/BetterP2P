@@ -6,7 +6,7 @@ import net.minecraft.client.gui.narration.NarrationElementOutput
 import net.minecraft.network.chat.Component
 import net.minecraft.resources.ResourceLocation
 
-class WidgetScrollBar(x: Int, y: Int): AbstractWidget(x, y, 12, 15, Component.empty()) {
+class WidgetScrollBar(x: Int, y: Int) : AbstractWidget(x, y, 12, 15, Component.empty()) {
     var pageSize = 1
 
     var maxScroll = 0
@@ -16,15 +16,10 @@ class WidgetScrollBar(x: Int, y: Int): AbstractWidget(x, y, 12, 15, Component.em
 
     var currentScroll = 0
 
+    val CREATIVE_TAB_GUI =
+        ResourceLocation("minecraft", "textures/gui/container/creative_inventory/tabs.png")
 
-    val CREATIVE_TAB_GUI = ResourceLocation("minecraft", "textures/gui/container/creative_inventory/tabs.png")
-
-    override fun renderWidget(
-        graphics: GuiGraphics,
-        mouseX: Int,
-        mouseY: Int,
-        partialTick: Float
-    ) {
+    override fun renderWidget(graphics: GuiGraphics, mouseX: Int, mouseY: Int, partialTick: Float) {
         if (getRange() == 0) {
             graphics.blit(CREATIVE_TAB_GUI, x, y, 244, 0, 12, 15)
         } else {
@@ -71,8 +66,7 @@ class WidgetScrollBar(x: Int, y: Int): AbstractWidget(x, y, 12, 15, Component.em
         return true
     }
 
-    override fun updateWidgetNarration(narrationElementOutput: NarrationElementOutput) {
-    }
+    override fun updateWidgetNarration(narrationElementOutput: NarrationElementOutput) {}
 
     fun setHeight(i: Int) {
         height = i

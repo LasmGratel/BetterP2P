@@ -9,7 +9,8 @@ import net.minecraft.world.inventory.AbstractContainerMenu
 import net.minecraft.world.inventory.DataSlot
 import net.minecraft.world.item.ItemStack
 
-class AdvancedMemoryCardMenu(id: Int, inv: Inventory?) : AbstractContainerMenu(BetterP2P.ADVANCED_MEMORY_CARD_MENU.get(), id) {
+class AdvancedMemoryCardMenu(id: Int, inv: Inventory?) :
+    AbstractContainerMenu(BetterP2P.ADVANCED_MEMORY_CARD_MENU.get(), id) {
     var infos: List<P2PInfo> = emptyList()
     var memoryInfo: MemoryInfo = MemoryInfo()
     override fun quickMoveStack(player: Player, i: Int): ItemStack {

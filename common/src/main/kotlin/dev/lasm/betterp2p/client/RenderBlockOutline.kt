@@ -22,24 +22,25 @@ import java.util.*
 
 object RenderBlockOutline {
     @JvmStatic
-    val LINES_BEHIND_BLOCK: RenderType = RenderType.create(
-        "lines_behind_block",
-        DefaultVertexFormat.POSITION_COLOR_NORMAL,
-        VertexFormat.Mode.LINES,
-        256,
-        false,
-        false,
-        RenderType.CompositeState.builder()
-            .setShaderState(RenderStateShard.RENDERTYPE_LINES_SHADER)
-            .setLineState(RenderStateShard.LineStateShard(OptionalDouble.empty()))
-            .setLayeringState(RenderStateShard.VIEW_OFFSET_Z_LAYERING)
-            .setTransparencyState(RenderStateShard.TRANSLUCENT_TRANSPARENCY)
-            .setDepthTestState(RenderStateShard.DepthTestStateShard(">", GL11.GL_GREATER))
-            .setOutputState(RenderStateShard.ITEM_ENTITY_TARGET)
-            .setWriteMaskState(RenderStateShard.COLOR_WRITE)
-            .setCullState(RenderStateShard.NO_CULL)
-            .createCompositeState(false)
-    );
+    val LINES_BEHIND_BLOCK: RenderType =
+        RenderType.create(
+            "lines_behind_block",
+            DefaultVertexFormat.POSITION_COLOR_NORMAL,
+            VertexFormat.Mode.LINES,
+            256,
+            false,
+            false,
+            RenderType.CompositeState.builder()
+                .setShaderState(RenderStateShard.RENDERTYPE_LINES_SHADER)
+                .setLineState(RenderStateShard.LineStateShard(OptionalDouble.empty()))
+                .setLayeringState(RenderStateShard.VIEW_OFFSET_Z_LAYERING)
+                .setTransparencyState(RenderStateShard.TRANSLUCENT_TRANSPARENCY)
+                .setDepthTestState(RenderStateShard.DepthTestStateShard(">", GL11.GL_GREATER))
+                .setOutputState(RenderStateShard.ITEM_ENTITY_TARGET)
+                .setWriteMaskState(RenderStateShard.COLOR_WRITE)
+                .setCullState(RenderStateShard.NO_CULL)
+                .createCompositeState(false)
+        )
 
     fun showPartPlacementPreview(
         player: Player?,
@@ -68,9 +69,9 @@ object RenderBlockOutline {
                         0x75,
                         true // TODO We need a setting here
                     )
-                    //0x45DA75
+                    // 0x45DA75
                 }
-                //0x66CCFF
+                // 0x66CCFF
                 for (entry in positions) {
                     val side = entry.component2()
                     val boxes = ArrayList<AABB>()
@@ -100,11 +101,12 @@ object RenderBlockOutline {
         camera: Camera,
         pos: BlockPos?,
         boxes: List<AABB>,
-        red: Int, green: Int, blue: Int,
+        red: Int,
+        green: Int,
+        blue: Int,
         insideBlock: Boolean
     ) {
-        val renderType =
-            if (insideBlock) LINES_BEHIND_BLOCK else RenderType.lines()
+        val renderType = if (insideBlock) LINES_BEHIND_BLOCK else RenderType.lines()
         val buffer = buffers.getBuffer(renderType)
         val alpha = ((if (insideBlock) 0.6f else 0.8f) * 255.0f).toInt()
 
@@ -121,14 +123,30 @@ object RenderBlockOutline {
                 var r = (o - l).toFloat()
                 var s = (p - m).toFloat()
                 val t = Mth.sqrt(q * q + r * r + s * s)
-                buffer.vertex(pose.pose(), (k + x).toFloat(), (l + y).toFloat(), (m + z).toFloat())
-                    .color(red, green, blue, alpha).normal(
-                    pose.normal(),
-                    t.let { q /= it; q },
-                    t.let { r /= it; r },
-                    t.let { s /= it; s }).endVertex()
-                buffer.vertex(pose.pose(), (n + x).toFloat(), (o + y).toFloat(), (p + z).toFloat())
-                    .color(red, green, blue, alpha).normal(pose.normal(), q, r, s).endVertex()
+                buffer
+                    .vertex(pose.pose(), (k + x).toFloat(), (l + y).toFloat(), (m + z).toFloat())
+                    .color(red, green, blue, alpha)
+                    .normal(
+                        pose.normal(),
+                        t.let {
+                            q /= it
+                            q
+                        },
+                        t.let {
+                            r /= it
+                            r
+                        },
+                        t.let {
+                            s /= it
+                            s
+                        }
+                    )
+                    .endVertex()
+                buffer
+                    .vertex(pose.pose(), (n + x).toFloat(), (o + y).toFloat(), (p + z).toFloat())
+                    .color(red, green, blue, alpha)
+                    .normal(pose.normal(), q, r, s)
+                    .endVertex()
             }
         }
     }

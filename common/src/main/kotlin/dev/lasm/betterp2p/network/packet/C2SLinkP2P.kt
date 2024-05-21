@@ -5,10 +5,10 @@ import dev.lasm.betterp2p.network.ModNetwork
 import dev.lasm.betterp2p.network.data.P2PLocation
 import dev.lasm.betterp2p.network.data.readP2PLocation
 import dev.lasm.betterp2p.network.data.writeP2PLocation
-import net.minecraft.network.FriendlyByteBuf
 import java.util.function.Supplier
+import net.minecraft.network.FriendlyByteBuf
 
-class C2SLinkP2P(var input: P2PLocation? = null, var output: P2PLocation? = null): IMessage {
+class C2SLinkP2P(var input: P2PLocation? = null, var output: P2PLocation? = null) : IMessage {
     override fun fromBytes(buf: FriendlyByteBuf) {
         input = readP2PLocation(buf)
         output = readP2PLocation(buf)

@@ -8,7 +8,12 @@ import net.minecraft.client.gui.narration.NarrationElementOutput
 import net.minecraft.network.chat.Component
 import net.minecraft.resources.ResourceLocation
 
-class WidgetTypeIcon(x: Int, y: Int, tooltipLiteral: String, val iconSupplier: () -> ResourceLocation) : AbstractWidget(x, y, 18, 18, Component.empty()) {
+class WidgetTypeIcon(
+    x: Int,
+    y: Int,
+    tooltipLiteral: String,
+    val iconSupplier: () -> ResourceLocation
+) : AbstractWidget(x, y, 18, 18, Component.empty()) {
     init {
         tooltip = Tooltip.create(Component.literal(tooltipLiteral))
     }
@@ -17,13 +22,8 @@ class WidgetTypeIcon(x: Int, y: Int, tooltipLiteral: String, val iconSupplier: (
         if (isHovered) {
             graphics.fill(x, y, x + width, y + height, 0xFF00FF00.toInt())
         }
-        drawBlockIcon(graphics, iconSupplier(),
-            x = x + 1,
-            y = y + 1)
+        drawBlockIcon(graphics, iconSupplier(), x = x + 1, y = y + 1)
     }
 
-    override fun updateWidgetNarration(arg: NarrationElementOutput) {
-
-    }
-
+    override fun updateWidgetNarration(arg: NarrationElementOutput) {}
 }

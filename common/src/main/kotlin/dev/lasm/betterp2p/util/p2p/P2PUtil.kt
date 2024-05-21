@@ -9,11 +9,9 @@ import net.minecraft.network.chat.Component
 val P2PTunnelPart<*>.hasChannel
     get() = isPowered && isActive
 
-/**
- * Get the type index or use TUNNEL_ANY
- */
-fun P2PTunnelPart<*>.getTypeIndex()
-    = BetterP2P.proxy.getP2PFromClass(this.javaClass)?.index ?: TUNNEL_ANY
+/** Get the type index or use TUNNEL_ANY */
+fun P2PTunnelPart<*>.getTypeIndex() =
+    BetterP2P.proxy.getP2PFromClass(this.javaClass)?.index ?: TUNNEL_ANY
 
 fun AEBasePart.setCustomName(value: Component?) {
     // FUCK YOUR MOM

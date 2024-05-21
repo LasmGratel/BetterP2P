@@ -5,9 +5,9 @@ import dev.lasm.betterp2p.client.gui.GuiAdvancedMemoryCard
 import dev.lasm.betterp2p.network.data.P2PInfo
 import dev.lasm.betterp2p.network.data.readP2PInfo
 import dev.lasm.betterp2p.network.data.writeP2PInfo
+import java.util.function.Supplier
 import net.minecraft.client.Minecraft
 import net.minecraft.network.FriendlyByteBuf
-import java.util.function.Supplier
 
 class S2CUpdateP2P(var infos: List<P2PInfo> = emptyList(), var clear: Boolean = false) : IMessage {
     override fun fromBytes(buf: FriendlyByteBuf) {
@@ -47,4 +47,3 @@ val ClientUpdateP2PHandler = { message: S2CUpdateP2P, _: Supplier<NetworkManager
     }
     Unit
 }
-

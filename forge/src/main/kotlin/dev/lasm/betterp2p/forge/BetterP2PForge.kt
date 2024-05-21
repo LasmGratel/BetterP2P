@@ -11,10 +11,7 @@ import thedarkcolour.kotlinforforge.forge.MOD_BUS
 object BetterP2PForge {
     init {
         // Submit our event bus to let architectury register our content on the right time
-        EventBuses.registerModEventBus(
-            BetterP2P.MOD_ID,
-            MOD_BUS
-        )
+        EventBuses.registerModEventBus(BetterP2P.MOD_ID, MOD_BUS)
         DistExecutor.unsafeRunWhenOn(Dist.CLIENT) { Runnable { BetterP2PForgeClient.init() } }
 
         BetterP2P.init()

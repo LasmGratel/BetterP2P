@@ -9,7 +9,7 @@ import net.minecraft.client.multiplayer.ClientLevel
 import net.minecraft.client.renderer.MultiBufferSource
 import net.minecraftforge.api.distmarker.Dist
 import net.minecraftforge.api.distmarker.OnlyIn
-import net.minecraftforge.client.event.RenderHighlightEvent
+import net.minecraftforge.client.event.RenderLevelStageEvent
 import net.minecraftforge.common.MinecraftForge
 
 @OnlyIn(Dist.CLIENT)
@@ -17,16 +17,21 @@ object BetterP2PForgeClient {
     @JvmStatic
     fun init() {
         BetterP2P.initClient()
-        MinecraftForge.EVENT_BUS.addListener { context: RenderHighlightEvent.Block ->
+        MinecraftForge.EVENT_BUS.addListener { context: RenderLevelStageEvent ->
+            if (context.stage != RenderLevelStageEvent.Stage.AFTER_BLOCK_ENTITIES) return@addListener
             val level: ClientLevel? = Minecraft.getInstance().level
             val poseStack: PoseStack = context.poseStack
-            val buffers: MultiBufferSource? = context.multiBufferSource
+            val buffers: MultiBufferSource? = Minecraft.getInstance().renderBuffers().bufferSource()
             val camera: Camera = context.camera
             if (level == null || buffers == null) {
                 return@addListener
             } else {
-                RenderBlockOutline.showPartPlacementPreview(Minecraft.getInstance().player, poseStack, buffers, camera)
-                context.isCanceled = true
+                RenderBlockOutline.showPartPlacementPreview(
+                    Minecraft.getInstance().player,
+                    poseStack,
+                    buffers,
+                    camera
+                )
             }
         }
     }
