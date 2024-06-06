@@ -97,7 +97,21 @@ class GuiAdvancedMemoryCard(val theMenu: AdvancedMemoryCardMenu) :
 
     val scrollBar = WidgetScrollBar(tableX, tableY)
 
-    val searchBar: EditBox by lazy { EditBox(font, 0, 0, 100, 10, Component.empty()) }
+    val searchBar: EditBox by lazy {
+        object : EditBox(font, 0, 0, 100, 10, Component.empty()), ITooltip {
+            override fun getTooltipMessage(): MutableList<Component> {
+                return sortRules.asSequence().map { Component.literal(it) }.toMutableList()
+            }
+
+            override fun getTooltipArea(): Rect2i {
+                return Rect2i(x, y, width, height)
+            }
+
+            override fun isTooltipAreaVisible(): Boolean {
+                return isVisible
+            }
+        }
+    }
     val modeButton = IconButton((mode.ordinal + 3) * 32, 232, ::onChangeMode)
 
     val col = WidgetP2PColumn(this, infos, 0, 0, ::selectedInfo, ::mode, scrollBar)

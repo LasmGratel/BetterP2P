@@ -70,9 +70,9 @@ enum class Filter(val pattern: Regex, val filter: (InfoWrapper, List<String>?) -
         "\\A@types*=(.+)\\z".toRegex(),
         filter@{ it, strs ->
             val tags =
-                dev.lasm.betterp2p.BetterP2P.proxy.getP2PFromIndex(it.type)!!.dispName.toLowerCase()
+                dev.lasm.betterp2p.BetterP2P.proxy.getP2PFromIndex(it.type)!!.dispName.lowercase()
             for (f in strs!!) {
-                if (tags.contains(f.toLowerCase())) {
+                if (tags.contains(f.lowercase())) {
                     return@filter true
                 }
             }
@@ -82,7 +82,7 @@ enum class Filter(val pattern: Regex, val filter: (InfoWrapper, List<String>?) -
     NAME(
         "\"?.+\"?".toRegex(),
         filter@{ it, strs ->
-            val name = it.name.toLowerCase()
+            val name = it.name.lowercase()
             for (f in strs!!) {
                 // Ppl better not troll and use double quotes in their P2P tunnel names
                 val query = f.removeSurrounding("\"")

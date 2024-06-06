@@ -16,6 +16,8 @@ import net.minecraft.client.Minecraft
 import net.minecraft.client.gui.GuiGraphics
 import net.minecraft.client.resources.language.I18n
 
+private const val s = "gui.advanced_memory_card.types.filtered"
+
 class P2PTypeButton(
     val type: KProperty0<ClientTunnelInfo?>,
     onPress: OnPress,
@@ -67,11 +69,10 @@ class P2PTypeButton(
     }
 
     override fun mouseClicked(d: Double, e: Double, i: Int): Boolean {
-        var bl: Boolean
         if (!this.active || !this.visible) {
             return false
         }
-        if ((clicked(d, e).also { bl = it })) {
+        if ((clicked(d, e))) {
             if (i == 0) {
                 this.playDownSound(Minecraft.getInstance().soundManager)
                 this.onClick(d, e)

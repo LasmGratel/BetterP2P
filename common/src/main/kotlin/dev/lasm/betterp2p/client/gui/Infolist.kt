@@ -47,18 +47,23 @@ class InfoList(initList: Collection<InfoWrapper>, private val search: KProperty0
 
     fun resort() {
         sorted.sortBy {
-            if (it.loc == selectedEntry) {
-                -2 // Put the selected p2p in the front
-                // Non-Zero frequencies
-            } else if (
-                it.frequency != 0.toShort() && it.frequency == selectedInfo?.frequency && !it.output
-            ) {
-                -3 // Put input in the beginning
-            } else if (it.frequency != 0.toShort() && it.frequency == selectedInfo?.frequency) {
-                -1 // Put same frequency in the front
-            } else {
-                // Frequencies from lowest to highest
-                it.frequency + Short.MAX_VALUE
+            when {
+                it.loc == selectedEntry -> {
+                    -2 // Put the selected p2p in the front
+                    // Non-Zero frequencies
+                }
+                it.frequency != 0.toShort() &&
+                    it.frequency == selectedInfo?.frequency &&
+                    !it.output -> {
+                    -3 // Put input in the beginning
+                }
+                it.frequency != 0.toShort() && it.frequency == selectedInfo?.frequency -> {
+                    -1 // Put same frequency in the front
+                }
+                else -> {
+                    // Frequencies from lowest to highest
+                    it.frequency + Short.MAX_VALUE
+                }
             }
         }
     }

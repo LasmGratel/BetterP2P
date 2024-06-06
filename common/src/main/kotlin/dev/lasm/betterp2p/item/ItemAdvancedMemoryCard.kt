@@ -41,7 +41,7 @@ object ItemAdvancedMemoryCard :
     ) {
         val info = getInfo(stack)
         list.add(
-            Component.translatable("gui.advanced_memory_card.mode.${info.mode.name.toLowerCase()}")
+            Component.translatable("gui.advanced_memory_card.mode.${info.mode.name.lowercase()}")
         )
     }
 

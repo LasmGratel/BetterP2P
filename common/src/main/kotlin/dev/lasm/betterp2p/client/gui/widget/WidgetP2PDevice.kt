@@ -59,7 +59,6 @@ class WidgetP2PDevice(
             }
             .size(56, 20)
             .build()
-    //    val renameBar: EditBox = EditBox(font, 120, 12, 0, 0, Component.empty())
     val unbindButton: Button =
         Button.builder(Component.translatable("gui.advanced_memory_card.unbind")) {
                 col.onUnbindButtonClicked(infoSupplier()!!)
@@ -78,32 +77,32 @@ class WidgetP2PDevice(
             return
         }
 
-        if (selectedInfo == null) {
-            // No selected, so we don't show buttons
-            bindButton.visible = false
-            unbindButton.visible = false
-        } else if (mode == BetterMemoryCardModes.UNBIND) {
-            // Only unbinds allowed in unbind mode
-            bindButton.visible = false
-            unbindButton.visible = info.frequency != 0.toShort()
-        } else if (
-            mode == BetterMemoryCardModes.COPY &&
-                ((!info.output && info.frequency != 0.toShort()) || selectedInfo!!.output)
-        ) {
-            // Copy mode
-            // If this info is (input && set freq) || selected info is an output
-            // Disable all buttons
-            bindButton.visible = false
-            unbindButton.visible = false
-        } else {
-            // Other modes:
-            // Bind allowed only if currently not selected && selected is unbound; OR not bound to
-            // selected
-            bindButton.visible =
-                info.loc != selectedInfo!!.loc &&
-                    (selectedInfo!!.frequency == 0.toShort() ||
-                        info.frequency != selectedInfo!!.frequency)
-            unbindButton.visible = false
+        when {
+            selectedInfo == null ||
+                mode == BetterMemoryCardModes.COPY &&
+                    ((!info.output && info.frequency != 0.toShort()) || selectedInfo!!.output) -> {
+                // Copy mode
+                // If this info is (input && set freq) || selected info is an output
+                // Disable all buttons
+                bindButton.visible = false
+                unbindButton.visible = false
+            }
+            mode == BetterMemoryCardModes.UNBIND -> {
+                // Only unbinds allowed in unbind mode
+                bindButton.visible = false
+                unbindButton.visible = info.frequency != 0.toShort()
+            }
+            else -> {
+                // Other modes:
+                // Bind allowed only if currently not selected && selected is unbound; OR not bound
+                // to
+                // selected
+                bindButton.visible =
+                    info.loc != selectedInfo!!.loc &&
+                        (selectedInfo!!.frequency == 0.toShort() ||
+                            info.frequency != selectedInfo!!.frequency)
+                unbindButton.visible = false
+            }
         }
     }
 
@@ -159,21 +158,20 @@ class WidgetP2PDevice(
             }
         }
 
-        if (isHovered) {
-            if (
+        if (
+            isHovered &&
                 mouseX > x.toDouble() + 50 &&
-                    mouseX < x.toDouble() + 50 + 160 &&
-                    mouseY > y.toDouble() + 1 &&
-                    mouseY < y.toDouble() + 1 + 13
-            ) {
-                graphics.fill(
-                    x + 50,
-                    y + 1,
-                    x + 50 + 160,
-                    y + 1 + 12,
-                    0x6E000000 // ARGB xd
-                )
-            }
+                mouseX < x.toDouble() + 50 + 160 &&
+                mouseY > y.toDouble() + 1 &&
+                mouseY < y.toDouble() + 1 + 13
+        ) {
+            graphics.fill(
+                x + 50,
+                y + 1,
+                x + 50 + 160,
+                y + 1 + 12,
+                0x6E000000 // ARGB xd
+            )
         }
 
         graphics.setColor(1.0f, 1.0f, 1.0f, 1.0f)

@@ -25,10 +25,6 @@ class InfoWrapper(info: P2PInfo) {
     var name: String = info.name
     var error: Boolean = false
 
-    //    val icon: ResourceLocation? = ResourceLocation("appliedenergistics2",
-    // "textures/blocks/quartz_block.png")
-    //    val overlay: ResourceLocation? = ResourceLocation("appliedenergistics2",
-    // "textures/items/part/p2p_tunnel_front.png")
     /** The backing p2p icon/feature */
     var icon: ResourceLocation
 
