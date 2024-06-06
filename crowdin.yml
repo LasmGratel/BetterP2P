@@ -1,2 +1,5 @@
 bundles:
   - 2
+files:
+  - source: /common/src/main/resources/assets/betterp2p/lang/*.json
+    translation: /common/src/main/resources/assets/betterp2p/lang/%locale_with_underscore%.json
