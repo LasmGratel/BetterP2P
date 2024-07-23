@@ -13,11 +13,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.4.2]
+
 ### Added
 
 - Crowdin integration
 - Chinese (Simplified) localization
 - Search bar tooltip
+
+### Fixed
+
+- Recipe for Advanced Memory Card
 
 ### Removed
 
@@ -36,5 +42,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - 1.20.1 Support.
 
+[1.4.2]: https://github.com/LasmGratel/BetterP2P/releases/tag/v1.4.2
 [1.4.1]: https://github.com/LasmGratel/BetterP2P/releases/tag/v1.4.1
 [1.4.0]: https://github.com/LasmGratel/BetterP2P/releases/tag/v1.4.0
