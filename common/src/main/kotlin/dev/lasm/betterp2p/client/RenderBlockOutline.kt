@@ -72,7 +72,7 @@ object RenderBlockOutline {
                     // 0x45DA75
                 }
                 // 0x66CCFF
-                for (entry in positions) {
+                for (entry in positions.toList()) {
                     val side = entry.component2()
                     val boxes = ArrayList<AABB>()
                     val bch = BusCollisionHelper(boxes, side, true)

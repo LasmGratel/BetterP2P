@@ -1,9 +1,5 @@
-import net.darkhax.curseforgegradle.TaskPublishCurseForge
-
 plugins {
     id "com.github.johnrengelman.shadow" version "7.1.2"
-    id "com.modrinth.minotaur" version "2.+"
-    id 'net.darkhax.curseforgegradle' version '1.1.+'
 }
 
 architectury {
@@ -80,45 +76,3 @@ publishing {
         // Add repositories to publish to here.
     }
 }
-
-modrinth {
-    token = findProperty("modrinth_token") // Remember to have the MODRINTH_TOKEN environment variable set or else this will fail - just make sure it stays private!
-    projectId = "betterp2p" // This can be the project ID or the slug. Either will work!
-    versionName = "[Fabric 1.20.1] v${project.mod_version}"
-    uploadFile = remapJar // With Loom, this MUST be set to `remapJar` instead of `jar`!
-    gameVersions = ['1.20.1'] // Must be an array, even with only one version
-    loaders = ["fabric"] // Must also be an array - no need to specify this if you're using Loom or ForgeGradle
-    syncBodyFrom = rootProject.file("README.md").text
-    changelog = rootProject.file("CHANGELOG.md").text
-    dependencies { // A special DSL for creating dependencies
-        // scope.type
-        // The scope can be `required`, `optional`, `incompatible`, or `embedded`
-        // The type can either be `project` or `version`
-        required.project "fabric-api"
-        required.project "architectury-api"
-        required.project "ae2"
-        required.project "fabric-language-kotlin"
-    }
-}
-
-// CurseForgeGradle
-tasks.register('publishCurseforgeFabric', TaskPublishCurseForge) {
-
-    apiToken = findProperty('curseforge_token')
-    debugMode = false
-
-    // The main file to upload
-    def mainFile = upload(538092, remapJar)
-    mainFile.releaseType = 'release'
-    mainFile.changelog = rootProject.file('CHANGELOG.md')
-    mainFile.changelogType = 'markdown'
-    mainFile.addModLoader("Fabric")
-    mainFile.displayName = "[Fabric 1.20.1] v${project.mod_version}"
-    mainFile.addGameVersion('1.20.1')
-    mainFile.addRequirement('fabric-api')
-    mainFile.addRequirement('architectury-api')
-    mainFile.addRequirement('applied-energistics-2')
-    mainFile.addRequirement('fabric-language-kotlin')
-}
-
-tasks.modrinth.dependsOn(tasks.modrinthSyncBody)
