@@ -41,6 +41,14 @@ jobs:
             - name: Grant execute permission for gradlew
               run: chmod +x gradlew
 
+            - name: Restore Cache
+              id: cache-restore
+              uses: actions/cache/restore@v4
+              with:
+                  path: ~/.gradle/caches
+                  key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle') }}
+                  restore-keys: ${{ runner.os }}-gradle
+
             - name: Cache Gradle packages
               uses: actions/cache@v4
               with:
@@ -50,6 +58,18 @@ jobs:
 
             - name: Build Project
               run: ./gradlew build --warning-mode all --build-cache
+
+            - run: ls forge/build/libs
+            - run: ls fabric/build/libs
+
+            - name: Publish to GitHub
+              uses: softprops/action-gh-release@v2
+              with:
+                  files: |
+                      forge/build/libs/betterp2p-${{ steps.tag.outputs.version }}-forge.jar
+                      fabric/build/libs/betterp2p-${{ steps.tag.outputs.version }}-fabric.jar
+                  generate_release_notes: true
+                  fail_on_unmatched_files: true
 
             - name: "Upload Forge to CurseForge"
               uses: itsmeow/curseforge-upload@v3
@@ -100,3 +120,12 @@ jobs:
                       "fabric/build/libs/betterp2p-${{ steps.tag.outputs.version }}-fabric.jar"
                   dependencies: "P7dR8mSH:required, XxWD5pD3:required, Ha28R6CL:required, lhGA9TYQ:required"
                   version_type: release
+
+            - name: Always Save Cache
+              id: cache-save
+              if: always() && steps.cache-restore.outputs.cache-hit != 'true'
+              uses: actions/cache/save@v4
+              with:
+                  path: ~/.gradle/caches
+                  key: ${{ steps.cache-restore.outputs.cache-primary-key }}
+                  restore-keys: ${{ runner.os }}-gradle
