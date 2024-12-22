@@ -86,6 +86,6 @@ fun P2PTunnelPart<*>.toInfo() =
         customName?.string ?: "",
         isOutput,
         hasChannel,
-        (externalFacingNode as? GridNode)?.usedChannels() ?: -1,
+        (externalFacingNode as? GridNode)?.getUsedChannels() ?: -1,
         getTypeIndex()
     )
