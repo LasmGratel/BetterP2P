@@ -15,8 +15,8 @@ import net.minecraft.core.registries.Registries
 import net.minecraft.world.flag.FeatureFlagSet
 import net.minecraft.world.inventory.MenuType
 import net.minecraft.world.item.Item
-import org.slf4j.Logger
-import org.slf4j.LoggerFactory
+import org.apache.logging.log4j.LogManager
+import org.apache.logging.log4j.Logger
 
 object BetterP2P {
     val proxy: CommonProxy =
@@ -24,7 +24,7 @@ object BetterP2P {
 
     const val MOD_ID = "betterp2p"
 
-    val logger: Logger = LoggerFactory.getLogger(MOD_ID)
+    val logger: Logger = LogManager.getLogger(MOD_ID)
 
     val ITEMS: DeferredRegister<Item> = DeferredRegister.create(MOD_ID, Registries.ITEM)
     val ADVANCED_MEMORY_CARD_ITEM: RegistrySupplier<Item> =

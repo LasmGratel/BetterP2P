@@ -77,7 +77,7 @@ class GuiAdvancedMemoryCard(val theMenu: AdvancedMemoryCardMenu) :
     private val searchText: String
         get() = searchBar.value
 
-    private val infos = InfoList(menu.infos.map(::InfoWrapper), ::searchText)
+    private val infos = InfoList(menu.infos.map(::InfoWrapper), ::searchText, ::mode)
 
     private val typeSelector: WidgetTypeSelector
 
@@ -483,7 +483,13 @@ class GuiAdvancedMemoryCard(val theMenu: AdvancedMemoryCardMenu) :
                         it != selectedInfo &&
                         it.loc.dim == minecraft?.player?.level()?.dimension()
                 }
+                .filter {
+                    val d =
+                        minecraft?.player?.blockPosition()?.let { pos -> it.loc.pos.distSqr(pos) }
+                    (d?.compareTo(50.0) ?: 1) < 0 // Distance < 50
+                }
                 .map { it.loc.pos to it.loc.facing }
+                .take(200)
         )
     }
 

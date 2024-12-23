@@ -74,6 +74,7 @@ jobs:
             - name: "Upload Forge to CurseForge"
               uses: itsmeow/curseforge-upload@v3
               with:
+                  display_name: "[Forge 1.20.1] v${{ steps.tag.outputs.version }}"
                   file_path: "forge/build/libs/betterp2p-${{ steps.tag.outputs.version }}-forge.jar"
                   game_endpoint: "minecraft"
                   relations: "applied-energistics-2:requiredDependency,architectury-api:requiredDependency,kotlin-for-forge:requiredDependency"
@@ -84,6 +85,7 @@ jobs:
             - name: "Upload Fabric to CurseForge"
               uses: itsmeow/curseforge-upload@v3
               with:
+                  display_name: "[Fabric 1.20.1] v${{ steps.tag.outputs.version }}"
                   file_path: "fabric/build/libs/betterp2p-${{ steps.tag.outputs.version }}-fabric.jar"
                   game_endpoint: "minecraft"
                   relations: "fabric-api:requiredDependency,applied-energistics-2:requiredDependency,fabric-language-kotlin:requiredDependency,architectury-api:requiredDependency"
@@ -96,11 +98,11 @@ jobs:
               env:
                   MODRINTH_TOKEN: "${{ secrets.MODRINTH_TOKEN }}"
               with:
-                  name: "[Forge 1.20.1] v*"
+                  name: "[Forge 1.20.1] v${{ steps.tag.outputs.version }}"
                   project_id: 9DDxOvTJ
                   loaders: forge
                   game_versions: 1.20.1
-                  version_number: "*"
+                  version_number: ${{ steps.tag.outputs.version }}
                   files: |
                       "forge/build/libs/betterp2p-${{ steps.tag.outputs.version }}-forge.jar"
                   dependencies: "lhGA9TYQ:required, ordsPcFz:required, XxWD5pD3:required"
@@ -111,11 +113,11 @@ jobs:
               env:
                   MODRINTH_TOKEN: "${{ secrets.MODRINTH_TOKEN }}"
               with:
-                  name: "[Fabric 1.20.1] v*"
+                  name: "[Fabric 1.20.1] v${{ steps.tag.outputs.version }}"
                   project_id: 9DDxOvTJ
                   loaders: fabric
                   game_versions: 1.20.1
-                  version_number: "*"
+                  version_number: ${{ steps.tag.outputs.version }}
                   files: |
                       "fabric/build/libs/betterp2p-${{ steps.tag.outputs.version }}-fabric.jar"
                   dependencies: "P7dR8mSH:required, XxWD5pD3:required, Ha28R6CL:required, lhGA9TYQ:required"

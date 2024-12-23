@@ -1,6 +1,7 @@
 package dev.lasm.betterp2p.client.gui
 
 import dev.lasm.betterp2p.client.gui.widget.WidgetScrollBar
+import dev.lasm.betterp2p.item.BetterMemoryCardModes
 import dev.lasm.betterp2p.network.data.P2PLocation
 import java.util.*
 import kotlin.reflect.KProperty0
@@ -10,7 +11,11 @@ import kotlin.reflect.KProperty0
  * opaque type, and access to it is restricted. External access is instead directed to a sorted view
  * and a filtered view of the internal map.
  */
-class InfoList(initList: Collection<InfoWrapper>, private val search: KProperty0<String>) {
+class InfoList(
+    initList: Collection<InfoWrapper>,
+    private val search: KProperty0<String>,
+    private val mode: KProperty0<BetterMemoryCardModes>
+) {
 
     /** The master map, acts as the source of truth for all items in this list. */
     private val masterMap: HashMap<P2PLocation, InfoWrapper> = hashMapOf()
@@ -60,9 +65,12 @@ class InfoList(initList: Collection<InfoWrapper>, private val search: KProperty0
                 it.frequency != 0.toShort() && it.frequency == selectedInfo?.frequency -> {
                     -1 // Put same frequency in the front
                 }
+                it.frequency == 0.toShort() && mode.get() == BetterMemoryCardModes.INPUT -> {
+                    0 // Put zero frequency to the front on Input mode
+                }
                 else -> {
                     // Frequencies from lowest to highest
-                    it.frequency + Short.MAX_VALUE
+                    1 + it.frequency + Short.MAX_VALUE
                 }
             }
         }

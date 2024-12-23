@@ -11,6 +11,9 @@ open class TunnelInfo(
     val clazz: Class<out P2PTunnelPart<*>>
 ) {
     val dispName: String = stack.displayName.string ?: "§c<Unknown P2P Type>"
+    override fun toString(): String {
+        return "TunnelInfo(index=$index, stack=$stack, clazz=$clazz, dispName='$dispName')"
+    }
 }
 
 /**
@@ -22,4 +25,8 @@ class ClientTunnelInfo(
     stack: ItemStack,
     clazz: Class<out P2PTunnelPart<*>>,
     val icon: () -> ResourceLocation
-) : TunnelInfo(index, stack, clazz)
+) : TunnelInfo(index, stack, clazz) {
+    override fun toString(): String {
+        return "ClientTunnelInfo(icon=${icon()}) ${super.toString()}"
+    }
+}

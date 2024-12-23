@@ -13,6 +13,23 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.5.0] - 2024-12-23
+
+### Added
+
+- MAE2 Support
+- Applied Mekanistics Support
+
+### Changed
+
+- Minimum AE2 version requires 15.3.0-beta
+- Default Mode is set to "Bind Input"
+- While in "Bind Input" mode, unbound P2P tunnels are sorted on the top of the list
+
+### Fixed
+
+- Massive P2P tunnels cause lag. Now only render outlines of <= 200 tunnels and in 50m range of player
+
 ## [1.4.3] - 2024-09-19
 
 ### Fixed
