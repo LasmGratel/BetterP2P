@@ -124,10 +124,10 @@ object RenderBlockOutline {
                 var s = (p - m).toFloat()
                 val t = Mth.sqrt(q * q + r * r + s * s)
                 buffer
-                    .vertex(pose.pose(), (k + x).toFloat(), (l + y).toFloat(), (m + z).toFloat())
-                    .color(red, green, blue, alpha)
-                    .normal(
-                        pose.normal(),
+                    .addVertex(pose.pose(), (k + x).toFloat(), (l + y).toFloat(), (m + z).toFloat())
+                    .setColor(red, green, blue, alpha)
+                    .setNormal(
+                        pose,
                         t.let {
                             q /= it
                             q
@@ -141,12 +141,10 @@ object RenderBlockOutline {
                             s
                         }
                     )
-                    .endVertex()
                 buffer
-                    .vertex(pose.pose(), (n + x).toFloat(), (o + y).toFloat(), (p + z).toFloat())
-                    .color(red, green, blue, alpha)
-                    .normal(pose.normal(), q, r, s)
-                    .endVertex()
+                    .addVertex(pose.pose(), (n + x).toFloat(), (o + y).toFloat(), (p + z).toFloat())
+                    .setColor(red, green, blue, alpha)
+                    .setNormal(pose, q, r, s)
             }
         }
     }

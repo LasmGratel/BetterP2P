@@ -1,7 +1,7 @@
 package dev.lasm.betterp2p.client.gui.widget
 
 enum class GuiScale(
-    inline val size: (Int) -> Int,
+    val size: (Int) -> Int,
     val minHeight: Int,
     val unlocalizedName: String
 ) {

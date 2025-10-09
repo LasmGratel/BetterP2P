@@ -20,7 +20,7 @@ const val NETWORK_CD = 250L
 
 /** Mod network manager. Handles server <-> client communication. */
 object ModNetwork {
-    val channel = NetworkChannel.create(ResourceLocation(BetterP2P.MOD_ID, "networking_channel"))
+    val channel = NetworkChannel.create(ResourceLocation.tryBuild(BetterP2P.MOD_ID, "networking_channel"))
 
     /** for client requests (changing viewed p2p) */
     val playerState: MutableMap<UUID, PlayerRequest> = Collections.synchronizedMap(WeakHashMap())

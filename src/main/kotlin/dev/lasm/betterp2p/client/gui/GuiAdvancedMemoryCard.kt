@@ -37,7 +37,7 @@ import net.minecraft.network.chat.Style
 import net.minecraft.resources.ResourceLocation
 import net.minecraft.util.FormattedCharSequence
 
-val TEXTURE = ResourceLocation(MOD_ID, "textures/gui/advanced_memory_card.png")
+val TEXTURE = ResourceLocation.tryBuild(MOD_ID, "textures/gui/advanced_memory_card.png")!!
 const val GUI_WIDTH = 288
 const val GUI_TEX_HEIGHT = 264
 
@@ -275,8 +275,8 @@ class GuiAdvancedMemoryCard(val theMenu: AdvancedMemoryCardMenu) :
         super.afterMouseAction()
     }
 
-    override fun renderBackground(graphics: GuiGraphics) {
-        super.renderBackground(graphics)
+    override fun renderMenuBackground(graphics: GuiGraphics) {
+        super.renderMenuBackground(graphics)
         graphics.blit(TEXTURE, leftPos, topPos, 0, 0.0f, 0.0f, GUI_WIDTH, 60, 288, 264)
 
         val p2pHeight = P2PEntryConstants.HEIGHT + 1
@@ -308,13 +308,13 @@ class GuiAdvancedMemoryCard(val theMenu: AdvancedMemoryCardMenu) :
         )
     }
 
-    override fun mouseScrolled(mouseX: Double, mouseY: Double, delta: Double): Boolean {
-        return scrollBar.mouseScrolled(mouseX, mouseY, delta) ||
-            super<Screen>.mouseScrolled(mouseX, mouseY, delta)
+    override fun mouseScrolled(mouseX: Double, mouseY: Double, scrollX: Double, scrollY: Double): Boolean {
+        return scrollBar.mouseScrolled(mouseX, mouseY, scrollX, scrollY) ||
+            super<Screen>.mouseScrolled(mouseX, mouseY, scrollX, scrollY)
     }
 
     override fun render(graphics: GuiGraphics, i: Int, j: Int, f: Float) {
-        this.renderBackground(graphics)
+        this.renderMenuBackground(graphics)
 
         graphics.drawString(
             font,

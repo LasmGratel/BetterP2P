@@ -59,20 +59,20 @@ open class CommonProxy {
         )
 
         registerModTunnel(
-            def = { BuiltInRegistries.ITEM[ResourceLocation("appmek", "chemical_p2p_tunnel")] },
+            def = { BuiltInRegistries.ITEM[ResourceLocation.tryBuild("appmek", "chemical_p2p_tunnel")] },
             type = typeId++,
             classType = "me.ramidzkh.mekae2.ae2.ChemicalP2PTunnelPart"
         )
 
         registerModTunnel(
-            def = { BuiltInRegistries.ITEM[ResourceLocation("mae2", "pattern_p2p_tunnel")] },
+            def = { BuiltInRegistries.ITEM[ResourceLocation.tryBuild("mae2", "pattern_p2p_tunnel")] },
             type = typeId++,
             classType = "stone.mae2.parts.p2p.PatternP2PTunnelPart"
         )
 
         if (Platform.isModLoaded("gtceu"))
             registerModTunnel(
-                def = { BuiltInRegistries.ITEM[ResourceLocation("mae2", "eu_p2p_tunnel")] },
+                def = { BuiltInRegistries.ITEM[ResourceLocation.tryBuild("mae2", "eu_p2p_tunnel")] },
                 type = typeId++,
                 classType = "stone.mae2.parts.p2p.EUP2PTunnelPart"
             )
@@ -135,59 +135,59 @@ class ClientProxy : CommonProxy() {
             def = AEParts.ME_P2P_TUNNEL,
             type = typeId++,
             classType = MEP2PTunnelPart::class.java,
-            icon = ResourceLocation("ae2", "textures/block/quartz_block.png")
+            icon = ResourceLocation.tryBuild("ae2", "textures/block/quartz_block.png")!!
         )
         registerTunnel(
             def = AEParts.FE_P2P_TUNNEL,
             type = typeId++,
             classType = FEP2PTunnelPart::class.java,
-            icon = ResourceLocation("minecraft", "textures/block/gold_block.png")
+            icon = ResourceLocation.tryBuild("minecraft", "textures/block/gold_block.png")!!
         )
         registerTunnel(
             def = AEParts.REDSTONE_P2P_TUNNEL,
             type = typeId++,
             classType = RedstoneP2PTunnelPart::class.java,
-            icon = ResourceLocation("minecraft", "textures/block/redstone_block.png")
+            icon = ResourceLocation.tryBuild("minecraft", "textures/block/redstone_block.png")!!
         )
         registerTunnel(
             def = AEParts.FLUID_P2P_TUNNEL,
             type = typeId++,
             classType = FluidP2PTunnelPart::class.java,
-            icon = ResourceLocation("minecraft", "textures/block/lapis_block.png")
+            icon = ResourceLocation.tryBuild("minecraft", "textures/block/lapis_block.png")!!
         )
         registerTunnel(
             def = AEParts.ITEM_P2P_TUNNEL,
             type = typeId++,
             classType = ItemP2PTunnelPart::class.java,
-            icon = ResourceLocation("minecraft", "textures/block/hopper_outside.png")
+            icon = ResourceLocation.tryBuild("minecraft", "textures/block/hopper_outside.png")!!
         )
         registerTunnel(
             def = AEParts.LIGHT_P2P_TUNNEL,
             type = typeId++,
             classType = LightP2PTunnelPart::class.java,
-            icon = ResourceLocation("minecraft", "textures/block/quartz_block_top.png")
+            icon = ResourceLocation.tryBuild("minecraft", "textures/block/quartz_block_top.png")!!
         )
 
         registerModTunnel(
-            def = { BuiltInRegistries.ITEM[ResourceLocation("appmek", "chemical_p2p_tunnel")] },
+            def = { BuiltInRegistries.ITEM[ResourceLocation.tryBuild("appmek", "chemical_p2p_tunnel")] },
             type = typeId++,
             classType = "me.ramidzkh.mekae2.ae2.ChemicalP2PTunnelPart",
-            icon = ResourceLocation("mekanism", "textures/block/block_osmium.png")
+            icon = ResourceLocation.tryBuild("mekanism", "textures/block/block_osmium.png")!!
         )
 
         registerModTunnel(
-            def = { BuiltInRegistries.ITEM[ResourceLocation("mae2", "pattern_p2p_tunnel")] },
+            def = { BuiltInRegistries.ITEM[ResourceLocation.tryBuild("mae2", "pattern_p2p_tunnel")] },
             type = typeId++,
             classType = "stone.mae2.parts.p2p.PatternP2PTunnelPart",
-            icon = ResourceLocation("ae2", "textures/block/pattern_provider.png")
+            icon = ResourceLocation.tryBuild("ae2", "textures/block/pattern_provider.png")!!
         )
 
         if (Platform.isModLoaded("gtceu"))
             registerModTunnel(
-                def = { BuiltInRegistries.ITEM[ResourceLocation("mae2", "eu_p2p_tunnel")] },
+                def = { BuiltInRegistries.ITEM[ResourceLocation.tryBuild("mae2", "eu_p2p_tunnel")] },
                 type = typeId++,
                 classType = "stone.mae2.parts.p2p.EUP2PTunnelPart",
-                icon = ResourceLocation("minecraft", "textures/block/copper_block.png")
+                icon = ResourceLocation.tryBuild("minecraft", "textures/block/copper_block.png")!!
             )
 
         BetterP2P.logger.info("Registered tunnel types: {}", tunnelTypes.values.joinToString(","))

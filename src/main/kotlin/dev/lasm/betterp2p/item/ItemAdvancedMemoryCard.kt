@@ -8,12 +8,9 @@ import dev.lasm.betterp2p.client.gui.widget.GuiScale
 import dev.lasm.betterp2p.network.ModNetwork
 import dev.lasm.betterp2p.network.data.*
 import dev.lasm.betterp2p.util.p2p.getTypeIndex
-import net.minecraft.core.registries.Registries
 import net.minecraft.nbt.CompoundTag
 import net.minecraft.nbt.Tag
 import net.minecraft.network.chat.Component
-import net.minecraft.resources.ResourceKey
-import net.minecraft.resources.ResourceLocation
 import net.minecraft.world.InteractionHand
 import net.minecraft.world.InteractionResult
 import net.minecraft.world.InteractionResultHolder
@@ -28,14 +25,11 @@ object ItemAdvancedMemoryCard :
     Item(
         Properties()
             .stacksTo(1)
-            .`arch$tab`(
-                ResourceKey.create(Registries.CREATIVE_MODE_TAB, ResourceLocation("ae2", "main"))
-            )
     ) {
 
     override fun appendHoverText(
         stack: ItemStack,
-        level: Level?,
+        context: TooltipContext,
         list: MutableList<Component>,
         tooltipFlag: TooltipFlag
     ) {
@@ -95,19 +89,19 @@ object ItemAdvancedMemoryCard :
             )
 
         // Initialize NBT if it isn't already a thing
-        val compound = stack.orCreateTag
+        /*val compound = stack.tagEnchantments
         if (!compound.contains("gui")) {
             compound.putByte("gui", GuiScale.DYNAMIC.ordinal.toByte())
         }
         if (!compound.contains("selectedIndex", Tag.TAG_COMPOUND.toInt())) {
             compound.put("selectedIndex", CompoundTag())
-        }
+        }*/
 
         return MemoryInfo(
-            selectedEntry = readP2PLocation(compound.getCompound("selectedIndex")),
-            frequency = compound.getShort("frequency"),
-            mode = BetterMemoryCardModes.values()[compound.getInt("mode")],
-            guiScale = GuiScale.values()[compound.getByte("gui").toInt()]
+            selectedEntry = readP2PLocation(/*compound.getCompound("selectedIndex")*/CompoundTag()),
+            frequency = 0,//compound.getShort("frequency"),
+            mode = BetterMemoryCardModes.values()[/*compound.getInt("mode")*/0],
+            guiScale = GuiScale.values()[/*compound.getByte("gui").toInt()*/0]
         )
     }
 
@@ -117,10 +111,10 @@ object ItemAdvancedMemoryCard :
                 "Cannot cast ${stack.item.javaClass.name} to ${javaClass.name}"
             )
 
-        val compound = stack.orCreateTag
+        /*val compound = stack.orCreateTag
         compound.put("selectedIndex", writeP2PLocation(info.selectedEntry))
         compound.putShort("frequency", info.frequency)
         compound.putInt("mode", info.mode.ordinal)
-        compound.putByte("gui", info.guiScale.ordinal.toByte())
+        compound.putByte("gui", info.guiScale.ordinal.toByte())*/
     }
 }

@@ -1,0 +1,47 @@
+modLoader = "kotlinforforge"
+loaderVersion = "[5,)"
+issueTrackerURL = "https://github.com/heisluft/BetterP2P/issues"
+license = "GPL-3.0"
+
+[[mods]]
+modId = "${mod_id}"
+version = "${mod_version}"
+displayName = "${mod_name}"
+authors = "${mod_authors}"
+description = "${mod_description}"
+#logoFile = ""
+
+[[dependencies.${mod_id}]]
+modId = "neoforge"
+mandatory = true
+versionRange = "${neo_version_range}"
+ordering = "NONE"
+side = "BOTH"
+
+[[dependencies.${mod_id}]]
+modId = "minecraft"
+mandatory = true
+versionRange = "${minecraft_version_range}"
+ordering = "NONE"
+side = "BOTH"
+
+[[dependencies.${mod_id}]]
+modId = "architectury"
+mandatory = true
+versionRange = "[13,)"
+ordering = "AFTER"
+side = "BOTH"
+
+[[dependencies.${mod_id}]]
+modId = "kotlinforforge"
+mandatory = true
+versionRange = "[5,)"
+ordering = "AFTER"
+side = "BOTH"
+
+[[dependencies.${mod_id}]]
+modId = "ae2"
+mandatory = true
+versionRange = "[19.2.0-beta,)"
+ordering = "AFTER"
+side = "BOTH"

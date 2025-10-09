@@ -1,6 +1,8 @@
+import org.jetbrains.kotlin.gradle.dsl.JvmTarget
+
 plugins {
     id 'net.neoforged.gradle.userdev' version '7.0.192'
-    id 'org.jetbrains.kotlin.jvm' version "1.9.22"
+    id 'org.jetbrains.kotlin.jvm' version "2.2.20"
     id 'com.diffplug.spotless-changelog' version "3.0.2"
     id 'com.diffplug.spotless' version '6.21.0'
     id 'com.palantir.git-version' version '3.0.0'
@@ -9,14 +11,14 @@ plugins {
 group = 'dev.lasm.betterp2p'
 version = '1.5.0'
 
-base {
-    archivesName = project.name
-}
+base.archivesName = project.name
 
 java {
     withSourcesJar()
     toolchain.languageVersion = JavaLanguageVersion.of(21)
 }
+
+compileKotlin.compilerOptions.jvmTarget = JvmTarget.JVM_21
 
 runs {
     configureEach {
@@ -27,7 +29,6 @@ runs {
     }
 
     client {
-        // Comma-separated list of namespaces to load gametests from. Empty = all namespaces.
         systemProperty 'neoforge.enabledGameTestNamespaces', project.name
     }
 
@@ -65,7 +66,8 @@ dependencies {
     implementation "net.neoforged:neoforge:${neo_version}"
     implementation 'appeng:appliedenergistics2:19.2.0-beta'
     compileOnly 'org.jetbrains.kotlin:kotlin-stdlib'
-    implementation 'thedarkcolour:kotlinforforge:4.10.0'
+    implementation 'thedarkcolour:kotlinforforge-neoforge:5.10.0'
+    runtimeOnly 'org.appliedenergistics:guideme:21.1.9'
     implementation 'dev.architectury:architectury-neoforge:13.0.8'
 }
 
@@ -99,6 +101,27 @@ spotless {
         ktfmt('0.39').kotlinlangStyle()
         trimTrailingWhitespace()
         endWithNewline()
+    }
+}
+
+tasks.withType(ProcessResources).configureEach {
+    var replaceProperties = [
+        minecraft_version      : minecraft_version,
+        minecraft_version_range: minecraft_version_range,
+        neo_version            : neo_version,
+        neo_version_range      : neo_version_range,
+        loader_version_range   : loader_version_range,
+        mod_id                 : project.name,
+        mod_name               : mod_name,
+        mod_license            : mod_license,
+        mod_version            : project.version,
+        mod_authors            : mod_authors,
+        mod_description        : mod_description,
+    ]
+    inputs.properties replaceProperties
+
+    filesMatching(['META-INF/neoforge.mods.toml']) {
+        expand replaceProperties
     }
 }
 

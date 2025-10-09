@@ -66,7 +66,7 @@ fun readP2PLocation(tag: CompoundTag): P2PLocation? {
         P2PLocation(
             pos = BlockPos.of(tag.getLong("pos")),
             facing = Direction.values()[tag.getByte("facing").toInt()],
-            dim = ResourceKey.create(Registries.DIMENSION, ResourceLocation(tag.getString("dim")))
+            dim = ResourceKey.create(Registries.DIMENSION, ResourceLocation.parse(tag.getString("dim")))
         )
     } catch (e: Exception) {
         e.printStackTrace()
