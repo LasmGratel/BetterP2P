@@ -1,5 +1,4 @@
 package dev.lasm.betterp2p
-
 import dev.architectury.event.events.client.ClientLifecycleEvent
 import dev.architectury.event.events.common.PlayerEvent
 import dev.architectury.registry.menu.MenuRegistry
