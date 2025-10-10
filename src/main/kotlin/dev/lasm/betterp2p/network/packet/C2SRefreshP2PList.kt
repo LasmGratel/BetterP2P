@@ -7,7 +7,7 @@ import java.util.function.Supplier
 import net.minecraft.network.FriendlyByteBuf
 
 /** Send a request to the server to refresh the p2p list with the given type. */
-class C2SRefreshP2PList(var type: Int = TUNNEL_ANY) : IMessage {
+class C2SRefreshP2PList(var type: Int = TUNNEL_ANY) : IC2SMessage {
     override fun fromBytes(buf: FriendlyByteBuf) {
         type = buf.readByte().toInt()
     }

@@ -2,6 +2,7 @@ package dev.lasm.betterp2p.network
 
 import appeng.api.networking.IGrid
 import dev.architectury.networking.NetworkChannel
+import dev.architectury.networking.NetworkManager
 import dev.lasm.betterp2p.BetterP2P
 import dev.lasm.betterp2p.network.data.GridServerCache
 import dev.lasm.betterp2p.network.data.MemoryInfo
@@ -14,6 +15,7 @@ import net.minecraft.network.FriendlyByteBuf
 import net.minecraft.resources.ResourceLocation
 import net.minecraft.server.level.ServerPlayer
 import net.minecraft.world.entity.player.Player
+import java.util.function.Supplier
 
 /** Network cooldown time in milliseconds */
 const val NETWORK_CD = 250L
@@ -21,6 +23,18 @@ const val NETWORK_CD = 250L
 /** Mod network manager. Handles server <-> client communication. */
 object ModNetwork {
     val channel = NetworkChannel.create(ResourceLocation.tryBuild(BetterP2P.MOD_ID, "networking_channel"))
+
+    fun sendToServer(msg: IC2SMessage) {
+        channel.sendToServer(msg);
+    }
+
+    fun sendToPlayer(sp: ServerPlayer, msg: IS2CMessage) {
+        channel.sendToPlayer(sp, msg);
+    }
+
+    fun <T: IMessage> register(msg: Class<T>, fac: () -> T, consumer: (T, Supplier<NetworkManager.PacketContext>) -> Unit) {
+        channel.register(msg, encoder, { buf: FriendlyByteBuf -> fac().also { it.fromBytes(buf) } }, consumer)
+    }
 
     /** for client requests (changing viewed p2p) */
     val playerState: MutableMap<UUID, PlayerRequest> = Collections.synchronizedMap(WeakHashMap())
@@ -30,66 +44,53 @@ object ModNetwork {
 
     val encoder = { packet: IMessage, buf: FriendlyByteBuf -> packet.toBytes(buf) }
 
-    fun <T : IMessage> decoder(factory: () -> T) = { buf: FriendlyByteBuf ->
-        factory().also { it.fromBytes(buf) }
-    }
-
     fun registerNetwork() {
-        channel.register(
+        register(
             S2COpenGui::class.java,
-            encoder,
-            decoder(::S2COpenGui),
+            ::S2COpenGui,
             ClientOpenGuiHandler
         )
 
-        channel.register(
+        register(
             S2CUpdateP2P::class.java,
-            encoder,
-            decoder(::S2CUpdateP2P),
+            ::S2CUpdateP2P,
             ClientUpdateP2PHandler
         )
 
-        channel.register(
+        register(
             C2SLinkP2P::class.java,
-            encoder,
-            decoder(::C2SLinkP2P),
+            ::C2SLinkP2P,
             ServerLinkP2PHandler
         )
-        channel.register(
+        register(
             C2SCloseGui::class.java,
-            encoder,
-            decoder(::C2SCloseGui),
+            ::C2SCloseGui,
             ServerCloseGuiHandler
         )
-        channel.register(
+        register(
             C2SUpdateMemoryInfo::class.java,
-            encoder,
-            decoder(::C2SUpdateMemoryInfo),
+            ::C2SUpdateMemoryInfo,
             ServerUpdateMemoryInfoHandler
         )
 
-        channel.register(
+        register(
             C2SRenameP2P::class.java,
-            encoder,
-            decoder(::C2SRenameP2P),
+            ::C2SRenameP2P,
             ServerRenameP2PTunnelHandler
         )
-        channel.register(
+        register(
             C2SRefreshP2PList::class.java,
-            encoder,
-            decoder(::C2SRefreshP2PList),
+            ::C2SRefreshP2PList,
             ServerRefreshP2PListHandler
         )
-        channel.register(
+        register(
             C2SUnlinkP2P::class.java,
-            encoder,
-            decoder(::C2SUnlinkP2P),
+            ::C2SUnlinkP2P,
             ServerUnlinkP2PHandler
         )
-        channel.register(
+        register(
             C2STypeChange::class.java,
-            encoder,
-            decoder(::C2STypeChange),
+            ::C2STypeChange,
             ServerTypeChangeHandler
         )
         networkWorker =
@@ -113,7 +114,7 @@ object ModNetwork {
 
             cache.type = type
             if (playerState.updateReady + NETWORK_CD < System.currentTimeMillis()) {
-                channel.sendToPlayer(
+                sendToPlayer(
                     player as ServerPlayer,
                     S2CUpdateP2P(cache.retrieveP2PList(), true)
                 )
@@ -123,7 +124,7 @@ object ModNetwork {
                 networkWorker.schedule(
                     {
                         synchronized(ModNetwork.playerState) {
-                            channel.sendToPlayer(
+                            sendToPlayer(
                                 player as ServerPlayer,
                                 S2CUpdateP2P(cache.retrieveP2PList(), true)
                             )
@@ -147,14 +148,14 @@ object ModNetwork {
             val cache = playerState.gridCache
 
             if (playerState.updateReady + NETWORK_CD < System.currentTimeMillis()) {
-                channel.sendToPlayer(player as ServerPlayer, S2CUpdateP2P(cache.getP2PUpdates()))
+                sendToPlayer(player as ServerPlayer, S2CUpdateP2P(cache.getP2PUpdates()))
                 playerState.updateReady = System.currentTimeMillis() + NETWORK_CD
             } else if (!playerState.updatePending) {
                 playerState.updatePending = true
                 networkWorker.schedule(
                     {
                         synchronized(ModNetwork.playerState) {
-                            channel.sendToPlayer(
+                            sendToPlayer(
                                 player as ServerPlayer,
                                 S2CUpdateP2P(cache.getP2PUpdates())
                             )
@@ -189,7 +190,7 @@ object ModNetwork {
             }
         })
         */
-        channel.sendToPlayer(player, S2COpenGui(cache.retrieveP2PList(), info))
+        sendToPlayer(player, S2COpenGui(cache.retrieveP2PList(), info))
     }
 
     fun removeConnection(player: Player) {

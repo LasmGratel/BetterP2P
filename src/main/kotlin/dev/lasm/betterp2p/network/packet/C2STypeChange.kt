@@ -10,7 +10,7 @@ import dev.lasm.betterp2p.network.data.writeP2PLocation
 import java.util.function.Supplier
 import net.minecraft.network.FriendlyByteBuf
 
-class C2STypeChange(var newType: Int = TUNNEL_ANY, var p2p: P2PLocation? = null) : IMessage {
+class C2STypeChange(var newType: Int = TUNNEL_ANY, var p2p: P2PLocation? = null) : IC2SMessage {
     override fun fromBytes(buf: FriendlyByteBuf) {
         newType = buf.readByte().toInt()
         p2p = readP2PLocation(buf)

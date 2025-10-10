@@ -8,7 +8,7 @@ import dev.lasm.betterp2p.network.data.writeMemoryInfo
 import java.util.function.Supplier
 import net.minecraft.network.FriendlyByteBuf
 
-class C2SUpdateMemoryInfo(var info: MemoryInfo = MemoryInfo()) : IMessage {
+class C2SUpdateMemoryInfo(var info: MemoryInfo = MemoryInfo()) : IC2SMessage {
     override fun fromBytes(buf: FriendlyByteBuf) {
         info = readMemoryInfo(buf)
     }

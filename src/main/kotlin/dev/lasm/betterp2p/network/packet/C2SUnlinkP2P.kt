@@ -10,7 +10,7 @@ import java.util.function.Supplier
 import net.minecraft.network.FriendlyByteBuf
 
 /** Unlink input from outputs message (set freq to 0) */
-class C2SUnlinkP2P(var p2p: P2PLocation? = null, var type: Int = TUNNEL_ANY) : IMessage {
+class C2SUnlinkP2P(var p2p: P2PLocation? = null, var type: Int = TUNNEL_ANY) : IC2SMessage {
     override fun fromBytes(buf: FriendlyByteBuf) {
         p2p = readP2PLocation(buf)
         type = buf.readByte().toInt()

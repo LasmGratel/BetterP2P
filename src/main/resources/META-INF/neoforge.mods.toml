@@ -26,13 +26,6 @@ ordering = "NONE"
 side = "BOTH"
 
 [[dependencies.${mod_id}]]
-modId = "architectury"
-mandatory = true
-versionRange = "[13,)"
-ordering = "AFTER"
-side = "BOTH"
-
-[[dependencies.${mod_id}]]
 modId = "kotlinforforge"
 mandatory = true
 versionRange = "[5,)"

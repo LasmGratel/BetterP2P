@@ -14,7 +14,7 @@ import java.util.function.Supplier
 import net.minecraft.network.FriendlyByteBuf
 import net.minecraft.network.chat.Component
 
-class C2SRenameP2P(var p2p: P2PLocation? = null, var name: String = "") : IMessage {
+class C2SRenameP2P(var p2p: P2PLocation? = null, var name: String = "") : IC2SMessage {
 
     override fun fromBytes(buf: FriendlyByteBuf) {
         p2p = readP2PLocation(buf)

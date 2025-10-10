@@ -5,7 +5,7 @@ import dev.lasm.betterp2p.network.ModNetwork
 import java.util.function.Supplier
 import net.minecraft.network.FriendlyByteBuf
 
-class C2SCloseGui : IMessage {
+class C2SCloseGui : IC2SMessage {
     override fun toBytes(buf: FriendlyByteBuf) {}
 
     override fun fromBytes(buf: FriendlyByteBuf) {}

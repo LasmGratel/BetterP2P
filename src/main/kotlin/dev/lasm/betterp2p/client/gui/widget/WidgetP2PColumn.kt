@@ -93,7 +93,7 @@ class WidgetP2PColumn(
             val info: InfoWrapper = renameBar.info!!
 
             renameBar.value = renameBar.value.trim()
-            ModNetwork.channel.sendToServer(C2SRenameP2P(info.loc, renameBar.value))
+            ModNetwork.sendToServer(C2SRenameP2P(info.loc, renameBar.value))
         }
         renameBar.visible = false
         renameBar.value = ""
@@ -130,15 +130,15 @@ class WidgetP2PColumn(
         when (mode()) {
             BetterMemoryCardModes.INPUT -> {
                 BetterP2P.logger.debug("Bind {} as input", info.loc)
-                ModNetwork.channel.sendToServer(C2SLinkP2P(info.loc, infos.selectedEntry))
+                ModNetwork.sendToServer(C2SLinkP2P(info.loc, infos.selectedEntry))
             }
             BetterMemoryCardModes.OUTPUT -> {
                 BetterP2P.logger.debug("Bind {} as output", info.loc)
-                ModNetwork.channel.sendToServer(C2SLinkP2P(infos.selectedEntry, info.loc))
+                ModNetwork.sendToServer(C2SLinkP2P(infos.selectedEntry, info.loc))
             }
             BetterMemoryCardModes.COPY -> {
                 val input = findInput(infos.selectedInfo?.frequency)
-                if (input != null) ModNetwork.channel.sendToServer(C2SLinkP2P(input.loc, info.loc))
+                if (input != null) ModNetwork.sendToServer(C2SLinkP2P(input.loc, info.loc))
             }
             else -> {
                 BetterP2P.logger.debug("Somehow bind button was pressed while in UNBIND mode.")
@@ -148,7 +148,7 @@ class WidgetP2PColumn(
 
     fun onUnbindButtonClicked(info: InfoWrapper) {
         if (info.frequency != 0.toShort()) {
-            ModNetwork.channel.sendToServer(C2SUnlinkP2P(info.loc, gui.getTypeID()))
+            ModNetwork.sendToServer(C2SUnlinkP2P(info.loc, gui.getTypeID()))
             info.frequency = 0.toShort()
         }
     }

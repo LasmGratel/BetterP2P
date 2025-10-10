@@ -142,7 +142,7 @@ class P2PTypeButton(
                     "§a" + type.get()!!.stack.displayName
                 )
         }
-        ModNetwork.channel.sendToServer(C2SRefreshP2PList(type.get()?.index ?: TUNNEL_ANY))
+        ModNetwork.sendToServer(C2SRefreshP2PList(type.get()?.index ?: TUNNEL_ANY))
         playDownSound(Minecraft.getInstance().soundManager)
     }
 

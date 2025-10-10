@@ -65,7 +65,7 @@ class GuiAdvancedMemoryCard(val theMenu: AdvancedMemoryCardMenu) :
     val refreshButton = IconButton(160, 200, this::onRefresh)
 
     private fun onRefresh(button: Button) {
-        ModNetwork.channel.sendToServer(C2SRefreshP2PList(type?.index ?: TUNNEL_ANY))
+        ModNetwork.sendToServer(C2SRefreshP2PList(type?.index ?: TUNNEL_ANY))
     }
 
     private fun onChangeType(button: Button) {
@@ -337,7 +337,7 @@ class GuiAdvancedMemoryCard(val theMenu: AdvancedMemoryCardMenu) :
     }
 
     private fun syncMemoryInfo() {
-        ModNetwork.channel.sendToServer(
+        ModNetwork.sendToServer(
             C2SUpdateMemoryInfo(
                 MemoryInfo(
                     infos.selectedEntry,
@@ -418,7 +418,7 @@ class GuiAdvancedMemoryCard(val theMenu: AdvancedMemoryCardMenu) :
         ClientCache.searchText = searchBar.value
         col.onGuiClosed()
         syncMemoryInfo()
-        ModNetwork.channel.sendToServer(C2SCloseGui())
+        ModNetwork.sendToServer(C2SCloseGui())
         super.onClose()
     }
 
@@ -510,7 +510,7 @@ class GuiAdvancedMemoryCard(val theMenu: AdvancedMemoryCardMenu) :
     fun closeTypeSelector(type: ClientTunnelInfo?) {
         if (this.type != type) {
             this.type = type
-            ModNetwork.channel.sendToServer(C2SRefreshP2PList(type?.index ?: TUNNEL_ANY))
+            ModNetwork.sendToServer(C2SRefreshP2PList(type?.index ?: TUNNEL_ANY))
         }
 
         typeSelector.visible = false

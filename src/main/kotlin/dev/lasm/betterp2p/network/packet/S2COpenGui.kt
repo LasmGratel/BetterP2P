@@ -11,7 +11,7 @@ import net.minecraft.network.FriendlyByteBuf
 class S2COpenGui(
     var infos: List<P2PInfo> = emptyList(),
     var memoryInfo: MemoryInfo = MemoryInfo()
-) : IMessage {
+) : IS2CMessage {
     override fun toBytes(buf: FriendlyByteBuf) {
         buf.writeInt(infos.size)
         for (info in infos) {

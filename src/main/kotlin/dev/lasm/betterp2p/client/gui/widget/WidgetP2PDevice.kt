@@ -286,7 +286,7 @@ class WidgetP2PDevice(
     }
 
     override fun accept(type: ClientTunnelInfo?) {
-        ModNetwork.channel.sendToServer(
+        ModNetwork.sendToServer(
             C2STypeChange(type?.index ?: TUNNEL_ANY, infoSupplier()!!.loc)
         )
         col.gui.closeTypeSelector(type)

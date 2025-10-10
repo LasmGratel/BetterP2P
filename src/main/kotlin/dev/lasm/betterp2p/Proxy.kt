@@ -4,7 +4,6 @@ import appeng.api.parts.IPartItem
 import appeng.core.definitions.AEParts
 import appeng.core.definitions.ItemDefinition
 import appeng.parts.p2p.*
-import dev.architectury.platform.Platform
 import dev.lasm.betterp2p.util.p2p.ClientTunnelInfo
 import dev.lasm.betterp2p.util.p2p.TunnelInfo
 import java.util.function.Supplier
@@ -12,6 +11,7 @@ import net.minecraft.core.registries.BuiltInRegistries
 import net.minecraft.resources.ResourceLocation
 import net.minecraft.world.item.Item
 import net.minecraft.world.item.ItemStack
+import net.neoforged.fml.ModList
 
 /** A proxy for the server */
 open class CommonProxy {
@@ -70,7 +70,7 @@ open class CommonProxy {
             classType = "stone.mae2.parts.p2p.PatternP2PTunnelPart"
         )
 
-        if (Platform.isModLoaded("gtceu"))
+        if (ModList.get().isLoaded("gtceu"))
             registerModTunnel(
                 def = { BuiltInRegistries.ITEM[ResourceLocation.tryBuild("mae2", "eu_p2p_tunnel")] },
                 type = typeId++,
@@ -182,7 +182,7 @@ class ClientProxy : CommonProxy() {
             icon = ResourceLocation.tryBuild("ae2", "textures/block/pattern_provider.png")!!
         )
 
-        if (Platform.isModLoaded("gtceu"))
+        if (ModList.get().isLoaded("gtceu"))
             registerModTunnel(
                 def = { BuiltInRegistries.ITEM[ResourceLocation.tryBuild("mae2", "eu_p2p_tunnel")] },
                 type = typeId++,

@@ -9,7 +9,7 @@ import java.util.function.Supplier
 import net.minecraft.client.Minecraft
 import net.minecraft.network.FriendlyByteBuf
 
-class S2CUpdateP2P(var infos: List<P2PInfo> = emptyList(), var clear: Boolean = false) : IMessage {
+class S2CUpdateP2P(var infos: List<P2PInfo> = emptyList(), var clear: Boolean = false) : IS2CMessage {
     override fun fromBytes(buf: FriendlyByteBuf) {
         val length = buf.readInt()
         val list = ArrayList<P2PInfo>(length)
