@@ -7,7 +7,6 @@ import com.mojang.blaze3d.systems.RenderSystem
 import dev.lasm.betterp2p.BetterP2P
 import dev.lasm.betterp2p.client.gui.GuiAdvancedMemoryCard
 import dev.lasm.betterp2p.client.gui.drawBlockIcon
-import dev.lasm.betterp2p.network.ModNetwork
 import dev.lasm.betterp2p.network.data.TUNNEL_ANY
 import dev.lasm.betterp2p.network.packet.C2SRefreshP2PList
 import dev.lasm.betterp2p.util.p2p.ClientTunnelInfo
@@ -15,6 +14,7 @@ import kotlin.reflect.KProperty0
 import net.minecraft.client.Minecraft
 import net.minecraft.client.gui.GuiGraphics
 import net.minecraft.client.resources.language.I18n
+import net.neoforged.neoforge.network.PacketDistributor
 
 private const val s = "gui.advanced_memory_card.types.filtered"
 
@@ -142,7 +142,7 @@ class P2PTypeButton(
                     "§a" + type.get()!!.stack.displayName
                 )
         }
-        ModNetwork.sendToServer(C2SRefreshP2PList(type.get()?.index ?: TUNNEL_ANY))
+        PacketDistributor.sendToServer(C2SRefreshP2PList(type.get()?.index ?: TUNNEL_ANY))
         playDownSound(Minecraft.getInstance().soundManager)
     }
 

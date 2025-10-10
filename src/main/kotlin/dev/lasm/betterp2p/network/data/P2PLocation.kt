@@ -1,16 +1,35 @@
 package dev.lasm.betterp2p.network.data
 
 import appeng.parts.p2p.P2PTunnelPart
+import com.mojang.serialization.Codec
+import com.mojang.serialization.codecs.RecordCodecBuilder
+import io.netty.buffer.ByteBuf
 import net.minecraft.core.BlockPos
 import net.minecraft.core.Direction
 import net.minecraft.core.registries.Registries
 import net.minecraft.nbt.CompoundTag
-import net.minecraft.network.FriendlyByteBuf
+import net.minecraft.network.codec.StreamCodec
 import net.minecraft.resources.ResourceKey
-import net.minecraft.resources.ResourceLocation
 import net.minecraft.world.level.Level
 
-data class P2PLocation(var pos: BlockPos, var facing: Direction, var dim: ResourceKey<Level>) {
+data class P2PLocation(val pos: BlockPos, val facing: Direction, val dim: ResourceKey<Level>) {
+
+    companion object {
+        val CODEC: Codec<P2PLocation> = RecordCodecBuilder.create { instance ->
+            instance.group(
+                BlockPos.CODEC.fieldOf("pos").forGetter(P2PLocation::pos),
+                Direction.CODEC.fieldOf("facing").forGetter(P2PLocation::facing),
+                ResourceKey.codec(Registries.DIMENSION).fieldOf("dim").forGetter(P2PLocation::dim)
+            ).apply(instance, ::P2PLocation)
+        }
+        val STREAM_CODEC: StreamCodec<ByteBuf, P2PLocation> = StreamCodec.composite(
+            BlockPos.STREAM_CODEC, P2PLocation::pos,
+            Direction.STREAM_CODEC, P2PLocation::facing,
+            ResourceKey.streamCodec(Registries.DIMENSION), P2PLocation::dim,
+            ::P2PLocation
+        )
+    }
+
     override fun hashCode(): Int {
         return hashP2P(pos, facing.ordinal, dim).hashCode()
     }
@@ -27,50 +46,6 @@ data class P2PLocation(var pos: BlockPos, var facing: Direction, var dim: Resour
         if (facing != other.facing) return false
 
         return true
-    }
-}
-
-fun writeP2PLocation(buf: FriendlyByteBuf, loc: P2PLocation) {
-    buf.writeLong(loc.pos.asLong())
-    buf.writeByte(loc.facing.ordinal)
-    buf.writeResourceKey(loc.dim)
-}
-
-fun readP2PLocation(buf: FriendlyByteBuf): P2PLocation? {
-    return try {
-        P2PLocation(
-            pos = BlockPos.of(buf.readLong()),
-            facing = Direction.values()[buf.readByte().toInt()],
-            dim = buf.readResourceKey(Registries.DIMENSION)
-        )
-    } catch (e: Exception) {
-        e.printStackTrace()
-        null
-    }
-}
-
-fun writeP2PLocation(loc: P2PLocation?): CompoundTag {
-    val nbt = CompoundTag()
-
-    if (loc != null) {
-        nbt.putLong("pos", loc.pos.asLong())
-        nbt.putByte("facing", loc.facing.ordinal.toByte())
-        nbt.putString("dim", loc.dim.location().toString())
-    }
-
-    return nbt
-}
-
-fun readP2PLocation(tag: CompoundTag): P2PLocation? {
-    return try {
-        P2PLocation(
-            pos = BlockPos.of(tag.getLong("pos")),
-            facing = Direction.values()[tag.getByte("facing").toInt()],
-            dim = ResourceKey.create(Registries.DIMENSION, ResourceLocation.parse(tag.getString("dim")))
-        )
-    } catch (e: Exception) {
-        e.printStackTrace()
-        null
     }
 }
 

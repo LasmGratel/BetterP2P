@@ -1,109 +1,96 @@
 package dev.lasm.betterp2p.network
 
 import appeng.api.networking.IGrid
-import dev.architectury.networking.NetworkChannel
-import dev.architectury.networking.NetworkManager
-import dev.lasm.betterp2p.BetterP2P
+import dev.lasm.betterp2p.client.AdvancedMemoryCardMenu
 import dev.lasm.betterp2p.network.data.GridServerCache
 import dev.lasm.betterp2p.network.data.MemoryInfo
 import dev.lasm.betterp2p.network.packet.*
+import net.minecraft.network.chat.Component
 import java.util.*
 import java.util.concurrent.ScheduledThreadPoolExecutor
 import java.util.concurrent.ThreadFactory
 import java.util.concurrent.TimeUnit
-import net.minecraft.network.FriendlyByteBuf
-import net.minecraft.resources.ResourceLocation
 import net.minecraft.server.level.ServerPlayer
+import net.minecraft.world.MenuProvider
+import net.minecraft.world.entity.player.Inventory
 import net.minecraft.world.entity.player.Player
-import java.util.function.Supplier
+import net.minecraft.world.inventory.AbstractContainerMenu
+import net.neoforged.neoforge.network.PacketDistributor
+import net.neoforged.neoforge.network.event.RegisterPayloadHandlersEvent
+import net.neoforged.neoforge.network.registration.HandlerThread
 
 /** Network cooldown time in milliseconds */
 const val NETWORK_CD = 250L
 
 /** Mod network manager. Handles server <-> client communication. */
 object ModNetwork {
-    val channel = NetworkChannel.create(ResourceLocation.tryBuild(BetterP2P.MOD_ID, "networking_channel"))
-
-    fun sendToServer(msg: IC2SMessage) {
-        channel.sendToServer(msg);
-    }
-
-    fun sendToPlayer(sp: ServerPlayer, msg: IS2CMessage) {
-        channel.sendToPlayer(sp, msg);
-    }
-
-    fun <T: IMessage> register(msg: Class<T>, fac: () -> T, consumer: (T, Supplier<NetworkManager.PacketContext>) -> Unit) {
-        channel.register(msg, encoder, { buf: FriendlyByteBuf -> fac().also { it.fromBytes(buf) } }, consumer)
-    }
 
     /** for client requests (changing viewed p2p) */
     val playerState: MutableMap<UUID, PlayerRequest> = Collections.synchronizedMap(WeakHashMap())
 
     /** Network Thread */
-    private lateinit var networkWorker: ScheduledThreadPoolExecutor
+    private val networkWorker: ScheduledThreadPoolExecutor =
+        ScheduledThreadPoolExecutor(
+            1,
+            ThreadFactory {
+                val th = Thread(it)
+                th.name = "BetterP2P-NetworkWorker"
+                th.isDaemon = true
+                th.priority = Thread.MIN_PRIORITY
+                th
+            }
+        )
 
-    val encoder = { packet: IMessage, buf: FriendlyByteBuf -> packet.toBytes(buf) }
-
-    fun registerNetwork() {
-        register(
-            S2COpenGui::class.java,
-            ::S2COpenGui,
+    fun registerNetwork(event: RegisterPayloadHandlersEvent) {
+        val reg = event.registrar("1").executesOn(HandlerThread.NETWORK)
+        reg.playToClient(
+            S2COpenGui.TYPE,
+            S2COpenGui.STREAM_CODEC,
             ClientOpenGuiHandler
         )
 
-        register(
-            S2CUpdateP2P::class.java,
-            ::S2CUpdateP2P,
+        reg.playToClient(
+            S2CUpdateP2P.TYPE,
+            S2CUpdateP2P.STREAM_CODEC,
             ClientUpdateP2PHandler
         )
 
-        register(
-            C2SLinkP2P::class.java,
-            ::C2SLinkP2P,
+        reg.playToServer(
+            C2SLinkP2P.TYPE,
+            C2SLinkP2P.STREAM_CODEC,
             ServerLinkP2PHandler
         )
-        register(
-            C2SCloseGui::class.java,
-            ::C2SCloseGui,
+        reg.playToServer(
+            C2SCloseGui.TYPE,
+            C2SCloseGui.STREAM_CODEC,
             ServerCloseGuiHandler
         )
-        register(
-            C2SUpdateMemoryInfo::class.java,
-            ::C2SUpdateMemoryInfo,
+        reg.playToServer(
+            C2SUpdateMemoryInfo.TYPE,
+            C2SUpdateMemoryInfo.STREAM_CODEC,
             ServerUpdateMemoryInfoHandler
         )
 
-        register(
-            C2SRenameP2P::class.java,
-            ::C2SRenameP2P,
+        reg.playToServer(
+            C2SRenameP2P.TYPE,
+            C2SRenameP2P.STREAM_CODEC,
             ServerRenameP2PTunnelHandler
         )
-        register(
-            C2SRefreshP2PList::class.java,
-            ::C2SRefreshP2PList,
+        reg.playToServer(
+            C2SRefreshP2PList.TYPE,
+            C2SRefreshP2PList.STREAM_CODEC,
             ServerRefreshP2PListHandler
         )
-        register(
-            C2SUnlinkP2P::class.java,
-            ::C2SUnlinkP2P,
+        reg.playToServer(
+            C2SUnlinkP2P.TYPE,
+            C2SUnlinkP2P.STREAM_CODEC,
             ServerUnlinkP2PHandler
         )
-        register(
-            C2STypeChange::class.java,
-            ::C2STypeChange,
+        reg.playToServer(
+            C2SChangeP2PType.TYPE,
+            C2SChangeP2PType.STREAM_CODEC,
             ServerTypeChangeHandler
         )
-        networkWorker =
-            ScheduledThreadPoolExecutor(
-                1,
-                ThreadFactory {
-                    val th = Thread(it)
-                    th.name = "BetterP2P-NetworkWorker"
-                    th.isDaemon = true
-                    th.priority = Thread.MIN_PRIORITY
-                    th
-                }
-            )
     }
 
     /** Utility function that asks for a full refresh of a specific p2p type. */
@@ -114,7 +101,7 @@ object ModNetwork {
 
             cache.type = type
             if (playerState.updateReady + NETWORK_CD < System.currentTimeMillis()) {
-                sendToPlayer(
+                PacketDistributor.sendToPlayer(
                     player as ServerPlayer,
                     S2CUpdateP2P(cache.retrieveP2PList(), true)
                 )
@@ -124,7 +111,7 @@ object ModNetwork {
                 networkWorker.schedule(
                     {
                         synchronized(ModNetwork.playerState) {
-                            sendToPlayer(
+                            PacketDistributor.sendToPlayer(
                                 player as ServerPlayer,
                                 S2CUpdateP2P(cache.retrieveP2PList(), true)
                             )
@@ -148,14 +135,14 @@ object ModNetwork {
             val cache = playerState.gridCache
 
             if (playerState.updateReady + NETWORK_CD < System.currentTimeMillis()) {
-                sendToPlayer(player as ServerPlayer, S2CUpdateP2P(cache.getP2PUpdates()))
+                PacketDistributor.sendToPlayer(player as ServerPlayer, S2CUpdateP2P(cache.getP2PUpdates()))
                 playerState.updateReady = System.currentTimeMillis() + NETWORK_CD
             } else if (!playerState.updatePending) {
                 playerState.updatePending = true
                 networkWorker.schedule(
                     {
                         synchronized(ModNetwork.playerState) {
-                            sendToPlayer(
+                            PacketDistributor.sendToPlayer(
                                 player as ServerPlayer,
                                 S2CUpdateP2P(cache.getP2PUpdates())
                             )
@@ -175,8 +162,8 @@ object ModNetwork {
 
         playerState[player.uuid] = PlayerRequest(gridCache = cache)
         if (player !is ServerPlayer) return
-        /*
-        MenuRegistry.openMenu(player, object : MenuProvider {
+
+        player.openMenu(object : MenuProvider {
             override fun createMenu(
                 id: Int,
                 inventory: Inventory,
@@ -189,8 +176,7 @@ object ModNetwork {
                 return Component.translatable("container.examplemod.example_menu")
             }
         })
-        */
-        sendToPlayer(player, S2COpenGui(cache.retrieveP2PList(), info))
+        PacketDistributor.sendToPlayer(player, S2COpenGui(cache.retrieveP2PList(), info))
     }
 
     fun removeConnection(player: Player) {

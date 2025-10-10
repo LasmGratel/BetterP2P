@@ -13,7 +13,6 @@ import dev.lasm.betterp2p.client.ClientCache
 import dev.lasm.betterp2p.client.gui.widget.*
 import dev.lasm.betterp2p.item.BetterMemoryCardModes
 import dev.lasm.betterp2p.item.MAX_TOOLTIP_LENGTH
-import dev.lasm.betterp2p.network.ModNetwork
 import dev.lasm.betterp2p.network.data.MemoryInfo
 import dev.lasm.betterp2p.network.data.P2PInfo
 import dev.lasm.betterp2p.network.data.P2PLocation
@@ -36,6 +35,9 @@ import net.minecraft.network.chat.Component
 import net.minecraft.network.chat.Style
 import net.minecraft.resources.ResourceLocation
 import net.minecraft.util.FormattedCharSequence
+import net.neoforged.neoforge.network.PacketDistributor
+import java.util.Optional
+import kotlin.jvm.optionals.getOrNull
 
 val TEXTURE = ResourceLocation.tryBuild(MOD_ID, "textures/gui/advanced_memory_card.png")!!
 const val GUI_WIDTH = 288
@@ -65,7 +67,7 @@ class GuiAdvancedMemoryCard(val theMenu: AdvancedMemoryCardMenu) :
     val refreshButton = IconButton(160, 200, this::onRefresh)
 
     private fun onRefresh(button: Button) {
-        ModNetwork.sendToServer(C2SRefreshP2PList(type?.index ?: TUNNEL_ANY))
+        PacketDistributor.sendToServer(C2SRefreshP2PList(type?.index ?: TUNNEL_ANY))
     }
 
     private fun onChangeType(button: Button) {
@@ -239,7 +241,7 @@ class GuiAdvancedMemoryCard(val theMenu: AdvancedMemoryCardMenu) :
         col.resize(scale, h - 75)
         col.setPosition(leftPos + tableX, topPos + tableY)
 
-        infos.select(memoryInfo.selectedEntry)
+        infos.select(memoryInfo.selectedEntry.getOrNull())
         infos.refresh()
 
         scrollBar.height = numEntries * P2PEntryConstants.HEIGHT + (numEntries - 1) - 7
@@ -337,10 +339,10 @@ class GuiAdvancedMemoryCard(val theMenu: AdvancedMemoryCardMenu) :
     }
 
     private fun syncMemoryInfo() {
-        ModNetwork.sendToServer(
+        PacketDistributor.sendToServer(
             C2SUpdateMemoryInfo(
                 MemoryInfo(
-                    infos.selectedEntry,
+                    Optional.ofNullable(infos.selectedEntry),
                     selectedInfo?.frequency ?: 0,
                     mode,
                     scale,
@@ -418,7 +420,7 @@ class GuiAdvancedMemoryCard(val theMenu: AdvancedMemoryCardMenu) :
         ClientCache.searchText = searchBar.value
         col.onGuiClosed()
         syncMemoryInfo()
-        ModNetwork.sendToServer(C2SCloseGui())
+        PacketDistributor.sendToServer(C2SCloseGui())
         super.onClose()
     }
 
@@ -510,7 +512,7 @@ class GuiAdvancedMemoryCard(val theMenu: AdvancedMemoryCardMenu) :
     fun closeTypeSelector(type: ClientTunnelInfo?) {
         if (this.type != type) {
             this.type = type
-            ModNetwork.sendToServer(C2SRefreshP2PList(type?.index ?: TUNNEL_ANY))
+            PacketDistributor.sendToServer(C2SRefreshP2PList(type?.index ?: TUNNEL_ANY))
         }
 
         typeSelector.visible = false

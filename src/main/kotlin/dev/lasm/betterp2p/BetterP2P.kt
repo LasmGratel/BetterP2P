@@ -5,6 +5,7 @@ import dev.lasm.betterp2p.client.RenderBlockOutline
 import dev.lasm.betterp2p.client.gui.GuiAdvancedMemoryCard
 import dev.lasm.betterp2p.item.ItemAdvancedMemoryCard
 import dev.lasm.betterp2p.network.ModNetwork
+import dev.lasm.betterp2p.network.data.MemoryInfo
 import net.minecraft.client.Camera
 import net.minecraft.client.Minecraft
 import net.minecraft.client.multiplayer.ClientLevel
@@ -45,12 +46,18 @@ object BetterP2P {
     val ADVANCED_MEMORY_CARD_MENU: DeferredHolder<MenuType<*>, MenuType<AdvancedMemoryCardMenu>> =
         MENUS.register("advanced_memory_card", Supplier { MenuType(::AdvancedMemoryCardMenu, FeatureFlagSet.of()) })
 
+    val DATA_COMPONENTS = DeferredRegister.createDataComponents(Registries.DATA_COMPONENT_TYPE, BetterP2P.MOD_ID)
+    val MEMORY_INFO = DATA_COMPONENTS.registerComponentType("memory_info") { builder ->
+        builder.persistent(MemoryInfo.CODEC).networkSynchronized(MemoryInfo.STREAM_CODEC)
+    }
+
     init {
         ITEMS.register(MOD_BUS)
         MENUS.register(MOD_BUS)
+        DATA_COMPONENTS.register(MOD_BUS)
         NeoForge.EVENT_BUS.addListener(::onPlayerQuit)
         NeoForge.EVENT_BUS.addListener(::onRenderLevelStage)
-        ModNetwork.registerNetwork()
+        MOD_BUS.addListener(ModNetwork::registerNetwork)
         MOD_BUS.addListener(::onRegisterMenuScreens)
         MOD_BUS.addListener(::onBuildCreativeModeTabContents)
     }
@@ -60,14 +67,10 @@ object BetterP2P {
     }
 
     fun onBuildCreativeModeTabContents(event: BuildCreativeModeTabContentsEvent) {
-        {
-            if (event.tabKey == ResourceKey.create(
-                    Registries.CREATIVE_MODE_TAB,
-                    ResourceLocation.tryBuild("ae2", "main")!!
-                )
-            )
-                event.accept(ADVANCED_MEMORY_CARD_ITEM.get())
-        }
+        if (event.tabKey == ResourceKey.create(
+                Registries.CREATIVE_MODE_TAB,
+                ResourceLocation.fromNamespaceAndPath("ae2", "main")
+        )) event.accept(ADVANCED_MEMORY_CARD_ITEM.get())
     }
 
     fun onRenderLevelStage(context: RenderLevelStageEvent) {

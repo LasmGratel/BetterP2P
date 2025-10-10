@@ -1,50 +1,40 @@
 package dev.lasm.betterp2p.network.data
 
+import com.mojang.serialization.Codec
+import com.mojang.serialization.codecs.RecordCodecBuilder
 import dev.lasm.betterp2p.client.gui.widget.GuiScale
 import dev.lasm.betterp2p.item.BetterMemoryCardModes
-import net.minecraft.network.FriendlyByteBuf
+import io.netty.buffer.ByteBuf
+import net.minecraft.network.codec.ByteBufCodecs
+import net.minecraft.network.codec.StreamCodec
+import java.util.Optional
 
 const val TUNNEL_ANY: Int = -1
 
 data class MemoryInfo(
-    var selectedEntry: P2PLocation? = null,
-    var frequency: Short = 0,
-    var mode: BetterMemoryCardModes = BetterMemoryCardModes.OUTPUT,
-    var guiScale: GuiScale = GuiScale.DYNAMIC,
-    var type: Int = TUNNEL_ANY
-)
+    val selectedEntry: Optional<P2PLocation> = Optional.empty(),
+    val frequency: Short = 0,
+    val mode: BetterMemoryCardModes = BetterMemoryCardModes.OUTPUT,
+    val guiScale: GuiScale = GuiScale.DYNAMIC,
+    val type: Int = TUNNEL_ANY
+) {
+    companion object {
+        val STREAM_CODEC: StreamCodec<ByteBuf, MemoryInfo> = StreamCodec.composite(
+            ByteBufCodecs.optional(P2PLocation.STREAM_CODEC), MemoryInfo::selectedEntry,
+            ByteBufCodecs.SHORT, MemoryInfo::frequency,
+            ByteBufCodecs.INT.map(BetterMemoryCardModes.values()::get, BetterMemoryCardModes::ordinal), MemoryInfo::mode,
+            ByteBufCodecs.INT.map(GuiScale.values()::get, GuiScale::ordinal), MemoryInfo::guiScale,
+            ByteBufCodecs.INT, MemoryInfo::type,
+            ::MemoryInfo
+        )
 
-fun writeMemoryInfo(buf: FriendlyByteBuf, info: MemoryInfo) {
-    val hasSelected = info.selectedEntry != null
-
-    buf.writeBoolean(hasSelected)
-    if (hasSelected) {
-        writeP2PLocation(buf, info.selectedEntry!!)
-    }
-    buf.writeShort(info.frequency.toInt())
-    buf.writeInt(info.mode.ordinal)
-    buf.writeByte(info.guiScale.ordinal)
-    buf.writeByte(info.type)
-}
-
-fun readMemoryInfo(buf: FriendlyByteBuf): MemoryInfo {
-    var selectedEntry: P2PLocation? = null
-    if (buf.readBoolean()) {
-        selectedEntry = readP2PLocation(buf)
-    }
-    val frequency = buf.readShort()
-    val mode =
-        try {
-            BetterMemoryCardModes.values()[buf.readInt()]
-        } catch (e: Exception) {
-            BetterMemoryCardModes.OUTPUT
+        val CODEC: Codec<MemoryInfo> = RecordCodecBuilder.create { instance ->
+            instance.group(
+                Codec.optionalField("selectedEntry", P2PLocation.CODEC, false).forGetter(MemoryInfo::selectedEntry),
+                Codec.SHORT.fieldOf("frequency").forGetter(MemoryInfo::frequency),
+                Codec.INT.xmap(BetterMemoryCardModes.values()::get, BetterMemoryCardModes::ordinal).fieldOf("mode").forGetter(MemoryInfo::mode),
+                Codec.INT.xmap(GuiScale.values()::get, GuiScale::ordinal).fieldOf("guiScale").forGetter(MemoryInfo::guiScale),
+            ).apply(instance, ::MemoryInfo)
         }
-    val gui =
-        try {
-            GuiScale.values()[buf.readByte().toInt()]
-        } catch (e: ArrayIndexOutOfBoundsException) {
-            GuiScale.DYNAMIC
-        }
-    val type = buf.readByte().toInt()
-    return MemoryInfo(selectedEntry, frequency, mode, gui, type)
+    }
 }

@@ -68,7 +68,6 @@ dependencies {
     compileOnly 'org.jetbrains.kotlin:kotlin-stdlib'
     implementation 'thedarkcolour:kotlinforforge-neoforge:5.10.0'
     runtimeOnly 'org.appliedenergistics:guideme:21.1.9'
-    implementation 'dev.architectury:architectury-neoforge:13.0.8'
 }
 
 spotless {

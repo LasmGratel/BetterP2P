@@ -8,7 +8,7 @@ import dev.lasm.betterp2p.client.gui.isClicked
 import dev.lasm.betterp2p.item.BetterMemoryCardModes
 import dev.lasm.betterp2p.network.ModNetwork
 import dev.lasm.betterp2p.network.data.TUNNEL_ANY
-import dev.lasm.betterp2p.network.packet.C2STypeChange
+import dev.lasm.betterp2p.network.packet.C2SChangeP2PType
 import dev.lasm.betterp2p.util.p2p.ClientTunnelInfo
 import java.util.function.Consumer
 import kotlin.reflect.KProperty0
@@ -20,6 +20,7 @@ import net.minecraft.client.gui.narration.NarrationElementOutput
 import net.minecraft.client.renderer.Rect2i
 import net.minecraft.client.resources.language.I18n
 import net.minecraft.network.chat.Component
+import net.neoforged.neoforge.network.PacketDistributor
 import org.lwjgl.glfw.GLFW
 
 object P2PEntryConstants {
@@ -286,8 +287,8 @@ class WidgetP2PDevice(
     }
 
     override fun accept(type: ClientTunnelInfo?) {
-        ModNetwork.sendToServer(
-            C2STypeChange(type?.index ?: TUNNEL_ANY, infoSupplier()!!.loc)
+        PacketDistributor.sendToServer(
+            C2SChangeP2PType(type?.index ?: TUNNEL_ANY, infoSupplier()!!.loc)
         )
         col.gui.closeTypeSelector(type)
     }

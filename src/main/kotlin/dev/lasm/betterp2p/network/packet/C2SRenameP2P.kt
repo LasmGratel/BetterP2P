@@ -3,42 +3,46 @@ package dev.lasm.betterp2p.network.packet
 import appeng.api.networking.IInWorldGridNodeHost
 import appeng.api.parts.IPartHost
 import appeng.parts.p2p.P2PTunnelPart
-import dev.architectury.networking.NetworkManager
+import dev.lasm.betterp2p.BetterP2P
 import dev.lasm.betterp2p.network.ModNetwork
 import dev.lasm.betterp2p.network.data.P2PLocation
-import dev.lasm.betterp2p.network.data.readP2PLocation
 import dev.lasm.betterp2p.network.data.toLoc
-import dev.lasm.betterp2p.network.data.writeP2PLocation
 import dev.lasm.betterp2p.util.p2p.setCustomName
-import java.util.function.Supplier
-import net.minecraft.network.FriendlyByteBuf
+import io.netty.buffer.ByteBuf
 import net.minecraft.network.chat.Component
+import net.minecraft.network.codec.ByteBufCodecs
+import net.minecraft.network.codec.StreamCodec
+import net.minecraft.network.protocol.common.custom.CustomPacketPayload
+import net.minecraft.resources.ResourceLocation
+import net.neoforged.neoforge.network.handling.IPayloadContext
 
-class C2SRenameP2P(var p2p: P2PLocation? = null, var name: String = "") : IC2SMessage {
+class C2SRenameP2P(val p2p: P2PLocation, val name: String) : IC2SMessage {
+    override fun type(): CustomPacketPayload.Type<out CustomPacketPayload?> = TYPE
 
-    override fun fromBytes(buf: FriendlyByteBuf) {
-        p2p = readP2PLocation(buf)
-        name = buf.readUtf()
-    }
-
-    override fun toBytes(buf: FriendlyByteBuf) {
-        writeP2PLocation(buf, p2p!!)
-        buf.writeUtf(name)
+    companion object {
+        val TYPE = CustomPacketPayload.Type<C2SRenameP2P>(
+            ResourceLocation.fromNamespaceAndPath(
+                BetterP2P.MOD_ID,
+                "rename_p2p"
+            )
+        )
+        val STREAM_CODEC: StreamCodec<ByteBuf, C2SRenameP2P> = StreamCodec.composite(
+            P2PLocation.STREAM_CODEC, C2SRenameP2P::p2p,
+        ByteBufCodecs.STRING_UTF8, C2SRenameP2P::name,
+        ::C2SRenameP2P
+        )
     }
 }
 
-val ServerRenameP2PTunnelHandler =
-    a@{ message: C2SRenameP2P, ctx: Supplier<NetworkManager.PacketContext> ->
-        if (message.p2p == null) {
-            return@a Unit
-        }
-        val player = ctx.get().player
+val ServerRenameP2PTunnelHandler: (C2SRenameP2P, IPayloadContext) -> Unit =
+    a@{ message: C2SRenameP2P, ctx: IPayloadContext ->
+        val player = ctx.player()
 
-        val world = player.server?.getLevel(message.p2p!!.dim) ?: return@a Unit
+        val world = player.server?.getLevel(message.p2p.dim) ?: return@a
         val te =
-            world.getChunkAt(message.p2p!!.pos).getBlockEntity(message.p2p!!.pos) ?: return@a Unit
-        val state = ModNetwork.playerState[player.uuid] ?: return@a Unit
-        val facing = message.p2p!!.facing
+            world.getChunkAt(message.p2p.pos).getBlockEntity(message.p2p.pos) ?: return@a
+        val state = ModNetwork.playerState[player.uuid] ?: return@a
+        val facing = message.p2p.facing
 
         if (te is IInWorldGridNodeHost && te is IPartHost && te.getGridNode(facing) != null) {
             val partTunnel = te.getPart(facing)

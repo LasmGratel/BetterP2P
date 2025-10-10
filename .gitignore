@@ -12,6 +12,7 @@ bin/
 libs/
 .classpath
 .project
+.kotlin/
 classes/
 .metadata
 .vscode

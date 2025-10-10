@@ -1,39 +1,37 @@
 package dev.lasm.betterp2p.network.packet
 
-import dev.architectury.networking.NetworkManager
+import dev.lasm.betterp2p.BetterP2P
 import dev.lasm.betterp2p.client.gui.GuiAdvancedMemoryCard
+import dev.lasm.betterp2p.network.data.BetterP2PCodecs
 import dev.lasm.betterp2p.network.data.P2PInfo
-import dev.lasm.betterp2p.network.data.readP2PInfo
-import dev.lasm.betterp2p.network.data.writeP2PInfo
-import java.util.function.Supplier
+import io.netty.buffer.ByteBuf
 import net.minecraft.client.Minecraft
-import net.minecraft.network.FriendlyByteBuf
+import net.minecraft.network.codec.ByteBufCodecs
+import net.minecraft.network.codec.StreamCodec
+import net.minecraft.network.protocol.common.custom.CustomPacketPayload
+import net.minecraft.resources.ResourceLocation
+import net.neoforged.neoforge.network.handling.IPayloadContext
 
-class S2CUpdateP2P(var infos: List<P2PInfo> = emptyList(), var clear: Boolean = false) : IS2CMessage {
-    override fun fromBytes(buf: FriendlyByteBuf) {
-        val length = buf.readInt()
-        val list = ArrayList<P2PInfo>(length)
+class S2CUpdateP2P(val infos: List<P2PInfo> = emptyList(), val clear: Boolean = false) : IS2CMessage {
 
-        for (i in 0 until length) {
-            val info = readP2PInfo(buf)
+    override fun type(): CustomPacketPayload.Type<out CustomPacketPayload?> = TYPE
 
-            if (info != null) {
-                list.add(info)
-            }
-        }
-
-        infos = list
-        clear = buf.readBoolean()
-    }
-
-    override fun toBytes(buf: FriendlyByteBuf) {
-        buf.writeInt(infos.size)
-        infos.forEach { writeP2PInfo(buf, it) }
-        buf.writeBoolean(clear)
+    companion object {
+        val TYPE = CustomPacketPayload.Type<S2CUpdateP2P>(
+            ResourceLocation.fromNamespaceAndPath(
+                BetterP2P.MOD_ID,
+                "update_p2p"
+            )
+        )
+        val STREAM_CODEC: StreamCodec<ByteBuf, S2CUpdateP2P> = StreamCodec.composite(
+            ByteBufCodecs.collection(::ArrayList, BetterP2PCodecs.P2P_INFO_STREAM, Int.MAX_VALUE), S2CUpdateP2P::infos,
+            ByteBufCodecs.BOOL, S2CUpdateP2P::clear,
+            ::S2CUpdateP2P
+        )
     }
 }
 
-val ClientUpdateP2PHandler = { message: S2CUpdateP2P, _: Supplier<NetworkManager.PacketContext> ->
+val ClientUpdateP2PHandler: ((S2CUpdateP2P, IPayloadContext) -> Unit) = { message: S2CUpdateP2P, _: IPayloadContext ->
     Minecraft.getInstance().submit {
         val gui = Minecraft.getInstance().screen
 

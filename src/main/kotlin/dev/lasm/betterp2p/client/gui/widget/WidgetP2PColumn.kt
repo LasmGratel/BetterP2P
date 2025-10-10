@@ -5,7 +5,6 @@ import dev.lasm.betterp2p.client.gui.GuiAdvancedMemoryCard
 import dev.lasm.betterp2p.client.gui.InfoList
 import dev.lasm.betterp2p.client.gui.InfoWrapper
 import dev.lasm.betterp2p.item.BetterMemoryCardModes
-import dev.lasm.betterp2p.network.ModNetwork
 import dev.lasm.betterp2p.network.packet.C2SLinkP2P
 import dev.lasm.betterp2p.network.packet.C2SRenameP2P
 import dev.lasm.betterp2p.network.packet.C2SUnlinkP2P
@@ -17,6 +16,7 @@ import net.minecraft.client.gui.components.AbstractWidget
 import net.minecraft.client.gui.components.EditBox
 import net.minecraft.client.gui.narration.NarrationElementOutput
 import net.minecraft.network.chat.Component
+import net.neoforged.neoforge.network.PacketDistributor
 
 /**
  * WidgetP2PColumn
@@ -93,7 +93,7 @@ class WidgetP2PColumn(
             val info: InfoWrapper = renameBar.info!!
 
             renameBar.value = renameBar.value.trim()
-            ModNetwork.sendToServer(C2SRenameP2P(info.loc, renameBar.value))
+            PacketDistributor.sendToServer(C2SRenameP2P(info.loc, renameBar.value))
         }
         renameBar.visible = false
         renameBar.value = ""
@@ -130,15 +130,15 @@ class WidgetP2PColumn(
         when (mode()) {
             BetterMemoryCardModes.INPUT -> {
                 BetterP2P.logger.debug("Bind {} as input", info.loc)
-                ModNetwork.sendToServer(C2SLinkP2P(info.loc, infos.selectedEntry))
+                PacketDistributor.sendToServer(C2SLinkP2P(info.loc, infos.selectedEntry!!))
             }
             BetterMemoryCardModes.OUTPUT -> {
                 BetterP2P.logger.debug("Bind {} as output", info.loc)
-                ModNetwork.sendToServer(C2SLinkP2P(infos.selectedEntry, info.loc))
+                PacketDistributor.sendToServer(C2SLinkP2P(infos.selectedEntry!!, info.loc))
             }
             BetterMemoryCardModes.COPY -> {
                 val input = findInput(infos.selectedInfo?.frequency)
-                if (input != null) ModNetwork.sendToServer(C2SLinkP2P(input.loc, info.loc))
+                if (input != null) PacketDistributor.sendToServer(C2SLinkP2P(input.loc, info.loc))
             }
             else -> {
                 BetterP2P.logger.debug("Somehow bind button was pressed while in UNBIND mode.")
@@ -148,7 +148,7 @@ class WidgetP2PColumn(
 
     fun onUnbindButtonClicked(info: InfoWrapper) {
         if (info.frequency != 0.toShort()) {
-            ModNetwork.sendToServer(C2SUnlinkP2P(info.loc, gui.getTypeID()))
+            PacketDistributor.sendToServer(C2SUnlinkP2P(info.loc, gui.getTypeID()))
             info.frequency = 0.toShort()
         }
     }

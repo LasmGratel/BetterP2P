@@ -3,13 +3,11 @@ package dev.lasm.betterp2p.item
 import appeng.api.networking.IInWorldGridNodeHost
 import appeng.api.parts.IPartHost
 import appeng.parts.p2p.P2PTunnelPart
+import dev.lasm.betterp2p.BetterP2P
 import dev.lasm.betterp2p.client.ClientCache
-import dev.lasm.betterp2p.client.gui.widget.GuiScale
 import dev.lasm.betterp2p.network.ModNetwork
 import dev.lasm.betterp2p.network.data.*
 import dev.lasm.betterp2p.util.p2p.getTypeIndex
-import net.minecraft.nbt.CompoundTag
-import net.minecraft.nbt.Tag
 import net.minecraft.network.chat.Component
 import net.minecraft.world.InteractionHand
 import net.minecraft.world.InteractionResult
@@ -20,11 +18,13 @@ import net.minecraft.world.item.ItemStack
 import net.minecraft.world.item.TooltipFlag
 import net.minecraft.world.item.context.UseOnContext
 import net.minecraft.world.level.Level
+import java.util.Optional
 
 object ItemAdvancedMemoryCard :
     Item(
         Properties()
             .stacksTo(1)
+            .component(BetterP2P.MEMORY_INFO, MemoryInfo())
     ) {
 
     override fun appendHoverText(
@@ -33,7 +33,7 @@ object ItemAdvancedMemoryCard :
         list: MutableList<Component>,
         tooltipFlag: TooltipFlag
     ) {
-        val info = getInfo(stack)
+        val info = stack.components.get(BetterP2P.MEMORY_INFO.get())!!
         list.add(
             Component.translatable("gui.advanced_memory_card.mode.${info.mode.name.lowercase()}")
         )
@@ -64,57 +64,21 @@ object ItemAdvancedMemoryCard :
             val part = te.selectPartWorld(useOnContext.clickLocation).part ?: te.getPart(null)
             val grid = part?.gridNode?.grid ?: return InteractionResult.FAIL
 
-            val info = getInfo(stack)
+            val info = stack.components.get(BetterP2P.MEMORY_INFO.get())!!
+            val selectedEntry: Optional<P2PLocation>
             val type: Int
             if (part is P2PTunnelPart<*>) {
                 type = part.getTypeIndex()
-                info.selectedEntry = part.toLoc()
+                selectedEntry = Optional.of(part.toLoc())
             } else {
                 type = TUNNEL_ANY
-                info.selectedEntry = null
+                selectedEntry = Optional.empty()
             }
-            info.type = type
-            writeInfo(stack, info)
+            stack.update(BetterP2P.MEMORY_INFO, MemoryInfo()) {info -> MemoryInfo(selectedEntry, info.frequency, info.mode, info.guiScale, info.type)}
             ModNetwork.initConnection(player, grid, info)
             return InteractionResult.SUCCESS
         }
 
         return InteractionResult.PASS
-    }
-
-    fun getInfo(stack: ItemStack): MemoryInfo {
-        if (stack.item != this)
-            throw ClassCastException(
-                "Cannot cast ${stack.item.javaClass.name} to ${javaClass.name}"
-            )
-
-        // Initialize NBT if it isn't already a thing
-        /*val compound = stack.tagEnchantments
-        if (!compound.contains("gui")) {
-            compound.putByte("gui", GuiScale.DYNAMIC.ordinal.toByte())
-        }
-        if (!compound.contains("selectedIndex", Tag.TAG_COMPOUND.toInt())) {
-            compound.put("selectedIndex", CompoundTag())
-        }*/
-
-        return MemoryInfo(
-            selectedEntry = readP2PLocation(/*compound.getCompound("selectedIndex")*/CompoundTag()),
-            frequency = 0,//compound.getShort("frequency"),
-            mode = BetterMemoryCardModes.values()[/*compound.getInt("mode")*/0],
-            guiScale = GuiScale.values()[/*compound.getByte("gui").toInt()*/0]
-        )
-    }
-
-    fun writeInfo(stack: ItemStack, info: MemoryInfo) {
-        if (stack.item != this)
-            throw ClassCastException(
-                "Cannot cast ${stack.item.javaClass.name} to ${javaClass.name}"
-            )
-
-        /*val compound = stack.orCreateTag
-        compound.put("selectedIndex", writeP2PLocation(info.selectedEntry))
-        compound.putShort("frequency", info.frequency)
-        compound.putInt("mode", info.mode.ordinal)
-        compound.putByte("gui", info.guiScale.ordinal.toByte())*/
     }
 }

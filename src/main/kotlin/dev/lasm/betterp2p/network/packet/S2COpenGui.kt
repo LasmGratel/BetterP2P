@@ -1,43 +1,37 @@
 package dev.lasm.betterp2p.network.packet
 
-import dev.architectury.networking.NetworkManager.PacketContext
+import dev.lasm.betterp2p.BetterP2P
 import dev.lasm.betterp2p.client.AdvancedMemoryCardMenu
 import dev.lasm.betterp2p.client.gui.GuiAdvancedMemoryCard
 import dev.lasm.betterp2p.network.data.*
-import java.util.function.Supplier
+import io.netty.buffer.ByteBuf
 import net.minecraft.client.Minecraft
-import net.minecraft.network.FriendlyByteBuf
+import net.minecraft.network.codec.ByteBufCodecs
+import net.minecraft.network.codec.StreamCodec
+import net.minecraft.network.protocol.common.custom.CustomPacketPayload
+import net.minecraft.resources.ResourceLocation
+import net.neoforged.neoforge.network.handling.IPayloadContext
 
-class S2COpenGui(
-    var infos: List<P2PInfo> = emptyList(),
-    var memoryInfo: MemoryInfo = MemoryInfo()
-) : IS2CMessage {
-    override fun toBytes(buf: FriendlyByteBuf) {
-        buf.writeInt(infos.size)
-        for (info in infos) {
-            writeP2PInfo(buf, info)
-        }
-        writeMemoryInfo(buf, memoryInfo)
-    }
+class S2COpenGui(val infos: List<P2PInfo> = emptyList(), val memoryInfo: MemoryInfo = MemoryInfo()) : IS2CMessage {
 
-    override fun fromBytes(buf: FriendlyByteBuf) {
-        val length = buf.readInt()
-        val list = ArrayList<P2PInfo>(length)
+    override fun type(): CustomPacketPayload.Type<out CustomPacketPayload?> = TYPE
 
-        for (i in 0 until length) {
-            val info = readP2PInfo(buf)
-
-            if (info != null) {
-                list.add(info)
-            }
-        }
-
-        infos = list
-        memoryInfo = readMemoryInfo(buf)
+    companion object {
+        val TYPE = CustomPacketPayload.Type<S2COpenGui>(
+            ResourceLocation.fromNamespaceAndPath(
+                BetterP2P.MOD_ID,
+                "open_gui"
+            )
+        )
+        val STREAM_CODEC: StreamCodec<ByteBuf, S2COpenGui> = StreamCodec.composite(
+            ByteBufCodecs.collection(::ArrayList, BetterP2PCodecs.P2P_INFO_STREAM, Int.MAX_VALUE), S2COpenGui::infos,
+            MemoryInfo.STREAM_CODEC, S2COpenGui::memoryInfo,
+            ::S2COpenGui
+        )
     }
 }
 
-val ClientOpenGuiHandler = { message: S2COpenGui, ctx: Supplier<PacketContext> ->
+val ClientOpenGuiHandler: ((S2COpenGui, IPayloadContext) -> Unit) = { message: S2COpenGui, ctx: IPayloadContext ->
     val gui = Minecraft.getInstance().screen
     if (gui is GuiAdvancedMemoryCard) {
         gui.refreshInfo(message.infos)
