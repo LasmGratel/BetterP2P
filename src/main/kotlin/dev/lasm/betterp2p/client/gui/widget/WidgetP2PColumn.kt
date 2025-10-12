@@ -117,12 +117,12 @@ class WidgetP2PColumn(
         gui.focused = renameBar
     }
 
-    override fun onClick(d: Double, e: Double) {
+    override fun onClick(mouseX: Double, mouseY: Double, button: Int) {
         val clickRenameButton = false
         if (!clickRenameButton && renameBar.visible) {
             finishRename()
         }
-        super.onClick(d, e)
+        super.onClick(mouseX, mouseY, button)
     }
 
     fun onBindButtonClicked(info: InfoWrapper) {

@@ -86,14 +86,14 @@ class P2PTypeButton(
         return false
     }
 
-    override fun renderWidget(graphics: GuiGraphics, mouseX: Int, mouseY: Int, partial: Float) {
+    override fun renderWidget(guiGraphics: GuiGraphics, mouseX: Int, mouseY: Int, partial: Float) {
         RenderSystem.enableBlend()
         RenderSystem.enableDepthTest()
-        renderBackground(graphics, mouseY, mouseY, partial)
+        renderBackground(guiGraphics, mouseY, mouseY, partial)
 
         if (type.get() != null) {
             drawBlockIcon(
-                graphics,
+                guiGraphics,
                 type.get()!!.icon(),
                 x = this.x + 2,
                 y = this.y + 2,
@@ -102,7 +102,7 @@ class P2PTypeButton(
             )
         } else {
             drawBlockIcon(
-                graphics,
+                guiGraphics,
                 redstone.icon(),
                 x = this.x + 12,
                 y = this.y + 12,
@@ -110,7 +110,7 @@ class P2PTypeButton(
                 height = 18
             )
             drawBlockIcon(
-                graphics,
+                guiGraphics,
                 fluid.icon(),
                 x = this.x + 7,
                 y = this.y + 7,
@@ -118,7 +118,7 @@ class P2PTypeButton(
                 height = 18
             )
             drawBlockIcon(
-                graphics,
+                guiGraphics,
                 me.icon(),
                 x = this.x + 2,
                 y = this.y + 2,

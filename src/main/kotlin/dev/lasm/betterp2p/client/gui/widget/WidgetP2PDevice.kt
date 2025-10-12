@@ -256,7 +256,7 @@ class WidgetP2PDevice(
         return super.charTyped(codePoint, modifiers)
     }
 
-    override fun onClick(mouseX: Double, mouseY: Double) {
+    override fun onClick(mouseX: Double, mouseY: Double,  button: Int) {
         val info = infoSupplier() ?: return
         if (
             isHovered &&
