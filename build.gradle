@@ -55,19 +55,13 @@ repositories {
         name "Kotlin for Forge"
         url "https://thedarkcolour.github.io/KotlinForForge/"
     }
-    // AE2
-    maven {
-        name 'ModMaven'
-        url 'https://modmaven.dev'
-    }
 }
 
 dependencies {
     implementation "net.neoforged:neoforge:${neo_version}"
-    implementation 'appeng:appliedenergistics2:19.2.0-beta'
+    implementation "org.appliedenergistics:appliedenergistics2:${ae2_version}"
     compileOnly 'org.jetbrains.kotlin:kotlin-stdlib'
     implementation 'thedarkcolour:kotlinforforge-neoforge:5.10.0'
-    runtimeOnly 'org.appliedenergistics:guideme:21.1.9'
 }
 
 spotless {
@@ -116,6 +110,7 @@ tasks.withType(ProcessResources).configureEach {
         mod_version            : project.version,
         mod_authors            : mod_authors,
         mod_description        : mod_description,
+        ae2_version            : ae2_version
     ]
     inputs.properties replaceProperties
 
