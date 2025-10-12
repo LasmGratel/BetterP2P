@@ -20,6 +20,7 @@ import net.minecraft.world.flag.FeatureFlagSet
 import net.minecraft.world.inventory.MenuType
 import net.minecraft.world.item.Item
 import net.neoforged.fml.common.Mod
+import net.neoforged.fml.event.lifecycle.FMLCommonSetupEvent
 import net.neoforged.neoforge.client.event.RegisterMenuScreensEvent
 import net.neoforged.neoforge.client.event.RenderLevelStageEvent
 import net.neoforged.neoforge.common.NeoForge
@@ -68,6 +69,12 @@ object BetterP2P {
         MOD_BUS.addListener(ModNetwork::registerNetwork)
         MOD_BUS.addListener(::onRegisterMenuScreens)
         MOD_BUS.addListener(::onBuildCreativeModeTabContents)
+        MOD_BUS.addListener(::onCommonSetup)
+    }
+
+    fun onCommonSetup(event: FMLCommonSetupEvent) {
+        logger.info("Tunnels init")
+        proxy.initTunnels()
     }
 
     fun onPlayerQuit(event: PlayerEvent.PlayerLoggedOutEvent) {
