@@ -15,16 +15,12 @@ class C2SRefreshP2PList(val type: Int = TUNNEL_ANY) : IC2SMessage {
     override fun type(): CustomPacketPayload.Type<out CustomPacketPayload?> = TYPE
 
     companion object {
-        val TYPE = CustomPacketPayload.Type<C2SRefreshP2PList>(
-            ResourceLocation.fromNamespaceAndPath(
-                BetterP2P.MOD_ID,
-                "refresh_p2p_list"
+        val TYPE =
+            CustomPacketPayload.Type<C2SRefreshP2PList>(
+                ResourceLocation.fromNamespaceAndPath(BetterP2P.MOD_ID, "refresh_p2p_list")
             )
-        )
-        val STREAM_CODEC: StreamCodec<ByteBuf, C2SRefreshP2PList> = StreamCodec.composite(
-            ByteBufCodecs.INT, C2SRefreshP2PList::type,
-            ::C2SRefreshP2PList
-        )
+        val STREAM_CODEC: StreamCodec<ByteBuf, C2SRefreshP2PList> =
+            StreamCodec.composite(ByteBufCodecs.INT, C2SRefreshP2PList::type, ::C2SRefreshP2PList)
     }
 }
 

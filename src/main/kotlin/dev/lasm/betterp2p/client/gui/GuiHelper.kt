@@ -25,7 +25,8 @@ fun GuiGraphics.drawTexturedQuad(
     RenderSystem.setShader { GameRenderer.getPositionTexShader() }
     RenderSystem.setShaderTexture(0, texture)
     val matrix4f: Matrix4f = this.pose().last().pose()
-    val bufferBuilder = Tesselator.getInstance().begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_TEX)
+    val bufferBuilder =
+        Tesselator.getInstance().begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_TEX)
     bufferBuilder.addVertex(matrix4f, x0, y1, 0.0f).setUv(u0, v1)
     bufferBuilder.addVertex(matrix4f, x1, y1, 0.0f).setUv(u1, v1)
     bufferBuilder.addVertex(matrix4f, x1, y0, 0.0f).setUv(u1, v0)
@@ -48,7 +49,8 @@ fun AbstractWidget.isClicked(mouseX: Double, mouseY: Double) =
 fun drawBlockIcon(
     graphics: GuiGraphics,
     icon: ResourceLocation,
-    overlay: ResourceLocation = ResourceLocation.tryBuild("ae2", "textures/part/p2p_tunnel_front.png")!!,
+    overlay: ResourceLocation =
+        ResourceLocation.fromNamespaceAndPath("ae2", "textures/part/p2p_tunnel_front.png"),
     x: Int,
     y: Int,
     width: Int = 16,

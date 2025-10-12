@@ -6,8 +6,6 @@ import dev.lasm.betterp2p.util.p2p.getTypeIndex
 import dev.lasm.betterp2p.util.p2p.hasChannel
 import net.minecraft.core.BlockPos
 import net.minecraft.core.Direction
-import net.minecraft.core.registries.Registries
-import net.minecraft.network.FriendlyByteBuf
 import net.minecraft.resources.ResourceKey
 import net.minecraft.world.level.Level
 

@@ -29,7 +29,8 @@ class InfoWrapper(info: P2PInfo) {
     var icon: ResourceLocation
 
     /** p2p frame */
-    var overlay: ResourceLocation = ResourceLocation.tryBuild("ae2", "textures/part/p2p_tunnel_front.png")!!
+    var overlay: ResourceLocation =
+        ResourceLocation.fromNamespaceAndPath("ae2", "textures/part/p2p_tunnel_front.png")
 
     val description: String
 

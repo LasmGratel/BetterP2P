@@ -16,17 +16,18 @@ class C2SUnlinkP2P(val p2p: P2PLocation, val type: Int = TUNNEL_ANY) : IC2SMessa
     override fun type(): CustomPacketPayload.Type<out CustomPacketPayload?> = TYPE
 
     companion object {
-        val TYPE = CustomPacketPayload.Type<C2SUnlinkP2P>(
-            ResourceLocation.fromNamespaceAndPath(
-                BetterP2P.MOD_ID,
-                "unlink_p2p"
+        val TYPE =
+            CustomPacketPayload.Type<C2SUnlinkP2P>(
+                ResourceLocation.fromNamespaceAndPath(BetterP2P.MOD_ID, "unlink_p2p")
             )
-        )
-        val STREAM_CODEC: StreamCodec<ByteBuf, C2SUnlinkP2P> = StreamCodec.composite(
-            P2PLocation.STREAM_CODEC, C2SUnlinkP2P::p2p,
-            ByteBufCodecs.INT, C2SUnlinkP2P::type,
-            ::C2SUnlinkP2P
-        )
+        val STREAM_CODEC: StreamCodec<ByteBuf, C2SUnlinkP2P> =
+            StreamCodec.composite(
+                P2PLocation.STREAM_CODEC,
+                C2SUnlinkP2P::p2p,
+                ByteBufCodecs.INT,
+                C2SUnlinkP2P::type,
+                ::C2SUnlinkP2P
+            )
     }
 }
 

@@ -46,9 +46,9 @@ class WidgetTypeSelector(
         translated = list
     }
 
-    override fun onClick(mouseX: Double, mouseY: Double) {
+    override fun onClick(mouseX: Double, mouseY: Double, button: Int) {
         if (hoveredIdx != -1) parent?.accept(p2pTypes.getOrNull(hoveredIdx))
-        super.onClick(mouseX, mouseY)
+        super.onClick(mouseX, mouseY, button)
     }
 
     override fun renderWidget(
@@ -89,7 +89,7 @@ class WidgetTypeSelector(
             }
             drawBlockIcon(
                 graphics,
-                ResourceLocation.tryBuild("minecraft", "textures/block/coal_block.png")!!,
+                ResourceLocation.fromNamespaceAndPath("minecraft", "textures/block/coal_block.png"),
                 x = iconPosX + 1,
                 y = iconPosY + 1
             )

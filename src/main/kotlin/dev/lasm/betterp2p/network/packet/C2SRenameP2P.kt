@@ -20,17 +20,18 @@ class C2SRenameP2P(val p2p: P2PLocation, val name: String) : IC2SMessage {
     override fun type(): CustomPacketPayload.Type<out CustomPacketPayload?> = TYPE
 
     companion object {
-        val TYPE = CustomPacketPayload.Type<C2SRenameP2P>(
-            ResourceLocation.fromNamespaceAndPath(
-                BetterP2P.MOD_ID,
-                "rename_p2p"
+        val TYPE =
+            CustomPacketPayload.Type<C2SRenameP2P>(
+                ResourceLocation.fromNamespaceAndPath(BetterP2P.MOD_ID, "rename_p2p")
             )
-        )
-        val STREAM_CODEC: StreamCodec<ByteBuf, C2SRenameP2P> = StreamCodec.composite(
-            P2PLocation.STREAM_CODEC, C2SRenameP2P::p2p,
-        ByteBufCodecs.STRING_UTF8, C2SRenameP2P::name,
-        ::C2SRenameP2P
-        )
+        val STREAM_CODEC: StreamCodec<ByteBuf, C2SRenameP2P> =
+            StreamCodec.composite(
+                P2PLocation.STREAM_CODEC,
+                C2SRenameP2P::p2p,
+                ByteBufCodecs.STRING_UTF8,
+                C2SRenameP2P::name,
+                ::C2SRenameP2P
+            )
     }
 }
 
@@ -39,8 +40,7 @@ val ServerRenameP2PTunnelHandler: (C2SRenameP2P, IPayloadContext) -> Unit =
         val player = ctx.player()
 
         val world = player.server?.getLevel(message.p2p.dim) ?: return@a
-        val te =
-            world.getChunkAt(message.p2p.pos).getBlockEntity(message.p2p.pos) ?: return@a
+        val te = world.getChunkAt(message.p2p.pos).getBlockEntity(message.p2p.pos) ?: return@a
         val state = ModNetwork.playerState[player.uuid] ?: return@a
         val facing = message.p2p.facing
 

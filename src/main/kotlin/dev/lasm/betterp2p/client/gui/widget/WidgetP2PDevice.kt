@@ -6,7 +6,6 @@ import dev.lasm.betterp2p.client.gui.drawBlockIcon
 import dev.lasm.betterp2p.client.gui.drawIcon
 import dev.lasm.betterp2p.client.gui.isClicked
 import dev.lasm.betterp2p.item.BetterMemoryCardModes
-import dev.lasm.betterp2p.network.ModNetwork
 import dev.lasm.betterp2p.network.data.TUNNEL_ANY
 import dev.lasm.betterp2p.network.packet.C2SChangeP2PType
 import dev.lasm.betterp2p.util.p2p.ClientTunnelInfo

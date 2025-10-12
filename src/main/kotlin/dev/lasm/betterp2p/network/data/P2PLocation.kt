@@ -7,7 +7,6 @@ import io.netty.buffer.ByteBuf
 import net.minecraft.core.BlockPos
 import net.minecraft.core.Direction
 import net.minecraft.core.registries.Registries
-import net.minecraft.nbt.CompoundTag
 import net.minecraft.network.codec.StreamCodec
 import net.minecraft.resources.ResourceKey
 import net.minecraft.world.level.Level
@@ -15,19 +14,28 @@ import net.minecraft.world.level.Level
 data class P2PLocation(val pos: BlockPos, val facing: Direction, val dim: ResourceKey<Level>) {
 
     companion object {
-        val CODEC: Codec<P2PLocation> = RecordCodecBuilder.create { instance ->
-            instance.group(
-                BlockPos.CODEC.fieldOf("pos").forGetter(P2PLocation::pos),
-                Direction.CODEC.fieldOf("facing").forGetter(P2PLocation::facing),
-                ResourceKey.codec(Registries.DIMENSION).fieldOf("dim").forGetter(P2PLocation::dim)
-            ).apply(instance, ::P2PLocation)
-        }
-        val STREAM_CODEC: StreamCodec<ByteBuf, P2PLocation> = StreamCodec.composite(
-            BlockPos.STREAM_CODEC, P2PLocation::pos,
-            Direction.STREAM_CODEC, P2PLocation::facing,
-            ResourceKey.streamCodec(Registries.DIMENSION), P2PLocation::dim,
-            ::P2PLocation
-        )
+        val CODEC: Codec<P2PLocation> =
+            RecordCodecBuilder.create { instance ->
+                instance
+                    .group(
+                        BlockPos.CODEC.fieldOf("pos").forGetter(P2PLocation::pos),
+                        Direction.CODEC.fieldOf("facing").forGetter(P2PLocation::facing),
+                        ResourceKey.codec(Registries.DIMENSION)
+                            .fieldOf("dim")
+                            .forGetter(P2PLocation::dim)
+                    )
+                    .apply(instance, ::P2PLocation)
+            }
+        val STREAM_CODEC: StreamCodec<ByteBuf, P2PLocation> =
+            StreamCodec.composite(
+                BlockPos.STREAM_CODEC,
+                P2PLocation::pos,
+                Direction.STREAM_CODEC,
+                P2PLocation::facing,
+                ResourceKey.streamCodec(Registries.DIMENSION),
+                P2PLocation::dim,
+                ::P2PLocation
+            )
     }
 
     override fun hashCode(): Int {

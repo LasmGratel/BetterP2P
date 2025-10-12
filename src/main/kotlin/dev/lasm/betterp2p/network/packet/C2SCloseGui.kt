@@ -13,11 +13,10 @@ class C2SCloseGui : IC2SMessage {
     override fun type(): CustomPacketPayload.Type<out CustomPacketPayload?> = TYPE
 
     companion object {
-        val TYPE = CustomPacketPayload.Type<C2SCloseGui>(
-            ResourceLocation.fromNamespaceAndPath(
-                BetterP2P.MOD_ID, "close_gui"
+        val TYPE =
+            CustomPacketPayload.Type<C2SCloseGui>(
+                ResourceLocation.fromNamespaceAndPath(BetterP2P.MOD_ID, "close_gui")
             )
-        )
         private val EMPTY = C2SCloseGui()
         val STREAM_CODEC: StreamCodec<ByteBuf, C2SCloseGui> = StreamCodec.unit(EMPTY)
     }
@@ -26,7 +25,8 @@ class C2SCloseGui : IC2SMessage {
     override fun hashCode(): Int = 0
 }
 
-val ServerCloseGuiHandler: ((C2SCloseGui, IPayloadContext) -> Unit) = { message: C2SCloseGui, ctx: IPayloadContext ->
-    ModNetwork.playerState.remove(ctx.player().uuid)
-    Unit
-}
+val ServerCloseGuiHandler: ((C2SCloseGui, IPayloadContext) -> Unit) =
+    { message: C2SCloseGui, ctx: IPayloadContext ->
+        ModNetwork.playerState.remove(ctx.player().uuid)
+        Unit
+    }

@@ -5,11 +5,11 @@ import dev.lasm.betterp2p.client.AdvancedMemoryCardMenu
 import dev.lasm.betterp2p.network.data.GridServerCache
 import dev.lasm.betterp2p.network.data.MemoryInfo
 import dev.lasm.betterp2p.network.packet.*
-import net.minecraft.network.chat.Component
 import java.util.*
 import java.util.concurrent.ScheduledThreadPoolExecutor
 import java.util.concurrent.ThreadFactory
 import java.util.concurrent.TimeUnit
+import net.minecraft.network.chat.Component
 import net.minecraft.server.level.ServerPlayer
 import net.minecraft.world.MenuProvider
 import net.minecraft.world.entity.player.Inventory
@@ -43,49 +43,22 @@ object ModNetwork {
 
     fun registerNetwork(event: RegisterPayloadHandlersEvent) {
         val reg = event.registrar("1").executesOn(HandlerThread.NETWORK)
-        reg.playToClient(
-            S2COpenGui.TYPE,
-            S2COpenGui.STREAM_CODEC,
-            ClientOpenGuiHandler
-        )
-
-        reg.playToClient(
-            S2CUpdateP2P.TYPE,
-            S2CUpdateP2P.STREAM_CODEC,
-            ClientUpdateP2PHandler
-        )
-
-        reg.playToServer(
-            C2SLinkP2P.TYPE,
-            C2SLinkP2P.STREAM_CODEC,
-            ServerLinkP2PHandler
-        )
-        reg.playToServer(
-            C2SCloseGui.TYPE,
-            C2SCloseGui.STREAM_CODEC,
-            ServerCloseGuiHandler
-        )
+        reg.playToClient(S2COpenGui.TYPE, S2COpenGui.STREAM_CODEC, ClientOpenGuiHandler)
+        reg.playToClient(S2CUpdateP2P.TYPE, S2CUpdateP2P.STREAM_CODEC, ClientUpdateP2PHandler)
+        reg.playToServer(C2SLinkP2P.TYPE, C2SLinkP2P.STREAM_CODEC, ServerLinkP2PHandler)
+        reg.playToServer(C2SCloseGui.TYPE, C2SCloseGui.STREAM_CODEC, ServerCloseGuiHandler)
         reg.playToServer(
             C2SUpdateMemoryInfo.TYPE,
             C2SUpdateMemoryInfo.STREAM_CODEC,
             ServerUpdateMemoryInfoHandler
         )
-
-        reg.playToServer(
-            C2SRenameP2P.TYPE,
-            C2SRenameP2P.STREAM_CODEC,
-            ServerRenameP2PTunnelHandler
-        )
+        reg.playToServer(C2SRenameP2P.TYPE, C2SRenameP2P.STREAM_CODEC, ServerRenameP2PTunnelHandler)
         reg.playToServer(
             C2SRefreshP2PList.TYPE,
             C2SRefreshP2PList.STREAM_CODEC,
             ServerRefreshP2PListHandler
         )
-        reg.playToServer(
-            C2SUnlinkP2P.TYPE,
-            C2SUnlinkP2P.STREAM_CODEC,
-            ServerUnlinkP2PHandler
-        )
+        reg.playToServer(C2SUnlinkP2P.TYPE, C2SUnlinkP2P.STREAM_CODEC, ServerUnlinkP2PHandler)
         reg.playToServer(
             C2SChangeP2PType.TYPE,
             C2SChangeP2PType.STREAM_CODEC,
@@ -135,7 +108,10 @@ object ModNetwork {
             val cache = playerState.gridCache
 
             if (playerState.updateReady + NETWORK_CD < System.currentTimeMillis()) {
-                PacketDistributor.sendToPlayer(player as ServerPlayer, S2CUpdateP2P(cache.getP2PUpdates()))
+                PacketDistributor.sendToPlayer(
+                    player as ServerPlayer,
+                    S2CUpdateP2P(cache.getP2PUpdates())
+                )
                 playerState.updateReady = System.currentTimeMillis() + NETWORK_CD
             } else if (!playerState.updatePending) {
                 playerState.updatePending = true
@@ -163,19 +139,24 @@ object ModNetwork {
         playerState[player.uuid] = PlayerRequest(gridCache = cache)
         if (player !is ServerPlayer) return
 
-        player.openMenu(object : MenuProvider {
-            override fun createMenu(
-                id: Int,
-                inventory: Inventory,
-                player: Player
-            ): AbstractContainerMenu {
-                return AdvancedMemoryCardMenu(id, inventory).also { it.memoryInfo = info; it.infos = cache.retrieveP2PList() }
-            }
+        player.openMenu(
+            object : MenuProvider {
+                override fun createMenu(
+                    id: Int,
+                    inventory: Inventory,
+                    player: Player
+                ): AbstractContainerMenu {
+                    return AdvancedMemoryCardMenu(id, inventory).also {
+                        it.memoryInfo = info
+                        it.infos = cache.retrieveP2PList()
+                    }
+                }
 
-            override fun getDisplayName(): Component {
-                return Component.translatable("container.examplemod.example_menu")
+                override fun getDisplayName(): Component {
+                    return Component.translatable("container.examplemod.example_menu")
+                }
             }
-        })
+        )
         PacketDistributor.sendToPlayer(player, S2COpenGui(cache.retrieveP2PList(), info))
     }
 

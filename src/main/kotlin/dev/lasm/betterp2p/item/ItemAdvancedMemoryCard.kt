@@ -8,6 +8,7 @@ import dev.lasm.betterp2p.client.ClientCache
 import dev.lasm.betterp2p.network.ModNetwork
 import dev.lasm.betterp2p.network.data.*
 import dev.lasm.betterp2p.util.p2p.getTypeIndex
+import java.util.Optional
 import net.minecraft.network.chat.Component
 import net.minecraft.world.InteractionHand
 import net.minecraft.world.InteractionResult
@@ -18,14 +19,9 @@ import net.minecraft.world.item.ItemStack
 import net.minecraft.world.item.TooltipFlag
 import net.minecraft.world.item.context.UseOnContext
 import net.minecraft.world.level.Level
-import java.util.Optional
 
 object ItemAdvancedMemoryCard :
-    Item(
-        Properties()
-            .stacksTo(1)
-            .component(BetterP2P.MEMORY_INFO, MemoryInfo())
-    ) {
+    Item(Properties().stacksTo(1).component(BetterP2P.MEMORY_INFO, MemoryInfo())) {
 
     override fun appendHoverText(
         stack: ItemStack,
@@ -74,7 +70,9 @@ object ItemAdvancedMemoryCard :
                 type = TUNNEL_ANY
                 selectedEntry = Optional.empty()
             }
-            stack.update(BetterP2P.MEMORY_INFO, MemoryInfo()) {info -> MemoryInfo(selectedEntry, info.frequency, info.mode, info.guiScale, info.type)}
+            stack.update(BetterP2P.MEMORY_INFO, MemoryInfo()) { info ->
+                MemoryInfo(selectedEntry, info.frequency, info.mode, info.guiScale, info.type)
+            }
             ModNetwork.initConnection(player, grid, info)
             return InteractionResult.SUCCESS
         }

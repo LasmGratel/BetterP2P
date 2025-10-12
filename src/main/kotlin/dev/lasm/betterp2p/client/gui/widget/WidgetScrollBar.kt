@@ -17,7 +17,10 @@ class WidgetScrollBar(x: Int, y: Int) : AbstractWidget(x, y, 12, 15, Component.e
     var currentScroll = 0
 
     val CREATIVE_TAB_GUI =
-        ResourceLocation.tryBuild("minecraft", "textures/gui/container/creative_inventory/tabs.png")!!
+        ResourceLocation.fromNamespaceAndPath(
+            "minecraft",
+            "textures/gui/container/creative_inventory/tabs.png"
+        )
 
     override fun renderWidget(graphics: GuiGraphics, mouseX: Int, mouseY: Int, partialTick: Float) {
         if (getRange() == 0) {
@@ -58,7 +61,12 @@ class WidgetScrollBar(x: Int, y: Int) : AbstractWidget(x, y, 12, 15, Component.e
         super.onDrag(mouseX, mouseY, dragX, dragY)
     }
 
-    override fun mouseScrolled(mouseX: Double, mouseY: Double, scrollX: Double, scrollY: Double): Boolean {
+    override fun mouseScrolled(
+        mouseX: Double,
+        mouseY: Double,
+        scrollX: Double,
+        scrollY: Double
+    ): Boolean {
         var delta = scrollY.toInt()
         delta = (-delta).coerceIn(-1, 1)
         currentScroll += delta

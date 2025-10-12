@@ -2,28 +2,38 @@ package dev.lasm.betterp2p.network.data
 
 import com.mojang.datafixers.util.Function9
 import io.netty.buffer.ByteBuf
+import java.util.function.Function
 import net.minecraft.core.BlockPos
 import net.minecraft.core.Direction
 import net.minecraft.core.registries.Registries
 import net.minecraft.network.codec.ByteBufCodecs
 import net.minecraft.network.codec.StreamCodec
 import net.minecraft.resources.ResourceKey
-import java.util.function.Function
 
 object BetterP2PCodecs {
 
-    val P2P_INFO_STREAM: StreamCodec<ByteBuf, P2PInfo> = composite(
-        ByteBufCodecs.SHORT, P2PInfo::frequency,
-        BlockPos.STREAM_CODEC, P2PInfo::pos,
-        ResourceKey.streamCodec(Registries.DIMENSION), P2PInfo::dim,
-        Direction.STREAM_CODEC, P2PInfo::facing,
-        ByteBufCodecs.STRING_UTF8, P2PInfo::name,
-        ByteBufCodecs.BOOL, P2PInfo::output,
-        ByteBufCodecs.BOOL, P2PInfo::hasChannel,
-        ByteBufCodecs.INT, P2PInfo::channels,
-        ByteBufCodecs.INT, P2PInfo::type,
-        ::P2PInfo
-    )
+    val P2P_INFO_STREAM: StreamCodec<ByteBuf, P2PInfo> =
+        composite(
+            ByteBufCodecs.SHORT,
+            P2PInfo::frequency,
+            BlockPos.STREAM_CODEC,
+            P2PInfo::pos,
+            ResourceKey.streamCodec(Registries.DIMENSION),
+            P2PInfo::dim,
+            Direction.STREAM_CODEC,
+            P2PInfo::facing,
+            ByteBufCodecs.STRING_UTF8,
+            P2PInfo::name,
+            ByteBufCodecs.BOOL,
+            P2PInfo::output,
+            ByteBufCodecs.BOOL,
+            P2PInfo::hasChannel,
+            ByteBufCodecs.INT,
+            P2PInfo::channels,
+            ByteBufCodecs.INT,
+            P2PInfo::type,
+            ::P2PInfo
+        )
 
     fun <B, C, T1, T2, T3, T4, T5, T6, T7, T8, T9> composite(
         codec1: StreamCodec<in B, T1>,

@@ -21,6 +21,8 @@ import dev.lasm.betterp2p.network.packet.C2SCloseGui
 import dev.lasm.betterp2p.network.packet.C2SRefreshP2PList
 import dev.lasm.betterp2p.network.packet.C2SUpdateMemoryInfo
 import dev.lasm.betterp2p.util.p2p.ClientTunnelInfo
+import java.util.Optional
+import kotlin.jvm.optionals.getOrNull
 import net.minecraft.ChatFormatting
 import net.minecraft.client.gui.GuiGraphics
 import net.minecraft.client.gui.components.Button
@@ -36,10 +38,8 @@ import net.minecraft.network.chat.Style
 import net.minecraft.resources.ResourceLocation
 import net.minecraft.util.FormattedCharSequence
 import net.neoforged.neoforge.network.PacketDistributor
-import java.util.Optional
-import kotlin.jvm.optionals.getOrNull
 
-val TEXTURE = ResourceLocation.tryBuild(MOD_ID, "textures/gui/advanced_memory_card.png")!!
+val TEXTURE = ResourceLocation.fromNamespaceAndPath(MOD_ID, "textures/gui/advanced_memory_card.png")
 const val GUI_WIDTH = 288
 const val GUI_TEX_HEIGHT = 264
 
@@ -310,7 +310,12 @@ class GuiAdvancedMemoryCard(val theMenu: AdvancedMemoryCardMenu) :
         )
     }
 
-    override fun mouseScrolled(mouseX: Double, mouseY: Double, scrollX: Double, scrollY: Double): Boolean {
+    override fun mouseScrolled(
+        mouseX: Double,
+        mouseY: Double,
+        scrollX: Double,
+        scrollY: Double
+    ): Boolean {
         return scrollBar.mouseScrolled(mouseX, mouseY, scrollX, scrollY) ||
             super<Screen>.mouseScrolled(mouseX, mouseY, scrollX, scrollY)
     }
