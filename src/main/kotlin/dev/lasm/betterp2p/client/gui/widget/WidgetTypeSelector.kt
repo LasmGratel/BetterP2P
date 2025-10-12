@@ -88,7 +88,7 @@ class WidgetTypeSelector(
             }
             drawBlockIcon(
                 graphics,
-                ResourceLocation.fromNamespaceAndPath("minecraft", "textures/block/coal_block.png"),
+                ResourceLocation.withDefaultNamespace("textures/block/coal_block.png"),
                 x = iconPosX + 1,
                 y = iconPosY + 1
             )
