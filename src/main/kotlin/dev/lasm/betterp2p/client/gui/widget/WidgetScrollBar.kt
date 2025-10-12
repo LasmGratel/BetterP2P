@@ -16,18 +16,17 @@ class WidgetScrollBar(x: Int, y: Int) : AbstractWidget(x, y, 12, 15, Component.e
 
     var currentScroll = 0
 
-    val CREATIVE_TAB_GUI =
-        ResourceLocation.fromNamespaceAndPath(
-            "minecraft",
-            "textures/gui/container/creative_inventory/tabs.png"
-        )
+    val SCROLLER =
+        ResourceLocation.withDefaultNamespace("container/creative_inventory/scroller")
+    val SCROLLER_DISABLED =
+        ResourceLocation.withDefaultNamespace("container/creative_inventory/scroller_disabled")
 
     override fun renderWidget(graphics: GuiGraphics, mouseX: Int, mouseY: Int, partialTick: Float) {
         if (getRange() == 0) {
-            graphics.blit(CREATIVE_TAB_GUI, x, y, 244, 0, 12, 15)
+            graphics.blitSprite(SCROLLER_DISABLED, x, y, 12, 15)
         } else {
             val offset = (currentScroll - minScroll) * (height - 15) / getRange()
-            graphics.blit(CREATIVE_TAB_GUI, x, offset + y, 232, 0, 12, 15)
+            graphics.blitSprite(SCROLLER, x, offset + y, 12, 15)
         }
     }
 
