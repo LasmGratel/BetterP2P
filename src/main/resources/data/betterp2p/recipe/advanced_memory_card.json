@@ -1,5 +1,6 @@
 {
     "type": "minecraft:crafting_shapeless",
+    "category": "misc",
     "ingredients": [
         {
             "item": "ae2:memory_card"
@@ -9,6 +10,7 @@
         }
     ],
     "result": {
-        "item": "betterp2p:advanced_memory_card"
+        "count": 1,
+        "id": "betterp2p:advanced_memory_card"
     }
 }
