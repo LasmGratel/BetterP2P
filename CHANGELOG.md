@@ -12,6 +12,24 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 **Please choose the corrent corresponding dependencies for your mod loader!**
 
 ## [Unreleased]
+### Added
+- NeoForge Support
+- Update to 1.21.1
+
+### Changed
+ - Migrate from Artifactory loom to NeoGradle
+ - Update AE2 dependency
+ - Update Gradle
+ - Update KotlinForForge
+ - Migrate Network stack to Stream Codecs
+ - Migrate ItemNBT to Data Attachments
+ - Migrate Event Handling to plain NeoForge
+ - Replace Mixin with Event-based initialization
+
+### Removed
+ - Fabric Support
+ - Forge Support
+ - Architectury dependency
 
 ## [1.5.0] - 2024-12-23
 

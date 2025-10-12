@@ -17,7 +17,6 @@ import net.minecraft.client.gui.components.AbstractWidget
 import net.minecraft.client.gui.components.Button
 import net.minecraft.client.gui.narration.NarrationElementOutput
 import net.minecraft.client.renderer.Rect2i
-import net.minecraft.client.resources.language.I18n
 import net.minecraft.network.chat.Component
 import net.neoforged.neoforge.network.PacketDistributor
 import org.lwjgl.glfw.GLFW
@@ -193,7 +192,7 @@ class WidgetP2PDevice(
         if (renderNameTextfield) {
             graphics.drawString(
                 font,
-                I18n.get("gui.advanced_memory_card.name", info.name),
+                Component.translatable("gui.advanced_memory_card.name", info.name),
                 leftAlign,
                 y + 2,
                 0x404040,
@@ -202,7 +201,7 @@ class WidgetP2PDevice(
         } else {
             graphics.drawString(
                 font,
-                I18n.get("gui.advanced_memory_card.name", ""),
+                Component.translatable("gui.advanced_memory_card.name", ""),
                 leftAlign,
                 y + 2,
                 0x404040,
@@ -256,7 +255,7 @@ class WidgetP2PDevice(
         return super.charTyped(codePoint, modifiers)
     }
 
-    override fun onClick(mouseX: Double, mouseY: Double,  button: Int) {
+    override fun onClick(mouseX: Double, mouseY: Double, button: Int) {
         val info = infoSupplier() ?: return
         if (
             isHovered &&
@@ -293,7 +292,7 @@ class WidgetP2PDevice(
     }
 
     override fun getTooltipMessage(): MutableList<Component> {
-        return infoSupplier()!!.hoverInfo.asSequence().map { Component.literal(it) }.toMutableList()
+        return infoSupplier()!!.hoverInfo.toMutableList()
     }
 
     override fun getTooltipArea(): Rect2i {

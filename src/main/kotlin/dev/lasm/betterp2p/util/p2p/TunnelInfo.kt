@@ -1,6 +1,8 @@
 package dev.lasm.betterp2p.util.p2p
 
 import appeng.parts.p2p.P2PTunnelPart
+import net.minecraft.ChatFormatting
+import net.minecraft.network.chat.Component
 import net.minecraft.resources.ResourceLocation
 import net.minecraft.world.item.ItemStack
 
@@ -10,9 +12,10 @@ open class TunnelInfo(
     val stack: ItemStack,
     val clazz: Class<out P2PTunnelPart<*>>
 ) {
-    val dispName: String = stack.displayName.string ?: "§c<Unknown P2P Type>"
+    val dispName: Component =
+        stack.displayName ?: Component.literal("<Unknown P2P Type>").withStyle(ChatFormatting.RED)
     override fun toString(): String {
-        return "TunnelInfo(index=$index, stack=$stack, clazz=$clazz, dispName='$dispName')"
+        return "TunnelInfo(index=$index, stack=$stack, clazz=$clazz, dispName='${dispName.string}')"
     }
 }
 

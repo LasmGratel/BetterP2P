@@ -4,16 +4,21 @@ import dev.lasm.betterp2p.BetterP2P
 import dev.lasm.betterp2p.network.data.P2PInfo
 import dev.lasm.betterp2p.network.data.P2PLocation
 import dev.lasm.betterp2p.util.p2p.ClientTunnelInfo
-import net.minecraft.client.resources.language.I18n
+import net.minecraft.ChatFormatting
+import net.minecraft.network.chat.Component
 import net.minecraft.resources.ResourceLocation
 
 class InfoWrapper(info: P2PInfo) {
     var frequency: Short = info.frequency
         set(value) {
             if (error || value == 0.toShort()) {
-                hoverInfo[4] = "§c" + I18n.get("gui.advanced_memory_card.p2p_status.unbound")
+                hoverInfo[4] =
+                    Component.translatable("gui.advanced_memory_card.p2p_status.unbound")
+                        .withStyle(ChatFormatting.RED)
             } else {
-                hoverInfo[4] = "§a" + I18n.get("gui.advanced_memory_card.p2p_status.bound")
+                hoverInfo[4] =
+                    Component.translatable("gui.advanced_memory_card.p2p_status.bound")
+                        .withStyle(ChatFormatting.GREEN)
             }
             field = value
         }
@@ -32,31 +37,30 @@ class InfoWrapper(info: P2PInfo) {
     var overlay: ResourceLocation =
         ResourceLocation.fromNamespaceAndPath("ae2", "textures/part/p2p_tunnel_front.png")
 
-    val description: String
+    val description: Component
 
-    val freqDisplay: String by lazy {
-        buildString {
-            append(I18n.get("item.betterp2p.advanced_memory_card.selected"))
-            append(" ")
-            if (frequency != 0.toShort()) {
-                val hex: String =
-                    buildString {
-                            append((frequency.toUInt() shr 32).toString(16).uppercase())
-                            append(frequency.toUInt().toString(16).uppercase())
-                        }
-                        .format4()
-                append(hex)
-            } else {
-                append(I18n.get("gui.advanced_memory_card.desc.not_set"))
-            }
-        }
-    }
+    val freqDisplay: Component =
+        Component.translatable("item.betterp2p.advanced_memory_card.selected")
+            .append(" ")
+            .append(
+                if (frequency != 0.toShort()) {
+                    val hex: String =
+                        buildString {
+                                append((frequency.toUInt() shr 32).toString(16).uppercase())
+                                append(frequency.toUInt().toString(16).uppercase())
+                            }
+                            .format4()
+                    Component.literal(hex)
+                } else {
+                    Component.translatable("gui.advanced_memory_card.desc.not_set")
+                }
+            )
 
-    val hoverInfo: MutableList<String>
+    val hoverInfo: MutableList<Component>
 
-    val channels: String? by lazy {
+    val channels: Component? by lazy {
         if (info.channels >= 0) {
-            I18n.get("gui.advanced_memory_card.extra.channel", info.channels)
+            Component.translatable("gui.advanced_memory_card.extra.channel", info.channels)
         } else {
             null
         }
@@ -66,32 +70,54 @@ class InfoWrapper(info: P2PInfo) {
         val p2pType: ClientTunnelInfo =
             BetterP2P.proxy.getP2PFromIndex(info.type) as ClientTunnelInfo
         icon = p2pType.icon()
-        description = buildString {
-            append("Type: ")
-            append(p2pType.dispName)
-            append(" - ")
-            if (output) {
-                append(I18n.get("gui.advanced_memory_card.p2p_status.output"))
-            } else {
-                append(I18n.get("gui.advanced_memory_card.p2p_status.input"))
-            }
-        }
+        description =
+            Component.literal("Type: ")
+                .append(p2pType.dispName)
+                .append(" - ")
+                .append(
+                    if (output) {
+                        Component.translatable("gui.advanced_memory_card.p2p_status.output")
+                    } else {
+                        Component.translatable("gui.advanced_memory_card.p2p_status.input")
+                    }
+                )
+
         val online = info.hasChannel
         hoverInfo =
             mutableListOf(
-                "§bP2P - ${p2pType.dispName}",
-                "§e" + I18n.get("gui.advanced_memory_card.pos", info.pos.x, info.pos.y, info.pos.z),
-                "§e" + I18n.get("gui.advanced_memory_card.side", info.facing.name),
-                "§e" + I18n.get("gui.advanced_memory_card.dim", info.dim.location())
+                Component.literal("P2P - ").withStyle(ChatFormatting.AQUA).append(p2pType.dispName),
+                Component.translatable(
+                        "gui.advanced_memory_card.pos",
+                        info.pos.x,
+                        info.pos.y,
+                        info.pos.z
+                    )
+                    .withStyle(ChatFormatting.YELLOW),
+                Component.translatable("gui.advanced_memory_card.side", info.facing.name)
+                    .withStyle(ChatFormatting.YELLOW),
+                Component.translatable(
+                        "gui.advanced_memory_card.dim",
+                        info.dim.location().toString()
+                    )
+                    .withStyle(ChatFormatting.YELLOW)
             )
         if (error || frequency == 0.toShort()) {
-            hoverInfo.add("§c" + I18n.get("gui.advanced_memory_card.p2p_status.unbound"))
+            hoverInfo.add(
+                Component.translatable("gui.advanced_memory_card.p2p_status.unbound")
+                    .withStyle(ChatFormatting.RED)
+            )
         } else {
-            hoverInfo.add("§a" + I18n.get("gui.advanced_memory_card.p2p_status.bound"))
+            hoverInfo.add(
+                Component.translatable("gui.advanced_memory_card.p2p_status.bound")
+                    .withStyle(ChatFormatting.GREEN)
+            )
         }
 
         if (!online) {
-            hoverInfo.add("§c" + I18n.get("gui.advanced_memory_card.p2p_status.offline"))
+            hoverInfo.add(
+                Component.translatable("gui.advanced_memory_card.p2p_status.offline")
+                    .withStyle(ChatFormatting.RED)
+            )
         }
     }
 

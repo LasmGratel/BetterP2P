@@ -70,7 +70,11 @@ enum class Filter(val pattern: Regex, val filter: (InfoWrapper, List<String>?) -
         "\\A@types*=(.+)\\z".toRegex(),
         filter@{ it, strs ->
             val tags =
-                dev.lasm.betterp2p.BetterP2P.proxy.getP2PFromIndex(it.type)!!.dispName.lowercase()
+                dev.lasm.betterp2p.BetterP2P.proxy
+                    .getP2PFromIndex(it.type)!!
+                    .dispName
+                    .string
+                    .lowercase()
             for (f in strs!!) {
                 if (tags.contains(f.lowercase())) {
                     return@filter true

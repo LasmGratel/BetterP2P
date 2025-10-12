@@ -85,15 +85,47 @@ class GuiAdvancedMemoryCard(val theMenu: AdvancedMemoryCardMenu) :
 
     private var mode = menu.memoryInfo.mode
 
-    private val sortRules: List<String> by lazy {
+    private val sortRules: List<Component> by lazy {
         listOf(
-            "§b§n" + I18n.get("gui.advanced_memory_card.sortinfo1"),
-            "§9@in§7 - " + I18n.get("gui.advanced_memory_card.sortinfo2"),
-            "§6@out§7 - " + I18n.get("gui.advanced_memory_card.sortinfo3"),
-            "§a@b§7 - " + I18n.get("gui.advanced_memory_card.sortinfo4"),
-            "§c@u§7 - " + I18n.get("gui.advanced_memory_card.sortinfo5"),
-            "§e@type=<name1>[;<name2>;]...§7 - " + I18n.get("gui.advanced_memory_card.sortinfo6"),
-            "§7" + I18n.get("gui.advanced_memory_card.sortinfo7")
+            Component.translatable("gui.advanced_memory_card.sortinfo1")
+                .withStyle(Style.EMPTY.withColor(ChatFormatting.AQUA).withUnderlined(true)),
+            Component.literal("@in")
+                .withStyle(ChatFormatting.BLUE)
+                .append(
+                    Component.literal(" - ")
+                        .withStyle(ChatFormatting.GRAY)
+                        .append(Component.translatable("gui.advanced_memory_card.sortinfo2"))
+                ),
+            Component.literal("@out")
+                .withStyle(ChatFormatting.GOLD)
+                .append(
+                    Component.literal(" - ")
+                        .withStyle(ChatFormatting.GRAY)
+                        .append(Component.translatable("gui.advanced_memory_card.sortinfo3"))
+                ),
+            Component.literal("@b")
+                .withStyle(ChatFormatting.GREEN)
+                .append(
+                    Component.literal(" - ")
+                        .withStyle(ChatFormatting.GRAY)
+                        .append(Component.translatable("gui.advanced_memory_card.sortinfo4"))
+                ),
+            Component.literal("@u")
+                .withStyle(ChatFormatting.RED)
+                .append(
+                    Component.literal(" - ")
+                        .withStyle(ChatFormatting.GRAY)
+                        .append(Component.translatable("gui.advanced_memory_card.sortinfo5"))
+                ),
+            Component.literal("@type=<name1>[;<name2>;]...")
+                .withStyle(ChatFormatting.YELLOW)
+                .append(
+                    Component.literal(" - ")
+                        .withStyle(ChatFormatting.GRAY)
+                        .append(Component.translatable("gui.advanced_memory_card.sortinfo6"))
+                ),
+            Component.translatable("gui.advanced_memory_card.sortinfo7")
+                .withStyle(ChatFormatting.GRAY)
         )
     }
 
@@ -102,7 +134,7 @@ class GuiAdvancedMemoryCard(val theMenu: AdvancedMemoryCardMenu) :
     val searchBar: EditBox by lazy {
         object : EditBox(font, 0, 0, 100, 10, Component.empty()), ITooltip {
             override fun getTooltipMessage(): MutableList<Component> {
-                return sortRules.asSequence().map { Component.literal(it) }.toMutableList()
+                return sortRules.toMutableList()
             }
 
             override fun getTooltipArea(): Rect2i {
@@ -140,7 +172,7 @@ class GuiAdvancedMemoryCard(val theMenu: AdvancedMemoryCardMenu) :
         typeSelector = WidgetTypeSelector(0, 0, this, typeSelectorList)
     }
 
-    private val modeDescriptions: List<List<String>> =
+    private val modeDescriptions: List<List<Component>> =
         listOf(
             fmtTooltips(
                 title = BetterMemoryCardModes.OUTPUT.unlocalizedName,
@@ -169,11 +201,7 @@ class GuiAdvancedMemoryCard(val theMenu: AdvancedMemoryCardMenu) :
         mode = mode.next()
         button.texX = (mode.ordinal + 3) * 32
         button.texY = 232
-        button.messages =
-            modeDescriptions[mode.ordinal]
-                .asSequence()
-                .map { Component.literal(it) }
-                .toMutableList()
+        button.messages = modeDescriptions[mode.ordinal].toMutableList()
         syncMemoryInfo()
     }
 
@@ -224,19 +252,17 @@ class GuiAdvancedMemoryCard(val theMenu: AdvancedMemoryCardMenu) :
         resizeButton.x = leftPos - 32
         resizeButton.y = topPos + 2
         resizeButton.texX = scale.ordinal * 32
+        resizeButton.messages[0] = Component.literal("Resize")
 
         modeButton.x = leftPos - 32
         modeButton.y = topPos + 34
         modeButton.texX = (mode.ordinal + 3) * 32
-        modeButton.messages =
-            modeDescriptions[mode.ordinal]
-                .asSequence()
-                .map { Component.literal(it) }
-                .toMutableList()
+        modeButton.messages = modeDescriptions[mode.ordinal].toMutableList()
 
         typeButton.setPosition(leftPos - 32, topPos + 66)
 
         refreshButton.setPosition(leftPos - 32, topPos + 98)
+        refreshButton.messages[0] = Component.literal("Refresh")
 
         col.resize(scale, h - 75)
         col.setPosition(leftPos + tableX, topPos + tableY)
@@ -325,7 +351,7 @@ class GuiAdvancedMemoryCard(val theMenu: AdvancedMemoryCardMenu) :
 
         graphics.drawString(
             font,
-            I18n.get("item.betterp2p.advanced_memory_card"),
+            Component.translatable("item.betterp2p.advanced_memory_card"),
             leftPos + tableX,
             topPos + 6,
             0x404040,
@@ -541,14 +567,14 @@ class GuiAdvancedMemoryCard(val theMenu: AdvancedMemoryCardMenu) :
 }
 
 /** Format multiple lines of tooltips by the given max chars. */
-fun fmtTooltips(title: String, vararg keys: String, maxChars: Int): List<String> {
-    val result: MutableList<String> = mutableListOf()
-    result.add(I18n.get(title))
+fun fmtTooltips(title: String, vararg keys: String, maxChars: Int): List<Component> {
+    val result: MutableList<Component> = mutableListOf()
+    result.add(Component.translatable(title))
     for (key in keys) {
         val words = I18n.get(key).split(' ')
         var i = 0
         if (key.length < maxChars) {
-            result.add(key)
+            result.add(Component.literal(key))
         }
         while (i < words.size) {
             val s = StringBuilder()
@@ -558,10 +584,8 @@ fun fmtTooltips(title: String, vararg keys: String, maxChars: Int): List<String>
                 if (i >= words.size) break@perWord
                 s.append(" ")
             }
-            if (!s.startsWith('§')) {
-                s.insert(0, "§7")
-            }
-            result.add(s.toString())
+            val c = Component.literal(s.toString())
+            result.add(if (!s.startsWith('§')) c.withStyle(ChatFormatting.GRAY) else c)
         }
     }
     return result

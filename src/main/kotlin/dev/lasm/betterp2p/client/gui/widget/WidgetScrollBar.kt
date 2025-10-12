@@ -16,8 +16,7 @@ class WidgetScrollBar(x: Int, y: Int) : AbstractWidget(x, y, 12, 15, Component.e
 
     var currentScroll = 0
 
-    val SCROLLER =
-        ResourceLocation.withDefaultNamespace("container/creative_inventory/scroller")
+    val SCROLLER = ResourceLocation.withDefaultNamespace("container/creative_inventory/scroller")
     val SCROLLER_DISABLED =
         ResourceLocation.withDefaultNamespace("container/creative_inventory/scroller_disabled")
 

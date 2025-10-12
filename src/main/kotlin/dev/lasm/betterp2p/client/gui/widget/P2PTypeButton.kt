@@ -11,9 +11,11 @@ import dev.lasm.betterp2p.network.data.TUNNEL_ANY
 import dev.lasm.betterp2p.network.packet.C2SRefreshP2PList
 import dev.lasm.betterp2p.util.p2p.ClientTunnelInfo
 import kotlin.reflect.KProperty0
+import net.minecraft.ChatFormatting
 import net.minecraft.client.Minecraft
 import net.minecraft.client.gui.GuiGraphics
-import net.minecraft.client.resources.language.I18n
+import net.minecraft.network.chat.Component
+import net.minecraft.network.chat.MutableComponent
 import net.neoforged.neoforge.network.PacketDistributor
 
 private const val s = "gui.advanced_memory_card.types.filtered"
@@ -23,7 +25,9 @@ class P2PTypeButton(
     onPress: OnPress,
     private val onSecondaryPress: OnPress
 ) : IconButton(0, 0, onPress), ITypeReceiver {
-    private var hoverText: MutableList<String>
+    init {
+        updateHoverText()
+    }
 
     val types = BetterP2P.proxy.getP2PTypeList()
     var index =
@@ -38,25 +42,6 @@ class P2PTypeButton(
         BetterP2P.proxy.getP2PFromClass(FluidP2PTunnelPart::class.java) as ClientTunnelInfo
     private val redstone =
         BetterP2P.proxy.getP2PFromClass(RedstoneP2PTunnelPart::class.java) as ClientTunnelInfo
-
-    init {
-        hoverText =
-            if (type.get() == null) {
-                mutableListOf(
-                    I18n.get(
-                        "gui.advanced_memory_card.types.filtered",
-                        I18n.get("gui.advanced_memory_card.types.any")
-                    )
-                )
-            } else {
-                mutableListOf(
-                    I18n.get(
-                        "gui.advanced_memory_card.types.filtered",
-                        "§a" + type.get()!!.stack.displayName
-                    )
-                )
-            }
-    }
 
     fun nextType(reverse: Boolean): ClientTunnelInfo? {
         return if (reverse) {
@@ -128,20 +113,25 @@ class P2PTypeButton(
         }
     }
 
+    private fun updateHoverText() {
+        messages[0] =
+            if (type.get() == null) {
+                Component.translatable(
+                    "gui.advanced_memory_card.types.filtered",
+                    Component.translatable("gui.advanced_memory_card.types.any")
+                )
+            } else {
+                Component.translatable(
+                    "gui.advanced_memory_card.types.filtered",
+                    (type.get()!!.stack.displayName as MutableComponent).withStyle(
+                        ChatFormatting.GREEN
+                    ),
+                )
+            }
+    }
+
     fun commitType() {
-        if (type.get() == null) {
-            hoverText[0] =
-                I18n.get(
-                    "gui.advanced_memory_card.types.filtered",
-                    I18n.get("gui.advanced_memory_card.types.any")
-                )
-        } else {
-            hoverText[0] =
-                I18n.get(
-                    "gui.advanced_memory_card.types.filtered",
-                    "§a" + type.get()!!.stack.displayName
-                )
-        }
+        updateHoverText()
         PacketDistributor.sendToServer(C2SRefreshP2PList(type.get()?.index ?: TUNNEL_ANY))
         playDownSound(Minecraft.getInstance().soundManager)
     }

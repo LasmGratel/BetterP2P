@@ -9,7 +9,6 @@ import net.minecraft.client.gui.GuiGraphics
 import net.minecraft.client.gui.components.AbstractWidget
 import net.minecraft.client.gui.layouts.LayoutElement
 import net.minecraft.client.gui.narration.NarrationElementOutput
-import net.minecraft.client.resources.language.I18n
 import net.minecraft.network.chat.Component
 import net.minecraft.resources.ResourceLocation
 
@@ -33,7 +32,7 @@ class WidgetTypeSelector(
     var useAny = false
     /** Feeds the input into this parent. */
     var parent: ITypeReceiver? = null
-    private val translated: List<List<String>>
+    private val translated: List<List<Component>>
 
     override fun setFocused(focused: Boolean) {
         super.setFocused(focused)
@@ -42,7 +41,7 @@ class WidgetTypeSelector(
 
     init {
         val list = p2pTypes.map { listOf(it.dispName) }.toMutableList()
-        list.add(listOf(I18n.get("gui.advanced_memory_card.types.any")))
+        list.add(listOf(Component.translatable("gui.advanced_memory_card.types.any")))
         translated = list
     }
 
@@ -103,12 +102,7 @@ class WidgetTypeSelector(
             )
         }
         if (hoveredIdx != -1) {
-            gui.drawTooltip(
-                graphics,
-                mouseX,
-                mouseY,
-                translated[hoveredIdx].map { Component.literal(it) }
-            )
+            gui.drawTooltip(graphics, mouseX, mouseY, translated[hoveredIdx])
         }
     }
 
