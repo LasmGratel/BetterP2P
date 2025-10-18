@@ -66,7 +66,7 @@ class GuiAdvancedMemoryCard(val theMenu: AdvancedMemoryCardMenu) :
 
     val refreshButton = IconButton(160, 200, this::onRefresh)
 
-    private fun onRefresh(button: Button) {
+    fun onRefresh(_button: Button?) {
         PacketDistributor.sendToServer(C2SRefreshP2PList(type?.index ?: TUNNEL_ANY))
     }
 

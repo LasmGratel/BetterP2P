@@ -6,9 +6,6 @@ import dev.lasm.betterp2p.network.data.GridServerCache
 import dev.lasm.betterp2p.network.data.MemoryInfo
 import dev.lasm.betterp2p.network.packet.*
 import java.util.*
-import java.util.concurrent.ScheduledThreadPoolExecutor
-import java.util.concurrent.ThreadFactory
-import java.util.concurrent.TimeUnit
 import net.minecraft.network.chat.Component
 import net.minecraft.server.level.ServerPlayer
 import net.minecraft.world.MenuProvider
@@ -20,26 +17,13 @@ import net.neoforged.neoforge.network.event.RegisterPayloadHandlersEvent
 import net.neoforged.neoforge.network.registration.HandlerThread
 
 /** Network cooldown time in milliseconds */
-const val NETWORK_CD = 250L
+const val NETWORK_CD = 200L
 
 /** Mod network manager. Handles server <-> client communication. */
 object ModNetwork {
 
     /** for client requests (changing viewed p2p) */
     val playerState: MutableMap<UUID, PlayerRequest> = Collections.synchronizedMap(WeakHashMap())
-
-    /** Network Thread */
-    private val networkWorker: ScheduledThreadPoolExecutor =
-        ScheduledThreadPoolExecutor(
-            1,
-            ThreadFactory {
-                val th = Thread(it)
-                th.name = "BetterP2P-NetworkWorker"
-                th.isDaemon = true
-                th.priority = Thread.MIN_PRIORITY
-                th
-            }
-        )
 
     fun registerNetwork(event: RegisterPayloadHandlersEvent) {
         val reg = event.registrar("1").executesOn(HandlerThread.NETWORK)
@@ -68,33 +52,23 @@ object ModNetwork {
 
     /** Utility function that asks for a full refresh of a specific p2p type. */
     fun requestP2PList(player: Player, type: Int) {
-        synchronized(playerState) {
-            val playerState = playerState[player.uuid] ?: return
-            val cache = playerState.gridCache
+        val playerState = playerState[player.uuid] ?: return
+        val cache = playerState.gridCache
 
-            cache.type = type
-            if (playerState.updateReady + NETWORK_CD < System.currentTimeMillis()) {
-                PacketDistributor.sendToPlayer(
-                    player as ServerPlayer,
-                    S2CUpdateP2P(cache.retrieveP2PList(), true)
-                )
-                playerState.updateReady = System.currentTimeMillis() + NETWORK_CD
-            } else if (!playerState.updatePending) {
-                playerState.updatePending = true
-                networkWorker.schedule(
-                    {
-                        synchronized(ModNetwork.playerState) {
-                            PacketDistributor.sendToPlayer(
-                                player as ServerPlayer,
-                                S2CUpdateP2P(cache.retrieveP2PList(), true)
-                            )
-                            playerState.updatePending = false
-                        }
-                    },
-                    playerState.updateReady - System.currentTimeMillis(),
-                    TimeUnit.MILLISECONDS
-                )
-            }
+        cache.type = type
+        if (playerState.updateReady + NETWORK_CD < System.currentTimeMillis()) {
+            PacketDistributor.sendToPlayer(
+                player as ServerPlayer,
+                S2CUpdateP2P(cache.retrieveP2PList(), true)
+            )
+            playerState.updateReady = System.currentTimeMillis() + NETWORK_CD
+        } else if (!playerState.updatePending) {
+            playerState.updatePending = true
+            PacketDistributor.sendToPlayer(
+                player as ServerPlayer,
+                S2CUpdateP2P(cache.retrieveP2PList(), true)
+            )
+            playerState.updatePending = false
         }
     }
 
@@ -103,32 +77,22 @@ object ModNetwork {
      * only an incremental update is sent.
      */
     fun requestP2PUpdate(player: Player) {
-        synchronized(playerState) {
-            val playerState = playerState[player.uuid] ?: return
-            val cache = playerState.gridCache
+        val playerState = playerState[player.uuid] ?: return
+        val cache = playerState.gridCache
 
-            if (playerState.updateReady + NETWORK_CD < System.currentTimeMillis()) {
-                PacketDistributor.sendToPlayer(
-                    player as ServerPlayer,
-                    S2CUpdateP2P(cache.getP2PUpdates())
-                )
-                playerState.updateReady = System.currentTimeMillis() + NETWORK_CD
-            } else if (!playerState.updatePending) {
-                playerState.updatePending = true
-                networkWorker.schedule(
-                    {
-                        synchronized(ModNetwork.playerState) {
-                            PacketDistributor.sendToPlayer(
-                                player as ServerPlayer,
-                                S2CUpdateP2P(cache.getP2PUpdates())
-                            )
-                            playerState.updatePending = false
-                        }
-                    },
-                    playerState.updateReady - System.currentTimeMillis(),
-                    TimeUnit.MILLISECONDS
-                )
-            }
+        if (playerState.updateReady + NETWORK_CD < System.currentTimeMillis()) {
+            PacketDistributor.sendToPlayer(
+                player as ServerPlayer,
+                S2CUpdateP2P(cache.getP2PUpdates())
+            )
+            playerState.updateReady = System.currentTimeMillis() + NETWORK_CD
+        } else if (!playerState.updatePending) {
+            playerState.updatePending = true
+            PacketDistributor.sendToPlayer(
+                player as ServerPlayer,
+                S2CUpdateP2P(cache.getP2PUpdates())
+            )
+            playerState.updatePending = false
         }
     }
 
@@ -162,10 +126,6 @@ object ModNetwork {
 
     fun removeConnection(player: Player) {
         playerState.remove(player.uuid)
-    }
-
-    fun stop() {
-        networkWorker.shutdown()
     }
 }
 

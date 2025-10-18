@@ -12,8 +12,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 **Please choose the corrent corresponding dependencies for your mod loader!**
 
 ## [Unreleased]
+
+## [1.5.1] - 2025-10-18
+
 ### Added
-- NeoForge Support
+
+- NeoForge Support by heisluft
 - Update to 1.21.1
 
 ### Changed
@@ -25,6 +29,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
  - Migrate ItemNBT to Data Attachments
  - Migrate Event Handling to plain NeoForge
  - Replace Mixin with Event-based initialization
+ - Replace redundant network worker with NeoForge Network
 
 ### Removed
  - Fabric Support

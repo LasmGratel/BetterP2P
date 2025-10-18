@@ -13,6 +13,7 @@ import kotlin.reflect.KProperty0
 import net.minecraft.client.Minecraft
 import net.minecraft.client.gui.GuiGraphics
 import net.minecraft.client.gui.components.AbstractWidget
+import net.minecraft.client.gui.components.Button
 import net.minecraft.client.gui.components.EditBox
 import net.minecraft.client.gui.narration.NarrationElementOutput
 import net.minecraft.network.chat.Component
@@ -125,7 +126,8 @@ class WidgetP2PColumn(
         super.onClick(mouseX, mouseY, button)
     }
 
-    fun onBindButtonClicked(info: InfoWrapper) {
+    fun onBindButtonClicked(button: Button, info: InfoWrapper) {
+        button.active = false
         if (infos.selectedEntry == null) return
         when (mode()) {
             BetterMemoryCardModes.INPUT -> {
@@ -144,13 +146,16 @@ class WidgetP2PColumn(
                 BetterP2P.logger.debug("Somehow bind button was pressed while in UNBIND mode.")
             }
         }
+        gui.onRefresh(null)
     }
 
-    fun onUnbindButtonClicked(info: InfoWrapper) {
+    fun onUnbindButtonClicked(button: Button, info: InfoWrapper) {
+        button.active = false
         if (info.frequency != 0.toShort()) {
             PacketDistributor.sendToServer(C2SUnlinkP2P(info.loc, gui.getTypeID()))
             info.frequency = 0.toShort()
         }
+        gui.onRefresh(null)
     }
 
     fun findInput(frequency: Short?) =

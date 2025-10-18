@@ -54,13 +54,13 @@ class WidgetP2PDevice(
 
     val bindButton: Button =
         Button.builder(Component.translatable("gui.advanced_memory_card.bind")) {
-                col.onBindButtonClicked(infoSupplier()!!)
+                col.onBindButtonClicked(it, infoSupplier()!!)
             }
             .size(56, 20)
             .build()
     val unbindButton: Button =
         Button.builder(Component.translatable("gui.advanced_memory_card.unbind")) {
-                col.onUnbindButtonClicked(infoSupplier()!!)
+                col.onUnbindButtonClicked(it, infoSupplier()!!)
             }
             .size(56, 20)
             .build()
@@ -90,6 +90,7 @@ class WidgetP2PDevice(
                 // Only unbinds allowed in unbind mode
                 bindButton.visible = false
                 unbindButton.visible = info.frequency != 0.toShort()
+                unbindButton.active = unbindButton.visible
             }
             else -> {
                 // Other modes:
@@ -100,6 +101,7 @@ class WidgetP2PDevice(
                     info.loc != selectedInfo!!.loc &&
                         (selectedInfo!!.frequency == 0.toShort() ||
                             info.frequency != selectedInfo!!.frequency)
+                bindButton.active = bindButton.visible
                 unbindButton.visible = false
             }
         }
