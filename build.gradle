@@ -1,137 +1,123 @@
+import org.jetbrains.kotlin.gradle.dsl.JvmTarget
+
 plugins {
-    id "org.jetbrains.kotlin.jvm" version "1.8.22"
-    id "architectury-plugin" version "3.4-SNAPSHOT"
-    id "dev.architectury.loom" version "1.3-SNAPSHOT" apply false
-
-    id 'com.diffplug.spotless-changelog' version "3.0.2" apply false
-    id 'com.diffplug.spotless' version '6.21.0' apply false
-    id 'com.palantir.git-version' version '3.0.0' apply false
+    id 'net.neoforged.gradle.userdev' version '7.0.192'
+    id 'org.jetbrains.kotlin.jvm' version "2.2.20"
+    id 'com.diffplug.spotless-changelog' version "3.0.2"
+    id 'com.diffplug.spotless' version '6.21.0'
+    id 'com.palantir.git-version' version '3.0.0'
 }
 
-architectury {
-    minecraft = rootProject.minecraft_version
+group = 'dev.lasm.betterp2p'
+version = '1.5.0'
+
+base.archivesName = project.name
+
+java {
+    withSourcesJar()
+    toolchain.languageVersion = JavaLanguageVersion.of(21)
 }
 
-subprojects {
-    apply plugin: "dev.architectury.loom"
+compileKotlin.compilerOptions.jvmTarget = JvmTarget.JVM_21
 
-    // Spotless auto-formatter
-    // See https://github.com/diffplug/spotless/tree/main/plugin-gradle
-    // Can be locally toggled via spotless:off/spotless:on comments
+runs {
+    configureEach {
+        systemProperty 'forge.logging.markers', 'REGISTRIES'
+        systemProperty 'forge.logging.console.level', 'debug'
 
-    loom {
-        silentMojangMappingsLicense()
+        modSource project.sourceSets.main
     }
 
-    repositories {
-        maven { url = "https://maven.parchmentmc.org" } // Parchment mappings
-        maven { url = "https://maven.quiltmc.org/repository/release" } // Quilt Mappings
+    client {
+        systemProperty 'neoforge.enabledGameTestNamespaces', project.name
     }
 
-    dependencies {
-        minecraft "com.mojang:minecraft:${rootProject.minecraft_version}"
-        // The following line declares the mojmap mappings, you may use other mappings as well
-        mappings loom.layered() {
-            officialMojangMappings() { nameSyntheticMembers = false }
-            parchment("org.parchmentmc.data:parchment-1.20.1:2023.09.03@zip")
-        }
-        // The following line declares the yarn mappings you may select this one as well.
-        // mappings "net.fabricmc:yarn:1.20.1+build.10:v2"
+    server {
+        systemProperty 'neoforge.enabledGameTestNamespaces', project.name
+        argument '--nogui'
+    }
+
+    gameTestServer {
+        systemProperty 'neoforge.enabledGameTestNamespaces', project.name
+    }
+
+    data {
+        arguments.addAll '--mod', project.name, '--all', '--output', file('src/generated/resources/').getAbsolutePath(), '--existing', file('src/main/resources/').getAbsolutePath()
     }
 }
 
-allprojects {
-    apply plugin: "java"
-    apply plugin: "kotlin"
-    apply plugin: "architectury-plugin"
-    apply plugin: "maven-publish"
-    apply plugin: 'com.diffplug.spotless'
-
-    base {
-        archivesName = rootProject.archives_base_name
+repositories {
+    maven { url = "https://maven.parchmentmc.org" } // Parchment mappings
+    // architectury
+    maven { url = 'https://maven.architectury.dev/' }
+    // KFF
+    maven {
+        name "Kotlin for Forge"
+        url "https://thedarkcolour.github.io/KotlinForForge/"
     }
+}
 
-    version = rootProject.mod_version
-    group = rootProject.maven_group
+dependencies {
+    implementation "net.neoforged:neoforge:${neo_version}"
+    implementation "org.appliedenergistics:appliedenergistics2:${ae2_version}"
+    compileOnly 'org.jetbrains.kotlin:kotlin-stdlib'
+    implementation 'thedarkcolour:kotlinforforge-neoforge:5.10.0'
+}
 
-    spotless {
-        encoding 'UTF-8'
+spotless {
+    encoding 'UTF-8'
 
-        format 'misc', {
-            target '.gitignore'
+    format 'misc', {
+        target '.gitignore'
 
-            trimTrailingWhitespace()
-            indentWithSpaces(4)
-            endWithNewline()
-        }
-        java {
-            target 'src/main/java/**/*.java', 'src/test/java/**/*.java' // exclude api as they are not our files
-            def orderFile = rootProject.file('spotless/spotless.importorder')
-            def formatFile = rootProject.file('spotless/spotless.eclipseformat.xml')
-
-            toggleOffOn()
-            importOrderFile(orderFile)
-            removeUnusedImports()
-            endWithNewline()
-            indentWithTabs(2)
-            indentWithSpaces(4)
-            //noinspection GroovyAssignabilityCheck
-            eclipse('4.19').configFile(formatFile)
-        }
-        kotlin {
-            target 'src/*/kotlin/**/*.kt'
-
-            toggleOffOn()
-            ktfmt('0.39').kotlinlangStyle()
-
-            trimTrailingWhitespace()
-
-
-            endWithNewline()
-        }
-        scala {
-            target 'src/*/scala/**/*.scala'
-            scalafmt('3.7.1')
-        }
+        trimTrailingWhitespace()
+        indentWithSpaces(4)
+        endWithNewline()
     }
-
-    repositories {
-        exclusiveContent {
-            forRepository {
-                maven {
-                    name 'Modrinth'
-                    url 'https://api.modrinth.com/maven'
-                }
-            }
-            filter {
-                includeGroup 'maven.modrinth'
-            }
-        }
-        maven {
-            name 'ModMaven'
-            url 'https://modmaven.dev'
-        }
-    }
-
-    dependencies {
-        compileOnly "org.jetbrains.kotlin:kotlin-stdlib"
-    }
-
-    tasks.withType(JavaCompile) {
-        options.encoding = "UTF-8"
-        options.release = 17
-    }
-
-    kotlin.target.compilations.all {
-        kotlinOptions.jvmTarget = "17"
-    }
-
     java {
-        withSourcesJar()
+        target 'src/main/java/**/*.java', 'src/test/java/**/*.java' // exclude api as they are not our files
+        def orderFile = rootProject.file('spotless/spotless.importorder')
+        def formatFile = rootProject.file('spotless/spotless.eclipseformat.xml')
+
+        toggleOffOn()
+        importOrderFile(orderFile)
+        removeUnusedImports()
+        endWithNewline()
+        indentWithTabs(2)
+        indentWithSpaces(4)
+        //noinspection GroovyAssignabilityCheck
+        eclipse('4.19').configFile(formatFile)
+    }
+    kotlin {
+        target 'src/*/kotlin/**/*.kt'
+        toggleOffOn()
+        ktfmt('0.39').kotlinlangStyle()
+        trimTrailingWhitespace()
+        endWithNewline()
     }
 }
 
-apply plugin: 'com.diffplug.spotless-changelog'
+tasks.withType(ProcessResources).configureEach {
+    var replaceProperties = [
+        minecraft_version      : minecraft_version,
+        minecraft_version_range: minecraft_version_range,
+        neo_version            : neo_version,
+        neo_version_range      : neo_version_range,
+        loader_version_range   : loader_version_range,
+        mod_id                 : project.name,
+        mod_name               : mod_name,
+        mod_license            : mod_license,
+        mod_version            : project.version,
+        mod_authors            : mod_authors,
+        mod_description        : mod_description,
+        ae2_version            : ae2_version
+    ]
+    inputs.properties replaceProperties
+
+    filesMatching(['META-INF/neoforge.mods.toml']) {
+        expand replaceProperties
+    }
+}
 
 spotlessChangelog {
     changelogFile 'CHANGELOG.md'
