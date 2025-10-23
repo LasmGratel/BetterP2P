@@ -70,10 +70,9 @@ object ItemAdvancedMemoryCard :
                 type = TUNNEL_ANY
                 selectedEntry = Optional.empty()
             }
-            stack.update(BetterP2P.MEMORY_INFO, MemoryInfo()) { info ->
-                MemoryInfo(selectedEntry, info.frequency, info.mode, info.guiScale, info.type)
-            }
-            ModNetwork.initConnection(player, grid, info)
+            val info1 = MemoryInfo(selectedEntry, info.frequency, info.mode, info.guiScale, type)
+            stack.update(BetterP2P.MEMORY_INFO, MemoryInfo()) { info -> info1 }
+            ModNetwork.initConnection(player, grid, info1)
             return InteractionResult.SUCCESS
         }
 

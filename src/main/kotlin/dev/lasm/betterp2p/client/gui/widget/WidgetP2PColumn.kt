@@ -10,7 +10,7 @@ import dev.lasm.betterp2p.network.packet.C2SRenameP2P
 import dev.lasm.betterp2p.network.packet.C2SUnlinkP2P
 import java.util.function.Consumer
 import kotlin.reflect.KProperty0
-import net.minecraft.client.Minecraft
+import net.minecraft.client.gui.Font
 import net.minecraft.client.gui.GuiGraphics
 import net.minecraft.client.gui.components.AbstractWidget
 import net.minecraft.client.gui.components.Button
@@ -35,15 +35,17 @@ class WidgetP2PColumn(
 ) : AbstractWidget(x, y, 160, 0, Component.empty()) {
 
     val entries: MutableList<WidgetP2PDevice> = mutableListOf()
-    private val renameBar =
+
+    private val renameBar by lazy {
         object : EditBox(font, 0, 0, 160, 12, Component.empty()) {
             var info: InfoWrapper? = null
         }
+    }
 
     fun getRenameBar() = renameBar
 
-    val font
-        get() = Minecraft.getInstance().font
+    val font: Font
+        get() = gui.getFont()
 
     init {
         renameBar.setMaxLength(50)

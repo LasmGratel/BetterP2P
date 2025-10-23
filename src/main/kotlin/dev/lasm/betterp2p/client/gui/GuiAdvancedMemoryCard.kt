@@ -24,6 +24,7 @@ import dev.lasm.betterp2p.util.p2p.ClientTunnelInfo
 import java.util.Optional
 import kotlin.jvm.optionals.getOrNull
 import net.minecraft.ChatFormatting
+import net.minecraft.client.gui.Font
 import net.minecraft.client.gui.GuiGraphics
 import net.minecraft.client.gui.components.Button
 import net.minecraft.client.gui.components.ComponentRenderUtils
@@ -146,9 +147,12 @@ class GuiAdvancedMemoryCard(val theMenu: AdvancedMemoryCardMenu) :
             }
         }
     }
-    val modeButton = IconButton((mode.ordinal + 3) * 32, 232, ::onChangeMode)
 
-    val col = WidgetP2PColumn(this, infos, 0, 0, ::selectedInfo, ::mode, scrollBar)
+    fun getFont(): Font = font
+
+    val modeButton by lazy { IconButton((mode.ordinal + 3) * 32, 232, ::onChangeMode) }
+
+    val col by lazy { WidgetP2PColumn(this, infos, 0, 0, ::selectedInfo, ::mode, scrollBar) }
 
     private val selectedInfo: InfoWrapper?
         get() = infos.selectedInfo
@@ -284,6 +288,8 @@ class GuiAdvancedMemoryCard(val theMenu: AdvancedMemoryCardMenu) :
 
         checkInfo()
         refreshOverlay()
+
+        selectInfo(memoryInfo.selectedEntry.getOrNull())
 
         col.visitWidgets(::addRenderableWidget)
         addRenderableWidget(refreshButton)
@@ -559,7 +565,7 @@ class GuiAdvancedMemoryCard(val theMenu: AdvancedMemoryCardMenu) :
         openTypeSelector(typeButton, true)
     }
 
-    fun selectInfo(loc: P2PLocation) {
+    fun selectInfo(loc: P2PLocation?) {
         infos.select(loc)
         syncMemoryInfo()
         refreshOverlay()

@@ -23,10 +23,10 @@ jobs:
         with:
           fetch-depth: 0  # Shallow clones should be disabled for a better relevancy of analysis
           submodules: true # Clone with vs-core submodule
-      - name: Set up JDK 17
+      - name: Set up JDK 21
         uses: actions/setup-java@v1
         with:
-          java-version: 17
+          java-version: 21
       - name: Grant execute permission for gradlew
         run: chmod +x gradlew
       - name: Cache Gradle packages
@@ -37,13 +37,8 @@ jobs:
           restore-keys: ${{ runner.os }}-gradle
       - name: Build and analyze
         run: ./gradlew build --info
-      - name: Attach Fabric compilation artifacts
+      - name: Attach compilation artifacts
         uses: actions/upload-artifact@v4
         with:
-          name: fabric-build-libs
-          path: fabric/build/libs
-      - name: Attach Forge compilation artifacts
-        uses: actions/upload-artifact@v4
-        with:
-          name: forge-build-libs
-          path: forge/build/libs
+          name: neoforge-build-libs
+          path: build/libs

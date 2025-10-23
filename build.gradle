@@ -9,7 +9,7 @@ plugins {
 }
 
 group = 'dev.lasm.betterp2p'
-version = '1.5.1'
+version = '1.5.2'
 
 base.archivesName = project.name
 
@@ -48,8 +48,6 @@ runs {
 
 repositories {
     maven { url = "https://maven.parchmentmc.org" } // Parchment mappings
-    // architectury
-    maven { url = 'https://maven.architectury.dev/' }
     // KFF
     maven {
         name "Kotlin for Forge"
